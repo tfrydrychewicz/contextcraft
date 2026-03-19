@@ -109,3 +109,20 @@ export type {
   TokenizerConfig,
   ContextConfig,
 } from './types/config.js';
+
+// Config validation — Zod (§1.9, §20)
+export {
+  contextConfigSchema,
+  slotConfigSchema,
+  slotBudgetSchema,
+  slotOverflowNamedSchema,
+  slotOverflowStrategySchema,
+  overflowConfigSchema,
+  validateContextConfig,
+  safeParseContextConfig,
+} from './config/validator.js';
+export type {
+  ParsedContextConfig,
+  ParsedSlotConfig,
+  ParsedSlotBudget,
+} from './config/validator.js';
