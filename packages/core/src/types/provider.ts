@@ -20,6 +20,12 @@ export interface Tokenizer {
   /** Count tokens in a string */
   count(text: string): TokenCount;
 
+  /**
+   * Count tokens for many strings in one call.
+   * Implementations should reuse encoder state where possible (§18.2 batch counting).
+   */
+  countBatch(texts: readonly string[]): TokenCount[];
+
   /** Count tokens for a full message (includes role overhead, formatting) */
   countMessage(message: CompiledMessage): TokenCount;
 

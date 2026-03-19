@@ -72,6 +72,12 @@ export class SentencePieceTokenizer implements Tokenizer {
   }
 
   /** @inheritdoc */
+  countBatch(texts: readonly string[]): TokenCount[] {
+    const e = this.enc();
+    return texts.map((t) => toTokenCount(e.encode(t).length));
+  }
+
+  /** @inheritdoc */
   encode(text: string): number[] {
     return this.enc().encode(text);
   }

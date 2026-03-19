@@ -71,6 +71,11 @@ export class CharEstimatorTokenizer implements Tokenizer {
   }
 
   /** @inheritdoc */
+  countBatch(texts: readonly string[]): TokenCount[] {
+    return texts.map((t) => this.count(t));
+  }
+
+  /** @inheritdoc */
   encode(text: string): number[] {
     const out: number[] = [];
     for (let i = 0; i < text.length; i += CHARS_PER_TOKEN_ESTIMATE) {

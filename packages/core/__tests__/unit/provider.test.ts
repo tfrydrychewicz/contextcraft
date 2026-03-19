@@ -13,6 +13,8 @@ describe('Tokenizer', () => {
     const tokenizer: Tokenizer = {
       id: 'cl100k_base',
       count: (text) => toTokenCount(Math.ceil(text.length / 4)),
+      countBatch: (texts) =>
+        texts.map((text) => toTokenCount(Math.ceil(text.length / 4))),
       countMessage: (msg) =>
         toTokenCount(
           typeof msg.content === 'string'
@@ -38,6 +40,10 @@ describe('Tokenizer', () => {
     };
     expect(tokenizer.id).toBe('cl100k_base');
     expect(tokenizer.count('hello')).toBe(2);
+    expect(tokenizer.countBatch(['hello', 'world'])).toEqual([
+      tokenizer.count('hello'),
+      tokenizer.count('world'),
+    ]);
   });
 });
 
@@ -75,6 +81,7 @@ describe('ProviderAdapter', () => {
     const tokenizer: Tokenizer = {
       id: 'test',
       count: () => toTokenCount(0),
+      countBatch: (texts) => texts.map(() => toTokenCount(0)),
       countMessage: () => toTokenCount(0),
       countMessages: () => toTokenCount(0),
       encode: () => [],

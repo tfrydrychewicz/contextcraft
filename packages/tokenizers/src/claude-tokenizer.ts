@@ -65,6 +65,12 @@ export class ClaudeTokenizer implements Tokenizer {
   }
 
   /** @inheritdoc */
+  countBatch(texts: readonly string[]): TokenCount[] {
+    const api = this.api;
+    return texts.map((t) => toTokenCount(api.countTokens(t)));
+  }
+
+  /** @inheritdoc */
   encode(text: string): number[] {
     const t = this.api.getTokenizer();
     try {

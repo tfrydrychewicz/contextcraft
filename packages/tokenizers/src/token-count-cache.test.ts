@@ -15,6 +15,7 @@ function mockTokenizer(
   return {
     id,
     count: (text) => toTokenCount(countImpl(text)),
+    countBatch: (texts) => texts.map((text) => toTokenCount(countImpl(text))),
     countMessage: () => toTokenCount(0),
     countMessages: () => toTokenCount(0),
     encode: () => [],

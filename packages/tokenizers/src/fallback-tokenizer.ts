@@ -52,6 +52,11 @@ export class FallbackTokenizer implements Tokenizer {
   }
 
   /** @inheritdoc */
+  countBatch(texts: readonly string[]) {
+    return this.inner.countBatch(texts);
+  }
+
+  /** @inheritdoc */
   encode(text: string) {
     return this.inner.encode(text);
   }

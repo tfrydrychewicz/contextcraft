@@ -84,6 +84,16 @@ export class TiktokenTokenizer implements Tokenizer {
   }
 
   /** @inheritdoc */
+  countBatch(texts: readonly string[]): TokenCount[] {
+    const enc = this.enc();
+    const out: TokenCount[] = [];
+    for (const t of texts) {
+      out.push(toTokenCount(enc.encode_ordinary(t).length));
+    }
+    return out;
+  }
+
+  /** @inheritdoc */
   encode(text: string): number[] {
     return [...this.enc().encode_ordinary(text)];
   }
