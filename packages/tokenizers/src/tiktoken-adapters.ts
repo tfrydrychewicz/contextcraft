@@ -18,7 +18,10 @@ import {
   compiledMessageTokenUnits,
   countCompiledMessages,
 } from './message-count.js';
+import { TOKEN_OVERHEAD } from './token-overhead.js';
 import type { Tokenizer } from './tokenizer.js';
+
+const OVERHEAD = TOKEN_OVERHEAD.openai;
 
 const pool = new Map<TiktokenEncoding, Tiktoken>();
 
@@ -64,6 +67,7 @@ export class TiktokenTokenizer implements Tokenizer {
       compiledMessageTokenUnits(
         (s) => this.enc().encode_ordinary(s).length,
         message,
+        OVERHEAD,
       ),
     );
   }
@@ -74,6 +78,7 @@ export class TiktokenTokenizer implements Tokenizer {
       countCompiledMessages(
         (s) => this.enc().encode_ordinary(s).length,
         messages,
+        OVERHEAD,
       ),
     );
   }

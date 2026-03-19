@@ -6,66 +6,28 @@
 
 import {
   toTokenCount,
-  type CompiledContentPart,
   type CompiledMessage,
   type TokenCount,
 } from 'contextcraft';
 
+import {
+  compiledMessageTokenUnits,
+  countCompiledMessages,
+} from './message-count.js';
+import { TOKEN_OVERHEAD } from './token-overhead.js';
 import type { Tokenizer } from './tokenizer.js';
 
 /** Default UTF-16 code units per estimated token (§18.2). */
 export const CHARS_PER_TOKEN_ESTIMATE = 4;
 
-/**
- * Provider-style overhead used only by {@link CharEstimatorTokenizer.countMessages}.
- * Aligns with OpenAI-style defaults from §9.4 (refined further in phase 2.4).
- */
-const PER_MESSAGE_OVERHEAD_TOKENS = 4;
-
-const PER_CONVERSATION_OVERHEAD_TOKENS = 2;
+/** Char estimator aligns with OpenAI-style §9.4 defaults for rough cross-provider parity. */
+const OVERHEAD = TOKEN_OVERHEAD.openai;
 
 function estimateTokensFromCharLength(charLength: number): number {
   if (charLength <= 0) {
     return 0;
   }
   return Math.ceil(charLength / CHARS_PER_TOKEN_ESTIMATE);
-}
-
-function compiledPartsToString(parts: CompiledContentPart[]): string {
-  let s = '';
-  for (const p of parts) {
-    switch (p.type) {
-      case 'text': {
-        s += p.text;
-        break;
-      }
-      case 'image_url': {
-        s += p.image_url.url;
-        break;
-      }
-      case 'image_base64': {
-        s += p.image_base64.data;
-        break;
-      }
-      default: {
-        break;
-      }
-    }
-  }
-  return s;
-}
-
-function messageBodyToString(content: CompiledMessage['content']): string {
-  return typeof content === 'string' ? content : compiledPartsToString(content);
-}
-
-/**
- * Serialize a compiled message into a single string for length-based estimation.
- * Not identical to any one provider’s wire format — only used for rough counts.
- */
-export function compiledMessageToEstimationString(message: CompiledMessage): string {
-  const nameLine = message.name !== undefined ? `${message.name}\n` : '';
-  return `${message.role}\n${nameLine}${messageBodyToString(message.content)}`;
 }
 
 /**
@@ -85,7 +47,13 @@ export class CharEstimatorTokenizer implements Tokenizer {
 
   /** @inheritdoc */
   countMessage(message: CompiledMessage): TokenCount {
-    return toTokenCount(this.messageCostUnits(message));
+    return toTokenCount(
+      compiledMessageTokenUnits(
+        (s) => estimateTokensFromCharLength(s.length),
+        message,
+        OVERHEAD,
+      ),
+    );
   }
 
   /** @inheritdoc */
@@ -93,11 +61,13 @@ export class CharEstimatorTokenizer implements Tokenizer {
     if (messages.length === 0) {
       return toTokenCount(0);
     }
-    let sum = PER_CONVERSATION_OVERHEAD_TOKENS;
-    for (const m of messages) {
-      sum += this.messageCostUnits(m);
-    }
-    return toTokenCount(sum);
+    return toTokenCount(
+      countCompiledMessages(
+        (s) => estimateTokensFromCharLength(s.length),
+        messages,
+        OVERHEAD,
+      ),
+    );
   }
 
   /** @inheritdoc */
@@ -137,14 +107,6 @@ export class CharEstimatorTokenizer implements Tokenizer {
     }
     return text.slice(0, lo);
   }
-
-  /** Raw token units for one message (before conversation-level overhead). */
-  private messageCostUnits(message: CompiledMessage): number {
-    const base = estimateTokensFromCharLength(
-      compiledMessageToEstimationString(message).length,
-    );
-    return base + PER_MESSAGE_OVERHEAD_TOKENS;
-  }
 }
 
 /** FNV-1a 32-bit — stable fingerprint for a chunk (not reversible). */
@@ -156,3 +118,5 @@ function fnv1a32(chunk: string): number {
   }
   return h >>> 0;
 }
+
+export { compiledMessageToEstimationString } from './compiled-message-string.js';

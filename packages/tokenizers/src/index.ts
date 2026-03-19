@@ -8,10 +8,11 @@ export const VERSION = '0.0.1';
 
 export type { Tokenizer } from './tokenizer.js';
 
+export { compiledMessageToEstimationString } from './compiled-message-string.js';
+
 export {
   CHARS_PER_TOKEN_ESTIMATE,
   CharEstimatorTokenizer,
-  compiledMessageToEstimationString,
 } from './char-estimator.js';
 
 export {
@@ -20,6 +21,16 @@ export {
   compiledMessageTokenUnits,
   countCompiledMessages,
 } from './message-count.js';
+
+export {
+  TOKEN_OVERHEAD,
+  getTokenOverhead,
+  ollamaOverhead,
+} from './token-overhead.js';
+export type {
+  ProviderTokenOverhead,
+  TokenOverheadProviderId,
+} from './token-overhead.js';
 
 export { Cl100kTokenizer, O200kTokenizer, freeTiktokenEncodings } from './tiktoken-adapters.js';
 

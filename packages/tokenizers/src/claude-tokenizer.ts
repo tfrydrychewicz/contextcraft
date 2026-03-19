@@ -17,7 +17,10 @@ import {
   compiledMessageTokenUnits,
   countCompiledMessages,
 } from './message-count.js';
+import { TOKEN_OVERHEAD } from './token-overhead.js';
 import type { Tokenizer } from './tokenizer.js';
+
+const OVERHEAD = TOKEN_OVERHEAD.anthropic;
 
 const CLAUDE_ID = 'anthropic-claude';
 
@@ -45,6 +48,7 @@ export class ClaudeTokenizer implements Tokenizer {
       compiledMessageTokenUnits(
         (s) => this.api.countTokens(s),
         message,
+        OVERHEAD,
       ),
     );
   }
@@ -52,7 +56,11 @@ export class ClaudeTokenizer implements Tokenizer {
   /** @inheritdoc */
   countMessages(messages: CompiledMessage[]): TokenCount {
     return toTokenCount(
-      countCompiledMessages((s) => this.api.countTokens(s), messages),
+      countCompiledMessages(
+        (s) => this.api.countTokens(s),
+        messages,
+        OVERHEAD,
+      ),
     );
   }
 

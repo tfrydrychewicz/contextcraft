@@ -20,7 +20,10 @@ import {
   compiledMessageTokenUnits,
   countCompiledMessages,
 } from './message-count.js';
+import { TOKEN_OVERHEAD } from './token-overhead.js';
 import type { Tokenizer } from './tokenizer.js';
+
+const OVERHEAD = TOKEN_OVERHEAD.openai;
 
 export type GptTokenizerEncodingName = 'cl100k_base' | 'o200k_base';
 
@@ -60,7 +63,11 @@ export class SentencePieceTokenizer implements Tokenizer {
   countMessages(messages: CompiledMessage[]): TokenCount {
     const e = this.enc();
     return toTokenCount(
-      countCompiledMessages((s) => e.encode(s).length, messages),
+      countCompiledMessages(
+        (s) => e.encode(s).length,
+        messages,
+        OVERHEAD,
+      ),
     );
   }
 
