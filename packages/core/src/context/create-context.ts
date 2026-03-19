@@ -1,25 +1,36 @@
 /**
- * Factory for validated {@link ContextConfig} with preset slot layouts (§7.3 — Phase 3.5).
- *
- * @remarks
- * Fluent `ctx.system()` / `ctx.build()` from the README lands with the orchestrator (Phase 5).
- * This entrypoint returns a **resolved, Zod-validated** config you can pass to upcoming APIs.
+ * Factory for validated {@link ContextConfig} with presets, model registry inference (§6.1, §7.3 — Phase 5.3).
  *
  * @packageDocumentation
  */
 
+import {
+  resolveModel,
+  inferProviderFromModelId,
+  type ModelRegistryEntry,
+} from '../config/model-registry.js';
+import { assertTokenizerPeersAvailable } from '../config/peer-resolve.js';
 import { CONTEXT_PRESETS, type ContextPresetId } from '../config/presets.js';
 import {
   validateContextConfig,
   type ParsedContextConfig,
 } from '../config/validator.js';
-import type { ContextConfig, SlotConfig } from '../types/config.js';
+import type { ContextConfig, ModelId, SlotConfig } from '../types/config.js';
+import type { ContextPlugin } from '../types/plugin.js';
 
-/** Options for {@link createContext} — `preset` selects defaults; explicit `slots` override by name. */
+/**
+ * Options for {@link createContext} — `preset` selects defaults; explicit `slots` override by name.
+ * Registry inference fills `maxTokens`, `provider.provider`, and `tokenizer.name` when omitted.
+ */
 export type CreateContextOptions = Omit<ContextConfig, 'slots'> & {
   slots?: Record<string, SlotConfig>;
   /** When set, start from that preset’s slots unless `slots` alone is provided. */
   preset?: ContextPresetId;
+  /**
+   * When true (default), verify an npm peer exists for known {@link TokenizerConfig.name} values
+   * (e.g. `o200k_base` → `gpt-tokenizer`). Set false in browsers or sandboxes without peers.
+   */
+  strictTokenizerPeers?: boolean;
 };
 
 /**
@@ -53,30 +64,93 @@ export function resolveContextSlots(options: {
 }
 
 export interface CreateContextResult {
-  /** Validated configuration with `slots` fully resolved. */
+  /** Validated configuration with `slots` fully resolved and registry defaults applied. */
   readonly config: ParsedContextConfig;
+  /** {@link resolveModel} result when a built-in, custom, or prefix rule matched. */
+  readonly modelMatch: ModelRegistryEntry | undefined;
+  /** Plugin instances from options (identity preserved). */
+  readonly plugins: readonly ContextPlugin[];
+}
+
+function mergeInferredConfig(
+  base: ContextConfig,
+  modelId: ModelId,
+  match: ModelRegistryEntry | undefined,
+): ContextConfig {
+  let merged: ContextConfig = { ...base };
+
+  if (merged.maxTokens === undefined && match?.maxTokens !== undefined) {
+    merged = { ...merged, maxTokens: match.maxTokens };
+  }
+
+  const providerUnset =
+    merged.provider === undefined || merged.provider.provider === undefined;
+  if (providerUnset) {
+    const pid = match?.provider ?? inferProviderFromModelId(modelId);
+    if (pid !== undefined) {
+      merged = {
+        ...merged,
+        provider: { ...merged.provider, provider: pid },
+      };
+    }
+  }
+
+  const tokenizerNameUnset =
+    merged.tokenizer === undefined || merged.tokenizer.name === undefined;
+  if (tokenizerNameUnset && match?.tokenizerName !== undefined) {
+    merged = {
+      ...merged,
+      tokenizer: { ...merged.tokenizer, name: match.tokenizerName },
+    };
+  }
+
+  return merged;
 }
 
 /**
- * Creates a validated {@link ContextConfig} with preset-based or custom slots.
+ * Creates a validated {@link ContextConfig} with preset-based or custom slots,
+ * {@link MODEL_REGISTRY} inference, and optional tokenizer peer checks.
  *
  * @throws {@link InvalidConfigError} When Zod validation fails (including cross-slot rules).
+ * @throws {@link TokenizerNotFoundError} When `strictTokenizerPeers` is true and no peer resolves for a known tokenizer id.
  */
 export function createContext(options: CreateContextOptions): CreateContextResult {
-  const { preset, slots: slotsInput, ...rest } = options;
-  // exactOptionalPropertyTypes: never pass `preset: undefined` / `slots: undefined`
+  const {
+    preset,
+    slots: slotsInput,
+    strictTokenizerPeers = true,
+    ...rest
+  } = options;
+
   const resolveOpts: { preset?: ContextPresetId; slots?: Record<string, SlotConfig> } =
     {};
-  if (preset !== undefined) resolveOpts.preset = preset;
-  if (slotsInput !== undefined) resolveOpts.slots = slotsInput;
+  if (preset !== undefined) {
+    resolveOpts.preset = preset;
+  }
+  if (slotsInput !== undefined) {
+    resolveOpts.slots = slotsInput;
+  }
   const slots = resolveContextSlots(resolveOpts);
 
-  const config: ContextConfig = {
+  const modelId = rest.model;
+  const match = resolveModel(modelId);
+  const withSlots: ContextConfig = {
     ...rest,
     slots,
   };
+  const merged = mergeInferredConfig(withSlots, modelId, match);
 
-  const parsed = validateContextConfig(config);
+  const parsed = validateContextConfig(merged);
 
-  return { config: parsed };
+  if (strictTokenizerPeers && parsed.tokenizer?.name !== undefined) {
+    assertTokenizerPeersAvailable(parsed.tokenizer.name);
+  }
+
+  const plugins = (parsed.plugins ?? []) as ContextPlugin[];
+
+  return {
+    config: parsed,
+    modelMatch: match,
+    plugins,
+  };
 }

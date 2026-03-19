@@ -74,9 +74,6 @@ importers:
       '@contextcraft/providers':
         specifier: workspace:*
         version: link:../providers
-      gpt-tokenizer:
-        specifier: '*'
-        version: 3.4.0
       nanoid:
         specifier: ^5.0.9
         version: 5.1.7
@@ -90,9 +87,15 @@ importers:
       '@size-limit/file':
         specifier: ^11.0.0
         version: 11.2.0(size-limit@11.2.0)
+      '@types/node':
+        specifier: ^22.10.0
+        version: 22.19.15
       expect-type:
         specifier: ^1.3.0
         version: 1.3.0
+      gpt-tokenizer:
+        specifier: ^3.4.0
+        version: 3.4.0
 
   packages/debug:
     dependencies:

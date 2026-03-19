@@ -209,6 +209,20 @@ export {
 } from './config/presets.js';
 export type { ContextPresetId } from './config/presets.js';
 export {
+  clearRegisteredModels,
+  inferProviderFromModelId,
+  MODEL_REGISTRY,
+  normalizeModelId,
+  registerModel,
+  resolveModel,
+} from './config/model-registry.js';
+export type { ModelRegistryEntry } from './config/model-registry.js';
+export {
+  assertTokenizerPeersAvailable,
+  TOKENIZER_PEER_PACKAGES,
+  tryResolveNpmPackage,
+} from './config/peer-resolve.js';
+export {
   createContext,
   resolveContextSlots,
 } from './context/create-context.js';
