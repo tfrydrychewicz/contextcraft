@@ -28,6 +28,9 @@
     "lint": "eslint src/",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "contextcraft": "workspace:*"
+  },
   "peerDependencies": {
     "tiktoken": "*",
     "@anthropic-ai/tokenizer": "*",

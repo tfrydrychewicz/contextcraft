@@ -56,9 +56,6 @@ importers:
       '@anthropic-ai/tokenizer':
         specifier: '*'
         version: 0.0.4
-      '@contextcraft/tokenizers':
-        specifier: workspace:*
-        version: link:../tokenizers
       gpt-tokenizer:
         specifier: '*'
         version: 3.4.0
@@ -77,9 +74,6 @@ importers:
       '@contextcraft/providers':
         specifier: workspace:*
         version: link:../providers
-      '@contextcraft/tokenizers':
-        specifier: workspace:*
-        version: link:../tokenizers
       gpt-tokenizer:
         specifier: '*'
         version: 3.4.0
@@ -129,9 +123,6 @@ importers:
       '@anthropic-ai/tokenizer':
         specifier: '*'
         version: 0.0.4
-      '@contextcraft/tokenizers':
-        specifier: workspace:*
-        version: link:../tokenizers
       gpt-tokenizer:
         specifier: '*'
         version: 3.4.0
@@ -144,6 +135,9 @@ importers:
       '@anthropic-ai/tokenizer':
         specifier: '*'
         version: 0.0.4
+      contextcraft:
+        specifier: workspace:*
+        version: link:../core
       gpt-tokenizer:
         specifier: '*'
         version: 3.4.0
