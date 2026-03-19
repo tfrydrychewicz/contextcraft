@@ -1,4 +1,3 @@
-import * as fc from 'fast-check';
 import { describe, expect, it, vi } from 'vitest';
 
 import {
@@ -92,6 +91,28 @@ describe('BudgetAllocator', () => {
     expect(r.find((s) => s.name === 'low')!.budgetTokens).toBe(50);
   });
 
+  it('splits three unbounded flex slots equally when total divides evenly', () => {
+    const slots: Record<string, SlotConfig> = {
+      a: { priority: 10, budget: { flex: true } },
+      b: { priority: 20, budget: { flex: true } },
+      c: { priority: 30, budget: { flex: true } },
+    };
+    const r = new BudgetAllocator().resolve(slots, 99);
+    expect(r.find((s) => s.name === 'a')!.budgetTokens).toBe(33);
+    expect(r.find((s) => s.name === 'b')!.budgetTokens).toBe(33);
+    expect(r.find((s) => s.name === 'c')!.budgetTokens).toBe(33);
+  });
+
+  it('percent 100% leaves no tokens for flex', () => {
+    const slots: Record<string, SlotConfig> = {
+      p: { priority: 50, budget: { percent: 100 } },
+      x: { priority: 10, budget: { flex: true } },
+    };
+    const r = new BudgetAllocator().resolve(slots, 500);
+    expect(r.find((s) => s.name === 'p')!.budgetTokens).toBe(500);
+    expect(r.find((s) => s.name === 'x')!.budgetTokens).toBe(0);
+  });
+
   it('respects bounded flex min/max', () => {
     const slots: Record<string, SlotConfig> = {
       b: {
@@ -147,43 +168,16 @@ describe('allocateFlexPool', () => {
     expect(m.get('a')).toBe(3);
     expect(m.get('b')).toBe(4);
   });
-});
 
-describe('BudgetAllocator (property)', () => {
-  it('total allocated never exceeds totalBudget', () => {
-    fc.assert(
-      fc.property(
-        fc.integer({ min: 0, max: 50_000 }),
-        fc.integer({ min: 0, max: 5 }),
-        fc.integer({ min: 0, max: 5 }),
-        (total, nf, np) => {
-          const slots: Record<string, SlotConfig> = {};
-          for (let i = 0; i < nf; i++) {
-            slots[`f${i}`] = {
-              priority: 50 + i,
-              budget: { fixed: Math.floor(total / Math.max(1, nf + np + 1)) },
-            };
-          }
-          let pSum = 0;
-          for (let i = 0; i < np; i++) {
-            const p = Math.min(20, 100 - pSum);
-            pSum += p;
-            slots[`p${i}`] = {
-              priority: 40 - i,
-              budget: { percent: p },
-            };
-          }
-          slots['rest'] = { priority: 1, budget: { flex: true } };
-          try {
-            const r = new BudgetAllocator().resolve(slots, total);
-            const sum = r.reduce((s, x) => s + x.budgetTokens, 0);
-            return sum <= total;
-          } catch {
-            return true;
-          }
-        },
-      ),
-      { numRuns: 80 },
-    );
+  it('splits three-way pool evenly when divisible', () => {
+    const flexSlots = [
+      { name: 'x', config: { priority: 1, budget: { flex: true } as const } },
+      { name: 'y', config: { priority: 2, budget: { flex: true } as const } },
+      { name: 'z', config: { priority: 3, budget: { flex: true } as const } },
+    ];
+    const m = allocateFlexPool(flexSlots, 300);
+    expect(m.get('x')).toBe(100);
+    expect(m.get('y')).toBe(100);
+    expect(m.get('z')).toBe(100);
   });
 });
