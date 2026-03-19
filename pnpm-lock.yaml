@@ -33,7 +33,97 @@ importers:
         specifier: ^8.15.0
         version: 8.57.1(eslint@9.39.4)(typescript@5.9.3)
 
+  packages/compression:
+    dependencies:
+      '@anthropic-ai/tokenizer':
+        specifier: '*'
+        version: 0.0.4
+      '@contextcraft/tokenizers':
+        specifier: workspace:*
+        version: link:../tokenizers
+      gpt-tokenizer:
+        specifier: '*'
+        version: 3.4.0
+      tiktoken:
+        specifier: '*'
+        version: 1.0.22
+
+  packages/core:
+    dependencies:
+      '@anthropic-ai/tokenizer':
+        specifier: '*'
+        version: 0.0.4
+      '@contextcraft/compression':
+        specifier: workspace:*
+        version: link:../compression
+      '@contextcraft/providers':
+        specifier: workspace:*
+        version: link:../providers
+      '@contextcraft/tokenizers':
+        specifier: workspace:*
+        version: link:../tokenizers
+      gpt-tokenizer:
+        specifier: '*'
+        version: 3.4.0
+      tiktoken:
+        specifier: '*'
+        version: 1.0.22
+
+  packages/debug:
+    dependencies:
+      contextcraft:
+        specifier: workspace:*
+        version: link:../core
+
+  packages/plugin-memory:
+    dependencies:
+      contextcraft:
+        specifier: workspace:*
+        version: link:../core
+
+  packages/plugin-rag:
+    dependencies:
+      contextcraft:
+        specifier: workspace:*
+        version: link:../core
+
+  packages/plugin-tools:
+    dependencies:
+      contextcraft:
+        specifier: workspace:*
+        version: link:../core
+
+  packages/providers:
+    dependencies:
+      '@anthropic-ai/tokenizer':
+        specifier: '*'
+        version: 0.0.4
+      '@contextcraft/tokenizers':
+        specifier: workspace:*
+        version: link:../tokenizers
+      gpt-tokenizer:
+        specifier: '*'
+        version: 3.4.0
+      tiktoken:
+        specifier: '*'
+        version: 1.0.22
+
+  packages/tokenizers:
+    dependencies:
+      '@anthropic-ai/tokenizer':
+        specifier: '*'
+        version: 0.0.4
+      gpt-tokenizer:
+        specifier: '*'
+        version: 3.4.0
+      tiktoken:
+        specifier: '*'
+        version: 1.0.22
+
 packages:
+
+  '@anthropic-ai/tokenizer@0.0.4':
+    resolution: {integrity: sha512-EHRKbxlxlc8W4KCBEseByJ7YwyYCmgu9OyN59H9+IYIGPoKv8tXyQXinkeGDI+cI8Tiuz9wk2jZb/kK7AyvL7g==}
 
   '@babel/code-frame@7.29.0':
     resolution: {integrity: sha512-9NhCeYjq9+3uxgdtp20LSiJXJvN0FeCtNGpJxuMFZ1Kv3cWUNb6DOhJwUvcVCzKGR66cw4njwM6hrJLqgOwbcw==}
@@ -138,6 +228,9 @@ packages:
 
   '@types/json5@0.0.29':
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
+
+  '@types/node@18.19.130':
+    resolution: {integrity: sha512-GRaXQx6jGfL8sKfaIDD6OupbIHBr9jv7Jnaml9tB7l4v068PAOXqfcujMMo5PhbIs6ggR1XODELqahT2R8v0fg==}
 
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
@@ -595,6 +688,9 @@ packages:
   gopd@1.2.0:
     resolution: {integrity: sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==}
     engines: {node: '>= 0.4'}
+
+  gpt-tokenizer@3.4.0:
+    resolution: {integrity: sha512-wxFLnhIXTDjYebd9A9pGl3e31ZpSypbpIJSOswbgop5jLte/AsZVDvjlbEuVFlsqZixVKqbcoNmRlFDf6pz/UQ==}
 
   has-bigints@1.1.0:
     resolution: {integrity: sha512-R3pbpkcIqv2Pm3dUwgjclDRVmWpTJW2DcMzcIhEXEx1oh/CEMObMm3KLmRJOdvhM7o4uQBnwr8pzRK2sJWIqfg==}
@@ -1083,6 +1179,9 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
+  tiktoken@1.0.22:
+    resolution: {integrity: sha512-PKvy1rVF1RibfF3JlXBSP0Jrcw2uq3yXdgcEXtKTYn3QJ/cBRBHDnrJ5jHky+MENZ6DIPwNUGWpkVx+7joCpNA==}
+
   tinyglobby@0.2.15:
     resolution: {integrity: sha512-j2Zq4NyQYG5XMST4cbs02Ak8iJUdxRM0XI5QyxXuZOzKOINmWurp3smXu3y5wDcJrptwpSjgXHzIQxR0omXljQ==}
     engines: {node: '>=12.0.0'}
@@ -1144,6 +1243,9 @@ packages:
     resolution: {integrity: sha512-nWJ91DjeOkej/TA8pXQ3myruKpKEYgqvpw9lz4OPHj/NWFNluYrjbz9j01CJ8yKQd2g4jFoOkINCTW2I5LEEyw==}
     engines: {node: '>= 0.4'}
 
+  undici-types@5.26.5:
+    resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
+
   update-browserslist-db@1.2.3:
     resolution: {integrity: sha512-Js0m9cx+qOgDxo0eMiFGEueWztz+d4+M3rGlmKPT+T4IS/jP4ylw3Nwpu6cpTTP8R1MAC1kF4VbdLt3ARf209w==}
     hasBin: true
@@ -1186,6 +1288,11 @@ packages:
     engines: {node: '>=10'}
 
 snapshots:
+
+  '@anthropic-ai/tokenizer@0.0.4':
+    dependencies:
+      '@types/node': 18.19.130
+      tiktoken: 1.0.22
 
   '@babel/code-frame@7.29.0':
     dependencies:
@@ -1277,6 +1384,10 @@ snapshots:
   '@types/json-schema@7.0.15': {}
 
   '@types/json5@0.0.29': {}
+
+  '@types/node@18.19.130':
+    dependencies:
+      undici-types: 5.26.5
 
   '@types/normalize-package-data@2.4.4': {}
 
@@ -1889,6 +2000,8 @@ snapshots:
 
   gopd@1.2.0: {}
 
+  gpt-tokenizer@3.4.0: {}
+
   has-bigints@1.1.0: {}
 
   has-flag@4.0.0: {}
@@ -2399,6 +2512,8 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
+  tiktoken@1.0.22: {}
+
   tinyglobby@0.2.15:
     dependencies:
       fdir: 6.5.0(picomatch@4.0.3)
@@ -2484,6 +2599,8 @@ snapshots:
       has-bigints: 1.1.0
       has-symbols: 1.1.0
       which-boxed-primitive: 1.1.1
+
+  undici-types@5.26.5: {}
 
   update-browserslist-db@1.2.3(browserslist@4.28.1):
     dependencies:

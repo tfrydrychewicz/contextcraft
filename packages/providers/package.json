@@ -1,0 +1,32 @@
+{
+  "name": "@contextcraft/providers",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "echo 'No tests yet'",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@contextcraft/tokenizers": "workspace:*"
+  },
+  "peerDependencies": {
+    "tiktoken": "*",
+    "@anthropic-ai/tokenizer": "*",
+    "gpt-tokenizer": "*"
+  },
+  "peerDependenciesMeta": {
+    "tiktoken": { "optional": true },
+    "@anthropic-ai/tokenizer": { "optional": true },
+    "gpt-tokenizer": { "optional": true }
+  }
+}
