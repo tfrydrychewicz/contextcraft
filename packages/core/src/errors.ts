@@ -16,6 +16,7 @@
  * @see {@link SlotNotFoundError}
  * @see {@link ItemNotFoundError}
  * @see {@link MaxItemsExceededError}
+ * @see {@link InvalidBudgetError}
  */
 export class ContextCraftError extends Error {
   override readonly name: string = 'ContextCraftError';
@@ -68,6 +69,25 @@ export class BudgetExceededError extends ContextCraftError {
   ) {
     super(message, { ...options, code: 'BUDGET_EXCEEDED', recoverable: false });
     Object.setPrototypeOf(this, BudgetExceededError.prototype);
+  }
+}
+
+/**
+ * Slot percentage budgets are invalid (e.g. sum of percents above 100).
+ */
+export class InvalidBudgetError extends ContextCraftError {
+  override readonly name = 'InvalidBudgetError';
+
+  override readonly code = 'INVALID_BUDGET';
+
+  override readonly recoverable = false;
+
+  constructor(
+    message: string,
+    options?: { context?: Record<string, unknown>; cause?: unknown },
+  ) {
+    super(message, { ...options, code: 'INVALID_BUDGET', recoverable: false });
+    Object.setPrototypeOf(this, InvalidBudgetError.prototype);
   }
 }
 

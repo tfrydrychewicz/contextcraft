@@ -8,6 +8,7 @@ import {
   CompressionFailedError,
   SnapshotCorruptedError,
   InvalidConfigError,
+  InvalidBudgetError,
   SlotNotFoundError,
   ItemNotFoundError,
   MaxItemsExceededError,
@@ -104,6 +105,14 @@ describe('InvalidConfigError', () => {
   });
 });
 
+describe('InvalidBudgetError', () => {
+  it('has INVALID_BUDGET code', () => {
+    const err = new InvalidBudgetError('percents > 100');
+    expect(err.code).toBe('INVALID_BUDGET');
+    expect(err.recoverable).toBe(false);
+  });
+});
+
 describe('SlotNotFoundError', () => {
   it('carries slot and recoverable', () => {
     const err = new SlotNotFoundError('missing', { slot: 'foo' });
@@ -146,6 +155,7 @@ describe('Error inheritance', () => {
     expect(new CompressionFailedError('x', { fallbackStrategy: 'y' })).toBeInstanceOf(ContextCraftError);
     expect(new SnapshotCorruptedError('x')).toBeInstanceOf(ContextCraftError);
     expect(new InvalidConfigError('x')).toBeInstanceOf(ContextCraftError);
+    expect(new InvalidBudgetError('x')).toBeInstanceOf(ContextCraftError);
     expect(new SlotNotFoundError('x', { slot: 's' })).toBeInstanceOf(ContextCraftError);
     expect(new ItemNotFoundError('x', { slot: 's', itemId: 'i' })).toBeInstanceOf(
       ContextCraftError,

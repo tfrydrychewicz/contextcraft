@@ -10,6 +10,7 @@ export const VERSION = '0.0.1';
 export {
   ContextCraftError,
   BudgetExceededError,
+  InvalidBudgetError,
   ContextOverflowError,
   TokenizerNotFoundError,
   CompressionFailedError,
@@ -57,6 +58,10 @@ export type { CreateContentItemParams } from './content/content-store.js';
 // Slot manager (§20 — Phase 3.2)
 export { SlotManager } from './slots/slot-manager.js';
 export type { SlotManagerOptions } from './slots/slot-manager.js';
+
+// Budget allocator (§7.1 — Phase 3.3)
+export { BudgetAllocator, allocateFlexPool } from './slots/budget-allocator.js';
+export type { BudgetAllocatorOptions } from './slots/budget-allocator.js';
 
 // Event types (§6.6, §13.1)
 export type {
