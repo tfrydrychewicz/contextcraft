@@ -4,7 +4,11 @@
  * @packageDocumentation
  */
 
-import type { ContentId, TokenCount } from './branded.js';
+import type { TokenCount } from './branded.js';
+import type { ContentItem, MessageRole } from './content.js';
+
+// Re-export content types for consumers that import from config
+export type { ContentItem, MessageRole } from './content.js';
 
 // ==========================================
 // Supporting Types (forward refs / placeholders)
@@ -21,41 +25,6 @@ export type ProviderId =
 
 /** Model identifier — either a known model string or custom config */
 export type ModelId = string;
-
-/** Message role for provider formatting */
-export type MessageRole =
-  | 'system'
-  | 'user'
-  | 'assistant'
-  | 'tool'
-  | 'function';
-
-/**
- * Content item (forward declaration).
- * Full definition in Phase 1.3.
- */
-export interface ContentItem {
-  id: ContentId;
-  role: MessageRole;
-  content: string | MultimodalContentStub[];
-  slot: string;
-  tokens?: TokenCount;
-  metadata?: Record<string, unknown>;
-  pinned?: boolean;
-  ephemeral?: boolean;
-  createdAt: number;
-  summarizes?: ContentId[];
-}
-
-/** Minimal multimodal content shape for ContentItem.content */
-export interface MultimodalContentStub {
-  type: 'text' | 'image_url' | 'image_base64';
-  text?: string;
-  imageUrl?: string;
-  imageBase64?: string;
-  mimeType?: string;
-  tokenEstimate?: number;
-}
 
 /**
  * Context event (placeholder).

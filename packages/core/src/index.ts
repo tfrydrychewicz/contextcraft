@@ -18,13 +18,25 @@ export {
   isContentId,
 } from './types/branded.js';
 
+// Content types (§6.6)
+export type {
+  MessageRole,
+  MultimodalContent,
+  MultimodalContentText,
+  MultimodalContentImageUrl,
+  MultimodalContentImageBase64,
+  ContentItem,
+  CompiledMessage,
+  CompiledContentPart,
+  CompiledContentText,
+  CompiledContentImageUrl,
+  CompiledContentImageBase64,
+} from './types/content.js';
+
 // Configuration types (§6.6)
 export type {
   ProviderId,
   ModelId,
-  MessageRole,
-  ContentItem,
-  MultimodalContentStub,
   ContextEvent,
   ContextPlugin,
   SlotBudget,
