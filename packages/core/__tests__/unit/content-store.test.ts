@@ -149,6 +149,46 @@ describe('ContentStore', () => {
     );
   });
 
+  it('getItem returns a shallow copy', () => {
+    const store = new ContentStore(baseSlot());
+    const item = createContentItem({
+      slot: 'history',
+      role: 'user',
+      content: 'g',
+    });
+    store.addItem('history', item);
+    const g = store.getItem('history', item.id);
+    expect(g.content).toBe('g');
+    g.content = 'mutated';
+    expect(store.getItem('history', item.id).content).toBe('g');
+  });
+
+  it('getItem throws ItemNotFoundError when id missing', () => {
+    const store = new ContentStore(baseSlot());
+    expect(() => store.getItem('history', toContentId('nope'))).toThrow(
+      ItemNotFoundError,
+    );
+  });
+
+  it('markItemEphemeral sets ephemeral true', () => {
+    const store = new ContentStore(baseSlot());
+    const item = createContentItem({
+      slot: 'history',
+      role: 'user',
+      content: 'e',
+    });
+    store.addItem('history', item);
+    store.markItemEphemeral('history', item.id);
+    expect(store.getItems('history')[0]!.ephemeral).toBe(true);
+  });
+
+  it('markItemEphemeral throws ItemNotFoundError when id missing', () => {
+    const store = new ContentStore(baseSlot());
+    expect(() =>
+      store.markItemEphemeral('history', toContentId('missing')),
+    ).toThrow(ItemNotFoundError);
+  });
+
   it('clearEphemeral removes only ephemeral items across slots', () => {
     const store = new ContentStore(baseSlot());
     const keep = createContentItem({

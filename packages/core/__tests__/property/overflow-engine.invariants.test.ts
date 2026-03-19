@@ -13,6 +13,7 @@ import {
   type ContentItem,
   type ContextEvent,
   type OverflowEngineInputSlot,
+  type SlotConfig,
 } from '../../src/index.js';
 
 function countSum(items: readonly ContentItem[]): number {
@@ -28,12 +29,6 @@ describe('OverflowEngine invariants (Phase 4.8 property)', () => {
         fc.integer({ min: 8, max: 55 }),
         fc.integer({ min: 1, max: 4 }),
         async (totalBudget, nSlots, tokEach, itemsPerSlot) => {
-          const flex = {
-            priority: 50,
-            budget: { flex: true },
-            overflow: 'truncate' as const,
-          };
-
           const inputs: OverflowEngineInputSlot[] = Array.from(
             { length: nSlots },
             (_, i) => {
@@ -48,11 +43,16 @@ describe('OverflowEngine invariants (Phase 4.8 property)', () => {
                 }),
               );
               const used = itemsPerSlot * tokEach;
+              const config = {
+                priority,
+                budget: { flex: true },
+                overflow: 'truncate',
+              } satisfies SlotConfig;
               return {
                 name,
                 priority,
                 budgetTokens: used + 500,
-                config: { ...flex, priority },
+                config,
                 content: items,
               };
             },

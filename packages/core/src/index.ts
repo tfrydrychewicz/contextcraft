@@ -216,3 +216,14 @@ export type {
   CreateContextOptions,
   CreateContextResult,
 } from './context/create-context.js';
+
+// Context runtime (§6.1, §6.3 — Phase 5.1)
+export {
+  Context,
+  DEFAULT_HISTORY_SLOT,
+  DEFAULT_SYSTEM_SLOT,
+} from './context/context.js';
+export type {
+  ContextInit,
+  ContextPushItemInput,
+} from './context/context.js';

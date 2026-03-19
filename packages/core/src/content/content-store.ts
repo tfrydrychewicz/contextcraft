@@ -153,6 +153,38 @@ export class ContentStore {
   }
 
   /**
+   * Returns a shallow copy of the item with `id` in `slot`, or throws if missing.
+   */
+  getItem(slot: string, id: ContentId): ContentItem {
+    this.requireSlot(slot);
+    const list = this.listFor(slot);
+    const item = list.find((i) => i.id === id);
+    if (!item) {
+      throw new ItemNotFoundError(`No item "${id}" in slot "${slot}"`, {
+        slot,
+        itemId: id,
+      });
+    }
+    return shallowCopyItem(item);
+  }
+
+  /**
+   * Sets `ephemeral: true` on the item with `id` in `slot` (§6.3 — Phase 5.1).
+   */
+  markItemEphemeral(slot: string, id: ContentId): void {
+    this.requireSlot(slot);
+    const list = this.listFor(slot);
+    const item = list.find((i) => i.id === id);
+    if (!item) {
+      throw new ItemNotFoundError(`No item "${id}" in slot "${slot}"`, {
+        slot,
+        itemId: id,
+      });
+    }
+    item.ephemeral = true;
+  }
+
+  /**
    * Removes every item with `ephemeral: true` from every registered slot (order preserved for survivors).
    */
   clearEphemeral(): void {
