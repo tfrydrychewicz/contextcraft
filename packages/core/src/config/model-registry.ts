@@ -1,6 +1,8 @@
 /**
  * Built-in model → provider / context window / tokenizer hints (§10.2 — Phase 5.3 subset).
  *
+ * Context sizes follow vendor documentation; re-verify at release time (provider limits change).
+ *
  * @packageDocumentation
  */
 
@@ -27,6 +29,7 @@ function freezeEntries(
  */
 export const MODEL_REGISTRY: Readonly<Record<string, ModelRegistryEntry>> =
   freezeEntries({
+    // --- OpenAI (GPT-4 / reasoning) ---
     'gpt-4o': {
       maxTokens: 128_000,
       provider: 'openai',
@@ -62,6 +65,33 @@ export const MODEL_REGISTRY: Readonly<Record<string, ModelRegistryEntry>> =
       provider: 'openai',
       tokenizerName: 'o200k_base',
     },
+    'o3-mini': {
+      maxTokens: 200_000,
+      provider: 'openai',
+      tokenizerName: 'o200k_base',
+    },
+    // OpenAI GPT-5.4 family (platform.openai.com/docs/models, Mar 2026)
+    'gpt-5.4': {
+      maxTokens: 1_000_000,
+      provider: 'openai',
+      tokenizerName: 'o200k_base',
+    },
+    'gpt-5.4-mini': {
+      maxTokens: 400_000,
+      provider: 'openai',
+      tokenizerName: 'o200k_base',
+    },
+    'gpt-5.4-nano': {
+      maxTokens: 400_000,
+      provider: 'openai',
+      tokenizerName: 'o200k_base',
+    },
+
+    // --- Anthropic (Claude 3.5 → 4.6) ---
+    'claude-3-5-haiku-20241022': {
+      maxTokens: 200_000,
+      provider: 'anthropic',
+    },
     'claude-sonnet-4-20250514': {
       maxTokens: 200_000,
       provider: 'anthropic',
@@ -70,10 +100,40 @@ export const MODEL_REGISTRY: Readonly<Record<string, ModelRegistryEntry>> =
       maxTokens: 200_000,
       provider: 'anthropic',
     },
-    'claude-3-5-haiku-20241022': {
+    'claude-sonnet-4-5-20250929': {
+      maxTokens: 1_000_000,
+      provider: 'anthropic',
+    },
+    'claude-opus-4-5-20251101': {
+      maxTokens: 1_000_000,
+      provider: 'anthropic',
+    },
+    'claude-haiku-4-5': {
       maxTokens: 200_000,
       provider: 'anthropic',
     },
+    'claude-haiku-4-5-20251001': {
+      maxTokens: 200_000,
+      provider: 'anthropic',
+    },
+    'claude-sonnet-4-6-20260217': {
+      maxTokens: 1_000_000,
+      provider: 'anthropic',
+    },
+    'claude-sonnet-4-6': {
+      maxTokens: 1_000_000,
+      provider: 'anthropic',
+    },
+    'claude-opus-4-6': {
+      maxTokens: 1_000_000,
+      provider: 'anthropic',
+    },
+    'claude-opus-4-6-20260217': {
+      maxTokens: 1_000_000,
+      provider: 'anthropic',
+    },
+
+    // --- Google Gemini ---
     'gemini-2.0-flash': {
       maxTokens: 1_000_000,
       provider: 'google',
@@ -82,12 +142,72 @@ export const MODEL_REGISTRY: Readonly<Record<string, ModelRegistryEntry>> =
       maxTokens: 2_000_000,
       provider: 'google',
     },
+    'gemini-2.5-flash': {
+      maxTokens: 1_048_576,
+      provider: 'google',
+    },
+    'gemini-2.5-pro': {
+      maxTokens: 1_048_576,
+      provider: 'google',
+    },
+    'gemini-3-flash-preview': {
+      maxTokens: 1_048_576,
+      provider: 'google',
+    },
+    'gemini-3.1-pro-preview': {
+      maxTokens: 1_048_576,
+      provider: 'google',
+    },
+    'gemini-3.1-pro-preview-customtools': {
+      maxTokens: 1_048_576,
+      provider: 'google',
+    },
+
+    // --- Mistral ---
     'mistral-large-latest': {
       maxTokens: 128_000,
       provider: 'mistral',
     },
+    'mistral-small-latest': {
+      maxTokens: 32_000,
+      provider: 'mistral',
+    },
+    'mistral-medium-latest': {
+      maxTokens: 32_000,
+      provider: 'mistral',
+    },
+    'codestral-latest': {
+      maxTokens: 256_000,
+      provider: 'mistral',
+    },
+    'devstral-small-latest': {
+      maxTokens: 128_000,
+      provider: 'mistral',
+    },
+
+    // --- Ollama (local; limits depend on model file — defaults are typical) ---
     'ollama/llama3': {
       maxTokens: 8192,
+      provider: 'ollama',
+    },
+    'ollama/llama3.1': {
+      maxTokens: 131_072,
+      provider: 'ollama',
+    },
+    'ollama/llama3.2': {
+      maxTokens: 131_072,
+      provider: 'ollama',
+    },
+    'ollama/llama3.3': {
+      maxTokens: 131_072,
+      provider: 'ollama',
+    },
+    'ollama/qwen2.5': {
+      maxTokens: 32_768,
+      provider: 'ollama',
+    },
+    'ollama/mistral': {
+      maxTokens: 32_768,
       provider: 'ollama',
     },
   });
@@ -114,22 +234,29 @@ export function clearRegisteredModels(): void {
 }
 
 function prefixMatch(id: string): ModelRegistryEntry | undefined {
+  if (id.startsWith('gpt-5')) {
+    return MODEL_REGISTRY['gpt-5.4'];
+  }
   if (id.startsWith('gpt-4o')) {
     return MODEL_REGISTRY['gpt-4o'];
   }
   if (id.startsWith('gpt-4-turbo')) {
     return MODEL_REGISTRY['gpt-4-turbo'];
   }
+  if (id.startsWith('gpt-4')) {
+    return MODEL_REGISTRY['gpt-4'];
+  }
   if (id.startsWith('o1') || id.startsWith('o3')) {
     return MODEL_REGISTRY['o1'];
   }
   if (id.startsWith('claude')) {
-    return MODEL_REGISTRY['claude-3-5-haiku-20241022'];
+    // Conservative default for unknown Claude ids (200k floor).
+    return MODEL_REGISTRY['claude-haiku-4-5-20251001'];
   }
   if (id.startsWith('gemini')) {
-    return MODEL_REGISTRY['gemini-2.0-flash'];
+    return MODEL_REGISTRY['gemini-2.5-flash'];
   }
-  if (id.includes('mistral') || id.includes('mixtral')) {
+  if (id.includes('mistral') || id.includes('mixtral') || id.includes('codestral')) {
     return MODEL_REGISTRY['mistral-large-latest'];
   }
   if (id.startsWith('ollama/')) {
@@ -168,7 +295,7 @@ export function inferProviderFromModelId(modelId: ModelId): ProviderId | undefin
   if (m.includes('gemini')) {
     return 'google';
   }
-  if (m.includes('mistral') || m.includes('mixtral')) {
+  if (m.includes('mistral') || m.includes('mixtral') || m.includes('codestral')) {
     return 'mistral';
   }
   if (m.includes('ollama')) {
