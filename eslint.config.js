@@ -29,6 +29,14 @@ export default [
       },
     },
     rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
       'import/no-duplicates': 'error',
       'import/no-unresolved': 'off',
       'unicorn/prevent-abbreviations': 'off',
