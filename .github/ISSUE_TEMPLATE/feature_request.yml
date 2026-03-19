@@ -1,0 +1,46 @@
+name: Feature request
+description: Suggest a new feature or enhancement
+title: '[Feature] '
+labels: ['enhancement']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature. Please describe your idea below.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: What problem would this solve?
+      placeholder: I'm always frustrated when...
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: How would you like it to work?
+      placeholder: Describe your ideal solution
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any alternative solutions or workarounds?
+      placeholder: I also considered...
+  - type: dropdown
+    id: package
+    attributes:
+      label: Affected package
+      description: Which package would this affect?
+      options:
+        - contextcraft (core)
+        - @contextcraft/tokenizers
+        - @contextcraft/providers
+        - @contextcraft/compression
+        - @contextcraft/debug
+        - @contextcraft/plugin-rag
+        - @contextcraft/plugin-memory
+        - @contextcraft/plugin-tools
+        - Multiple / unsure

@@ -1,0 +1,61 @@
+name: RFC (Request for Comments)
+description: Propose a design or architectural change
+title: '[RFC] '
+labels: ['rfc']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for significant design proposals. RFCs are discussed before implementation.
+  - type: input
+    id: title
+    attributes:
+      label: RFC title
+      description: Short, descriptive title
+      placeholder: e.g. Add streaming build API
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One-paragraph overview
+      placeholder: What is being proposed and why?
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why is this change needed?
+      placeholder: What problem does it solve?
+    validations:
+      required: true
+  - type: textarea
+    id: design
+    attributes:
+      label: Design
+      description: Detailed design. Include API sketches, examples, and trade-offs.
+      placeholder: |
+        ## API
+
+        ```typescript
+        // Example
+        ```
+
+        ## Trade-offs
+        - ...
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What other approaches did you consider?
+      placeholder: - Alternative A: ...
+  - type: textarea
+    id: open-questions
+    attributes:
+      label: Open questions
+      description: What needs to be decided?
+      placeholder: - [ ] Question 1
