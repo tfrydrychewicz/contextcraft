@@ -227,3 +227,18 @@ export type {
   ContextInit,
   ContextPushItemInput,
 } from './context/context.js';
+
+// Context builder & orchestrator (§6.5, §5.3 — Phase 5.2)
+export {
+  ContextBuilder,
+  contextBuilder,
+} from './context/context-builder.js';
+export {
+  ContextOrchestrator,
+  compileMessagesForSnapshot,
+  orderSlotsForCompile,
+} from './context/context-orchestrator.js';
+export type {
+  ContextOrchestratorBuildInput,
+  ContextOrchestratorBuildResult,
+} from './context/context-orchestrator.js';
