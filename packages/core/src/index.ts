@@ -6,6 +6,17 @@
 
 export const VERSION = '0.0.1';
 
+// Error types (§15.1)
+export {
+  ContextCraftError,
+  BudgetExceededError,
+  ContextOverflowError,
+  TokenizerNotFoundError,
+  CompressionFailedError,
+  SnapshotCorruptedError,
+  InvalidConfigError,
+} from './errors.js';
+
 // Branded types (§6.6)
 export type { TokenCount, SlotPriority, ContentId } from './types/branded.js';
 export {

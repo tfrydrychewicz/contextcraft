@@ -1,0 +1,246 @@
+/**
+ * Error types for contextcraft.
+ *
+ * @packageDocumentation
+ */
+
+/**
+ * Base error class for all contextcraft errors.
+ *
+ * @see {@link BudgetExceededError}
+ * @see {@link ContextOverflowError}
+ * @see {@link TokenizerNotFoundError}
+ * @see {@link CompressionFailedError}
+ * @see {@link SnapshotCorruptedError}
+ * @see {@link InvalidConfigError}
+ */
+export class ContextCraftError extends Error {
+  override readonly name: string = 'ContextCraftError';
+
+  readonly code: string;
+
+  readonly recoverable: boolean;
+
+  readonly context?: Record<string, unknown>;
+
+  constructor(
+    message: string,
+    options?: {
+      code?: string;
+      recoverable?: boolean;
+      context?: Record<string, unknown>;
+      cause?: unknown;
+    },
+  ) {
+    super(message, options?.cause ? { cause: options.cause } : undefined);
+    this.code = options?.code ?? 'CONTEXT_CRAFT_ERROR';
+    this.recoverable = options?.recoverable ?? false;
+    if (options?.context !== undefined) {
+      this.context = options.context;
+    }
+    Object.setPrototypeOf(this, ContextCraftError.prototype);
+  }
+}
+
+/**
+ * Fixed slots exceed total available budget.
+ *
+ * @example
+ * ```typescript
+ * throw new BudgetExceededError('Fixed slots require 15000 tokens but budget is 8000', {
+ *   context: { totalBudget: 8000, fixedTotal: 15000 },
+ * });
+ * ```
+ */
+export class BudgetExceededError extends ContextCraftError {
+  override readonly name = 'BudgetExceededError';
+
+  override readonly code = 'BUDGET_EXCEEDED';
+
+  override readonly recoverable = false;
+
+  constructor(
+    message: string,
+    options?: { context?: Record<string, unknown>; cause?: unknown },
+  ) {
+    super(message, { ...options, code: 'BUDGET_EXCEEDED', recoverable: false });
+    Object.setPrototypeOf(this, BudgetExceededError.prototype);
+  }
+}
+
+/**
+ * A slot with overflow: 'error' exceeded its budget.
+ *
+ * @example
+ * ```typescript
+ * throw new ContextOverflowError('Slot history exceeded budget', {
+ *   context: { slot: 'history', budgetTokens: 5000, actualTokens: 6200 },
+ * });
+ * ```
+ */
+export class ContextOverflowError extends ContextCraftError {
+  override readonly name = 'ContextOverflowError';
+
+  override readonly code = 'CONTEXT_OVERFLOW';
+
+  override readonly recoverable = true;
+
+  readonly slot: string;
+
+  readonly budgetTokens: number;
+
+  readonly actualTokens: number;
+
+  constructor(
+    message: string,
+    options: {
+      slot: string;
+      budgetTokens: number;
+      actualTokens: number;
+      context?: Record<string, unknown>;
+      cause?: unknown;
+    },
+  ) {
+    super(message, {
+      ...options,
+      code: 'CONTEXT_OVERFLOW',
+      recoverable: true,
+      context: {
+        ...options.context,
+        slot: options.slot,
+        budgetTokens: options.budgetTokens,
+        actualTokens: options.actualTokens,
+      },
+    });
+    this.slot = options.slot;
+    this.budgetTokens = options.budgetTokens;
+    this.actualTokens = options.actualTokens;
+    Object.setPrototypeOf(this, ContextOverflowError.prototype);
+  }
+}
+
+/**
+ * Requested tokenizer is not installed.
+ *
+ * @example
+ * ```typescript
+ * throw new TokenizerNotFoundError('Tokenizer cl100k_base not found. Install tiktoken.');
+ * ```
+ */
+export class TokenizerNotFoundError extends ContextCraftError {
+  override readonly name = 'TokenizerNotFoundError';
+
+  override readonly code = 'TOKENIZER_NOT_FOUND';
+
+  override readonly recoverable = false;
+
+  constructor(
+    message: string,
+    options?: { context?: Record<string, unknown>; cause?: unknown },
+  ) {
+    super(message, {
+      ...options,
+      code: 'TOKENIZER_NOT_FOUND',
+      recoverable: false,
+    });
+    Object.setPrototypeOf(this, TokenizerNotFoundError.prototype);
+  }
+}
+
+/**
+ * Summarization or compression LLM call failed.
+ *
+ * @example
+ * ```typescript
+ * throw new CompressionFailedError('Summarization timed out', {
+ *   context: { fallbackStrategy: 'truncate' },
+ * });
+ * ```
+ */
+export class CompressionFailedError extends ContextCraftError {
+  override readonly name = 'CompressionFailedError';
+
+  override readonly code = 'COMPRESSION_FAILED';
+
+  override readonly recoverable = true;
+
+  readonly fallbackStrategy: string;
+
+  constructor(
+    message: string,
+    options: {
+      fallbackStrategy: string;
+      context?: Record<string, unknown>;
+      cause?: unknown;
+    },
+  ) {
+    super(message, {
+      ...options,
+      code: 'COMPRESSION_FAILED',
+      recoverable: true,
+      context: { ...options.context, fallbackStrategy: options.fallbackStrategy },
+    });
+    this.fallbackStrategy = options.fallbackStrategy;
+    Object.setPrototypeOf(this, CompressionFailedError.prototype);
+  }
+}
+
+/**
+ * Deserialized snapshot fails integrity check.
+ *
+ * @example
+ * ```typescript
+ * throw new SnapshotCorruptedError('Checksum mismatch', {
+ *   context: { expected: 'abc', actual: 'xyz' },
+ * });
+ * ```
+ */
+export class SnapshotCorruptedError extends ContextCraftError {
+  override readonly name = 'SnapshotCorruptedError';
+
+  override readonly code = 'SNAPSHOT_CORRUPTED';
+
+  override readonly recoverable = false;
+
+  constructor(
+    message: string,
+    options?: { context?: Record<string, unknown>; cause?: unknown },
+  ) {
+    super(message, {
+      ...options,
+      code: 'SNAPSHOT_CORRUPTED',
+      recoverable: false,
+    });
+    Object.setPrototypeOf(this, SnapshotCorruptedError.prototype);
+  }
+}
+
+/**
+ * Configuration validation failed (e.g. Zod validation).
+ *
+ * @example
+ * ```typescript
+ * throw new InvalidConfigError('Slot percentages exceed 100%', {
+ *   context: { issues: zodError.issues },
+ * });
+ * ```
+ */
+export class InvalidConfigError extends ContextCraftError {
+  override readonly name = 'InvalidConfigError';
+
+  override readonly code = 'INVALID_CONFIG';
+
+  override readonly recoverable = false;
+
+  constructor(
+    message: string,
+    options?: { context?: Record<string, unknown>; cause?: unknown },
+  ) {
+    super(message, {
+      ...options,
+      code: 'INVALID_CONFIG',
+      recoverable: false,
+    });
+    Object.setPrototypeOf(this, InvalidConfigError.prototype);
+  }
+}
