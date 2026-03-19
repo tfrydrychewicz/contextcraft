@@ -4,8 +4,8 @@
  * @packageDocumentation
  */
 
-import { ContextOverflowError, InvalidConfigError } from '../errors.js';
-import { toTokenCount, type TokenCount } from '../types/branded.js';
+import { InvalidConfigError } from '../errors.js';
+import { toTokenCount } from '../types/branded.js';
 import type {
   OverflowContext,
   OverflowStrategyFn,
@@ -22,6 +22,7 @@ import type {
 import type { ResolvedSlot } from '../types/plugin.js';
 import type { TokenAccountant } from '../types/token-accountant.js';
 
+import { errorStrategy } from './strategies/error-strategy.js';
 import { slidingWindowStrategy } from './strategies/sliding-window-strategy.js';
 import { truncateLatestStrategy } from './strategies/truncate-latest-strategy.js';
 import { truncateStrategy } from './strategies/truncate-strategy.js';
@@ -94,22 +95,6 @@ function toResolvedOutput(s: WorkingSlot): ResolvedSlot {
   };
 }
 
-function builtinError(
-  items: ContentItem[],
-  budget: TokenCount,
-  countTokens: (xs: readonly ContentItem[]) => number,
-  slot: string,
-): ContentItem[] {
-  const actual = countTokens(items);
-  if (actual > budget) {
-    throw new ContextOverflowError(
-      `Slot "${slot}" exceeded budget with overflow strategy "error"`,
-      { slot, budgetTokens: budget, actualTokens: actual },
-    );
-  }
-  return items;
-}
-
 function strategyNotImplemented(name: NamedOverflowStrategy): never {
   throw new InvalidConfigError(
     `Overflow strategy "${name}" is not implemented yet (see Phase 4.2–4.6)`,
@@ -142,18 +127,14 @@ export class OverflowEngine {
   private readonly builtins: Record<NamedOverflowStrategy, OverflowStrategyFn>;
 
   constructor(options: OverflowEngineOptions) {
-    const count = options.countTokens;
-    this.countTokens = count;
+    this.countTokens = options.countTokens;
     this.onEvent = options.onEvent;
 
     const base: Record<NamedOverflowStrategy, OverflowStrategyFn> = {
       truncate: truncateStrategy,
       'truncate-latest': truncateLatestStrategy,
       'sliding-window': slidingWindowStrategy,
-      error: (items, budget, ctx) => {
-        const slot = typeof ctx.slot === 'string' ? ctx.slot : '';
-        return Promise.resolve(builtinError(items, budget, count, slot));
-      },
+      error: errorStrategy,
       summarize: (_items, _budget, _ctx) => {
         strategyNotImplemented('summarize');
       },

@@ -75,7 +75,11 @@ export type {
   OverflowResolveRunOptions,
 } from './slots/overflow-engine.js';
 
-// Overflow strategies (§5.2 — Phase 4.2–4.4)
+// Overflow strategies (§5.2 — Phase 4.2–4.5)
+export {
+  errorStrategy,
+  errorOverflow,
+} from './slots/strategies/error-strategy.js';
 export {
   slidingWindowStrategy,
   slidingWindow,
