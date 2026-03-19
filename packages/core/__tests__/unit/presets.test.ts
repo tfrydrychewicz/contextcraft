@@ -10,6 +10,7 @@ import {
   RAG_DEFAULTS,
   resolveContextSlots,
 } from '../../src/index.js';
+import type { SlotConfig } from '../../src/types/config.js';
 
 const LARGE_BUDGET = 100_000;
 
@@ -47,10 +48,10 @@ describe('presets (§7.3 — Phase 3.5)', () => {
           },
         },
       });
-      expect(merged.system?.budget).toEqual({ fixed: 500 });
-      expect(merged.rag).toEqual(RAG_DEFAULTS.rag);
-      expect(merged.history).toEqual(RAG_DEFAULTS.history);
-      expect(merged.output).toEqual(RAG_DEFAULTS.output);
+      expect(merged['system']?.budget).toEqual({ fixed: 500 });
+      expect(merged['rag']).toEqual(RAG_DEFAULTS.rag);
+      expect(merged['history']).toEqual(RAG_DEFAULTS.history);
+      expect(merged['output']).toEqual(RAG_DEFAULTS.output);
     });
   });
 
@@ -61,12 +62,12 @@ describe('presets (§7.3 — Phase 3.5)', () => {
         preset: 'chat',
         maxTokens: LARGE_BUDGET,
       });
-      expect(config.slots?.system).toMatchObject({
+      expect(config.slots?.['system']).toMatchObject({
         budget: { fixed: 2000 },
         defaultRole: 'system',
         overflow: 'error',
       });
-      expect(config.slots?.history).toMatchObject({
+      expect(config.slots?.['history']).toMatchObject({
         budget: { flex: true },
         overflow: 'summarize',
       });
@@ -90,8 +91,8 @@ describe('presets (§7.3 — Phase 3.5)', () => {
         'rag',
         'system',
       ]);
-      expect(config.slots?.rag?.defaultRole).toBe('user');
-      expect(config.slots?.output?.defaultRole).toBe('assistant');
+      expect(config.slots?.['rag']?.defaultRole).toBe('user');
+      expect(config.slots?.['output']?.defaultRole).toBe('assistant');
     });
 
     it('validates agent preset with tools and scratchpad', () => {
@@ -106,8 +107,8 @@ describe('presets (§7.3 — Phase 3.5)', () => {
         'system',
         'tools',
       ]);
-      expect(config.slots?.tools?.defaultRole).toBe('tool');
-      expect(config.slots?.scratchpad?.position).toBe('interleave');
+      expect(config.slots?.['tools']?.defaultRole).toBe('tool');
+      expect(config.slots?.['scratchpad']?.position).toBe('interleave');
     });
 
     it('defaults to chat when neither preset nor slots provided', () => {
@@ -139,10 +140,13 @@ describe('presets (§7.3 — Phase 3.5)', () => {
         preset: 'chat',
         maxTokens: LARGE_BUDGET,
       });
-      const r = new BudgetAllocator().resolve(config.slots!, LARGE_BUDGET);
+      const r = new BudgetAllocator().resolve(
+        config.slots! as Record<string, SlotConfig>,
+        LARGE_BUDGET,
+      );
       const byName = Object.fromEntries(r.map((s) => [s.name, s.budgetTokens]));
-      expect(byName.system).toBe(2000);
-      expect(byName.history).toBe(LARGE_BUDGET - 2000);
+      expect(byName['system']).toBe(2000);
+      expect(byName['history']).toBe(LARGE_BUDGET - 2000);
     });
 
     it('resolves rag preset without error', () => {
@@ -151,7 +155,10 @@ describe('presets (§7.3 — Phase 3.5)', () => {
         preset: 'rag',
         maxTokens: LARGE_BUDGET,
       });
-      const r = new BudgetAllocator().resolve(config.slots!, LARGE_BUDGET);
+      const r = new BudgetAllocator().resolve(
+        config.slots! as Record<string, SlotConfig>,
+        LARGE_BUDGET,
+      );
       const total = r.reduce((s, x) => s + x.budgetTokens, 0);
       expect(total).toBe(LARGE_BUDGET);
       expect(r.find((s) => s.name === 'system')?.budgetTokens).toBe(2000);
@@ -163,7 +170,10 @@ describe('presets (§7.3 — Phase 3.5)', () => {
         preset: 'agent',
         maxTokens: LARGE_BUDGET,
       });
-      const r = new BudgetAllocator().resolve(config.slots!, LARGE_BUDGET);
+      const r = new BudgetAllocator().resolve(
+        config.slots! as Record<string, SlotConfig>,
+        LARGE_BUDGET,
+      );
       const total = r.reduce((s, x) => s + x.budgetTokens, 0);
       expect(total).toBe(LARGE_BUDGET);
     });

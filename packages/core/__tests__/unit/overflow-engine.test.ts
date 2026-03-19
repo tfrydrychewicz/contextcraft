@@ -9,6 +9,7 @@ import {
   type OverflowEngineInputSlot,
 } from '../../src/index.js';
 import type { SlotConfig } from '../../src/types/config.js';
+import type { ContentItem } from '../../src/types/content.js';
 
 function slot(
   name: string,
@@ -26,7 +27,7 @@ function slot(
   };
 }
 
-function countSum(items: { tokens?: number }[]): number {
+function countSum(items: readonly ContentItem[]): number {
   return items.reduce((s, i) => s + (i.tokens ?? 0), 0);
 }
 
