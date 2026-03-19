@@ -96,6 +96,9 @@ importers:
       '@size-limit/file':
         specifier: ^11.0.0
         version: 11.2.0(size-limit@11.2.0)
+      expect-type:
+        specifier: ^1.3.0
+        version: 1.3.0
 
   packages/debug:
     dependencies:

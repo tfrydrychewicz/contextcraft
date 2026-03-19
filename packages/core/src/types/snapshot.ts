@@ -15,25 +15,25 @@ import type { CompiledMessage, ContentItem } from './content.js';
 /** Per-slot metadata in a snapshot */
 export interface SlotMeta {
   /** Slot name */
-  name: string;
+  readonly name: string;
 
   /** Resolved budget in tokens */
-  budgetTokens: TokenCount;
+  readonly budgetTokens: TokenCount;
 
   /** Actual tokens used */
-  usedTokens: TokenCount;
+  readonly usedTokens: TokenCount;
 
   /** Number of content items in the slot */
-  itemCount: number;
+  readonly itemCount: number;
 
   /** Number of items evicted during overflow */
-  evictedCount: number;
+  readonly evictedCount: number;
 
   /** Whether overflow strategy was triggered */
-  overflowTriggered: boolean;
+  readonly overflowTriggered: boolean;
 
   /** Utilization of this slot (usedTokens / budgetTokens) */
-  utilization: number;
+  readonly utilization: number;
 }
 
 // ==========================================
@@ -43,31 +43,31 @@ export interface SlotMeta {
 /** Compression event that occurred during build */
 export interface CompressionEvent {
   /** Slot where compression occurred */
-  slot: string;
+  readonly slot: string;
 
   /** Tokens before compression */
-  beforeTokens: number;
+  readonly beforeTokens: number;
 
   /** Tokens after compression */
-  afterTokens: number;
+  readonly afterTokens: number;
 
   /** Number of items compressed */
-  itemCount: number;
+  readonly itemCount: number;
 
   /** Compression ratio (1 - afterTokens/beforeTokens) */
-  ratio?: number;
+  readonly ratio?: number;
 }
 
 /** Content evicted during overflow resolution */
 export interface EvictionEvent {
   /** Slot from which content was evicted */
-  slot: string;
+  readonly slot: string;
 
   /** The evicted content item */
-  item: ContentItem;
+  readonly item: Readonly<ContentItem>;
 
   /** Reason for eviction */
-  reason: string;
+  readonly reason: string;
 }
 
 // ==========================================
@@ -77,16 +77,16 @@ export interface EvictionEvent {
 /** Warning emitted during build */
 export interface ContextWarning {
   /** Warning code */
-  code: string;
+  readonly code: string;
 
   /** Human-readable message */
-  message: string;
+  readonly message: string;
 
   /** Slot involved (if applicable) */
-  slot?: string;
+  readonly slot?: string;
 
   /** Severity level */
-  severity: 'info' | 'warn' | 'error';
+  readonly severity: 'info' | 'warn' | 'error';
 }
 
 // ==========================================
@@ -96,34 +96,34 @@ export interface ContextWarning {
 /** Comprehensive metadata about a compiled snapshot */
 export interface SnapshotMeta {
   /** Total tokens used in this snapshot */
-  totalTokens: TokenCount;
+  readonly totalTokens: TokenCount;
 
   /** Total token budget available (maxTokens - reserveForResponse) */
-  totalBudget: TokenCount;
+  readonly totalBudget: TokenCount;
 
   /** Utilization ratio (0.0–1.0) */
-  utilization: number;
+  readonly utilization: number;
 
   /** Wasted budget (allocated but unused tokens across all slots) */
-  waste: TokenCount;
+  readonly waste: TokenCount;
 
   /** Per-slot breakdown */
-  slots: Record<string, SlotMeta>;
+  readonly slots: Readonly<Record<string, SlotMeta>>;
 
   /** Compression events that occurred during this build */
-  compressions: CompressionEvent[];
+  readonly compressions: readonly CompressionEvent[];
 
   /** Content items evicted during overflow resolution */
-  evictions: EvictionEvent[];
+  readonly evictions: readonly EvictionEvent[];
 
   /** Warnings (e.g., slot over budget but protected, near-overflow) */
-  warnings: ContextWarning[];
+  readonly warnings: readonly ContextWarning[];
 
   /** Time taken to compile this snapshot (milliseconds) */
-  buildTimeMs: number;
+  readonly buildTimeMs: number;
 
   /** Timestamp */
-  builtAt: number;
+  readonly builtAt: number;
 }
 
 // ==========================================
@@ -133,17 +133,17 @@ export interface SnapshotMeta {
 /** Diff result between two snapshots */
 export interface SnapshotDiff {
   /** Messages added in the newer snapshot */
-  added: readonly CompiledMessage[];
+  readonly added: readonly Readonly<CompiledMessage>[];
 
   /** Messages removed from the older snapshot */
-  removed: readonly CompiledMessage[];
+  readonly removed: readonly Readonly<CompiledMessage>[];
 
   /** Messages modified (same position, different content) */
-  modified: Array<{
-    index: number;
-    before: CompiledMessage;
-    after: CompiledMessage;
-  }>;
+  readonly modified: readonly Readonly<{
+    readonly index: number;
+    readonly before: Readonly<CompiledMessage>;
+    readonly after: Readonly<CompiledMessage>;
+  }>[];
 }
 
 // ==========================================
@@ -190,7 +190,7 @@ export interface ContextSnapshot {
   readonly id: string;
 
   /** The compiled messages, ready for LLM consumption */
-  readonly messages: readonly CompiledMessage[];
+  readonly messages: readonly Readonly<CompiledMessage>[];
 
   /** Comprehensive metadata about this compilation */
   readonly meta: SnapshotMeta;

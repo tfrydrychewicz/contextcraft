@@ -71,16 +71,21 @@ export function makeItem(
     slot?: string;
   },
 ): ContentItemShape {
-  return {
+  const item: ContentItemShape = {
     id,
     role: options?.role ?? 'user',
     content: options?.content ?? `Content for ${id}`,
     slot: options?.slot ?? 'history',
     tokens,
-    pinned: options?.pinned,
-    ephemeral: options?.ephemeral,
     createdAt: Date.now(),
   };
+  if (options?.pinned !== undefined) {
+    item.pinned = options.pinned;
+  }
+  if (options?.ephemeral !== undefined) {
+    item.ephemeral = options.ephemeral;
+  }
+  return item;
 }
 
 /**

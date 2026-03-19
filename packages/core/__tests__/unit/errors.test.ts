@@ -44,7 +44,7 @@ describe('BudgetExceededError', () => {
     });
     expect(err.code).toBe('BUDGET_EXCEEDED');
     expect(err.recoverable).toBe(false);
-    expect(err.context?.totalBudget).toBe(8000);
+    expect(err.context?.['totalBudget']).toBe(8000);
   });
 });
 
@@ -97,7 +97,7 @@ describe('InvalidConfigError', () => {
     });
     expect(err.code).toBe('INVALID_CONFIG');
     expect(err.recoverable).toBe(false);
-    expect(err.context?.issues).toEqual([]);
+    expect(err.context?.['issues']).toEqual([]);
   });
 });
 

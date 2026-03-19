@@ -188,7 +188,7 @@ describe('ContextConfig', () => {
       tokenizer: { name: 'cl100k_base', cache: true },
     };
     expect(config.model).toBe('claude-sonnet-4-20250514');
-    expect(config.slots?.system?.priority).toBe(100);
-    expect(config.slots?.history?.overflow).toBe('summarize');
+    expect(config.slots?.['system']?.priority).toBe(100);
+    expect(config.slots?.['history']?.overflow).toBe('summarize');
   });
 });

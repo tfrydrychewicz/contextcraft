@@ -180,7 +180,7 @@ describe('validateContextConfig / safeParseContextConfig', () => {
       expect(e).toBeInstanceOf(InvalidConfigError);
       const err = e as InvalidConfigError;
       expect(err.code).toBe('INVALID_CONFIG');
-      expect(Array.isArray(err.context?.issues)).toBe(true);
+      expect(Array.isArray(err.context?.['issues'])).toBe(true);
     }
   });
 
