@@ -73,8 +73,9 @@ describe('SlotOverflowStrategy', () => {
       'semantic',
       'compress',
       'error',
+      'fallback-chain',
     ];
-    expect(strategies).toHaveLength(7);
+    expect(strategies).toHaveLength(8);
   });
 
   it('accepts custom strategy function', () => {

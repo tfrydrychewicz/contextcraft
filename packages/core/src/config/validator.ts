@@ -17,6 +17,7 @@ export const slotOverflowNamedSchema = z.enum([
   'semantic',
   'compress',
   'error',
+  'fallback-chain',
 ]);
 
 /** Slot overflow: named strategy or custom function */

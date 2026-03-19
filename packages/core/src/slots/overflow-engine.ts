@@ -24,6 +24,7 @@ import type { ResolvedSlot } from '../types/plugin.js';
 import type { TokenAccountant } from '../types/token-accountant.js';
 
 import { errorStrategy } from './strategies/error-strategy.js';
+import { createFallbackChainStrategy } from './strategies/fallback-chain-strategy.js';
 import { slidingWindowStrategy } from './strategies/sliding-window-strategy.js';
 import { truncateLatestStrategy } from './strategies/truncate-latest-strategy.js';
 import { truncateStrategy } from './strategies/truncate-strategy.js';
@@ -75,7 +76,11 @@ type NamedOverflowStrategy =
   | 'sliding-window'
   | 'semantic'
   | 'compress'
-  | 'error';
+  | 'error'
+  | 'fallback-chain';
+
+/** Built-ins except `fallback-chain`, which is composed after user overrides are merged. */
+type CoreNamedOverflowStrategy = Exclude<NamedOverflowStrategy, 'fallback-chain'>;
 
 type WorkingSlot = OverflowEngineInputSlot;
 
@@ -117,7 +122,8 @@ function isNamedStrategy(s: string): s is NamedOverflowStrategy {
     s === 'sliding-window' ||
     s === 'semantic' ||
     s === 'compress' ||
-    s === 'error'
+    s === 'error' ||
+    s === 'fallback-chain'
   );
 }
 
@@ -140,7 +146,7 @@ export class OverflowEngine {
     this.onEvent = options.onEvent;
     this.strategyLogger = options.strategyLogger;
 
-    const base: Record<NamedOverflowStrategy, OverflowStrategyFn> = {
+    const coreBuiltins: Record<CoreNamedOverflowStrategy, OverflowStrategyFn> = {
       truncate: truncateStrategy,
       'truncate-latest': truncateLatestStrategy,
       'sliding-window': slidingWindowStrategy,
@@ -156,7 +162,25 @@ export class OverflowEngine {
       },
     };
 
-    this.builtins = { ...base, ...options.strategies };
+    const userStrategies = options.strategies ?? {};
+    const merged = {
+      ...coreBuiltins,
+      ...userStrategies,
+    };
+
+    const builtins: Record<NamedOverflowStrategy, OverflowStrategyFn> = {
+      ...merged,
+      'fallback-chain': Object.hasOwn(userStrategies, 'fallback-chain')
+        ? userStrategies['fallback-chain']!
+        : createFallbackChainStrategy({
+            summarize: merged.summarize,
+            compress: merged.compress,
+            truncate: merged.truncate,
+            error: merged.error,
+          }),
+    };
+
+    this.builtins = builtins;
   }
 
   private emit(ev: ContextEvent): void {

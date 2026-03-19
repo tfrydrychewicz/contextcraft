@@ -104,6 +104,14 @@ export {
   sumCachedItemTokens,
   resolveOverflowCountItems,
 } from './slots/strategies/truncate-strategy.js';
+export {
+  createFallbackChainStrategy,
+  FALLBACK_CHAIN_STEPS,
+} from './slots/strategies/fallback-chain-strategy.js';
+export type {
+  FallbackChainStep,
+  FallbackChainStrategyDeps,
+} from './slots/strategies/fallback-chain-strategy.js';
 export type { TokenAccountant } from './types/token-accountant.js';
 
 // Event types (§6.6, §13.1)

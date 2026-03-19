@@ -126,6 +126,7 @@ export type SlotOverflowStrategy =
   | 'semantic'
   | 'compress'
   | 'error'
+  | 'fallback-chain'
   | OverflowStrategyFn;
 
 // ==========================================
