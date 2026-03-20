@@ -25,17 +25,19 @@ import {
   BudgetAllocator,
   orderedSlotEntriesForBudget,
 } from '../slots/budget-allocator.js';
+import {
+  fillMissingContentItemTokens,
+  sumCachedItemTokensWithLazyFill,
+  sumCachedOrEstimatedItemTokens,
+  tryResolveTokenizerForLazyFill,
+} from '../content/lazy-item-tokens.js';
+import { compileContentItem } from '../content/compile-content-item.js';
 import { OverflowEngine } from '../slots/overflow-engine.js';
 import { sumCachedItemTokens } from '../slots/strategies/truncate-strategy.js';
 import { ContextSnapshot } from '../snapshot/context-snapshot.js';
 import { toTokenCount } from '../types/branded.js';
 import type { ProviderId, SlotConfig } from '../types/config.js';
-import type {
-  CompiledContentPart,
-  CompiledMessage,
-  ContentItem,
-  MultimodalContent,
-} from '../types/content.js';
+import type { CompiledMessage, ContentItem } from '../types/content.js';
 import type { ContextEvent } from '../types/events.js';
 import type { ContextPlugin, ResolvedSlot } from '../types/plugin.js';
 import type { ProviderAdapter } from '../types/provider.js';
@@ -59,24 +61,48 @@ function resolvePlugins(config: ParsedContextConfig): readonly ContextPlugin[] {
 
 function resolveCountTokens(
   config: ParsedContextConfig,
+  providerAdapters?: Partial<Record<ProviderId, ProviderAdapter>>,
 ): (items: readonly ContentItem[]) => number {
   const ta = config.tokenAccountant as TokenAccountant | undefined;
   if (ta !== undefined) {
     return (items) => ta.countItems(items);
+  }
+  if (config.lazyContentItemTokens === true) {
+    const tokenizer = tryResolveTokenizerForLazyFill(
+      config.model,
+      providerAdapters,
+      config.provider?.provider as ProviderId | undefined,
+    );
+    return (items) =>
+      sumCachedItemTokensWithLazyFill(items as ContentItem[], (missing) => {
+        if (tokenizer !== undefined) {
+          fillMissingContentItemTokens({ items: missing, tokenizer });
+        } else {
+          fillMissingContentItemTokens({ items: missing });
+        }
+      });
+  }
+  if (config.charTokenEstimateForMissing === true) {
+    return sumCachedOrEstimatedItemTokens;
   }
   return sumCachedItemTokens;
 }
 
 /** §19.1 — refuse estimated token paths when billing policy is enabled. */
 function assertAuthoritativeTokenPolicy(config: ParsedContextConfig): void {
-  if (
-    config.requireAuthoritativeTokenCounts === true &&
-    config.tokenAccountant === undefined
-  ) {
-    throw new InvalidConfigError(
-      'requireAuthoritativeTokenCounts is true but tokenAccountant is missing — supply an authoritative tokenAccountant for billing-sensitive paths (§19.1)',
-      { context: { area: 'token-policy' } },
-    );
+  if (config.requireAuthoritativeTokenCounts === true) {
+    if (config.tokenAccountant === undefined) {
+      throw new InvalidConfigError(
+        'requireAuthoritativeTokenCounts is true but tokenAccountant is missing — supply an authoritative tokenAccountant for billing-sensitive paths (§19.1)',
+        { context: { area: 'token-policy' } },
+      );
+    }
+    if (config.lazyContentItemTokens === true || config.charTokenEstimateForMissing === true) {
+      throw new InvalidConfigError(
+        'requireAuthoritativeTokenCounts is incompatible with lazyContentItemTokens / charTokenEstimateForMissing — disable those flags when using authoritative counting (§19.1)',
+        { context: { area: 'token-policy' } },
+      );
+    }
   }
 }
 
@@ -211,54 +237,6 @@ export type ContextOrchestratorBuildResult = {
 };
 
 const DEFAULT_MAX_TOKENS = 8192;
-
-function compileContentItem(item: ContentItem): CompiledMessage {
-  if (typeof item.content === 'string') {
-    const m: CompiledMessage = { role: item.role, content: item.content };
-    if (item.name !== undefined) {
-      m.name = item.name;
-    }
-    if (item.toolCallId !== undefined) {
-      m.tool_call_id = item.toolCallId;
-    }
-    if (item.toolUses !== undefined) {
-      m.toolUses = item.toolUses;
-    }
-    return m;
-  }
-  const parts: CompiledContentPart[] = [];
-  for (const block of item.content as MultimodalContent[]) {
-    if (block.type === 'text') {
-      parts.push({ type: 'text', text: block.text });
-    } else if (block.type === 'image_url') {
-      const url = block.imageUrl ?? block.image_url ?? '';
-      parts.push({
-        type: 'image_url',
-        image_url: { url },
-      });
-    } else {
-      const data = block.imageBase64 ?? block.image_base64 ?? '';
-      parts.push({
-        type: 'image_base64',
-        image_base64:
-          block.mimeType !== undefined
-            ? { data, mime_type: block.mimeType }
-            : { data },
-      });
-    }
-  }
-  const m: CompiledMessage = { role: item.role, content: parts };
-  if (item.name !== undefined) {
-    m.name = item.name;
-  }
-  if (item.toolCallId !== undefined) {
-    m.tool_call_id = item.toolCallId;
-  }
-  if (item.toolUses !== undefined) {
-    m.toolUses = item.toolUses;
-  }
-  return m;
-}
 
 type SlotEntry = { readonly name: string; readonly config: SlotConfig };
 
@@ -422,8 +400,8 @@ export class ContextOrchestrator {
 
     const pluginManager = input.pluginManager;
     const plugins = pluginManager?.getPlugins() ?? resolvePlugins(config);
-    const countTokens = resolveCountTokens(config);
     assertAuthoritativeTokenPolicy(config);
+    const countTokens = resolveCountTokens(config, providerAdapters);
 
     const deliverPipelineEvent = (ev: ContextEvent): void => {
       const payload = eventRedactor !== undefined ? eventRedactor(ev) : ev;
@@ -550,6 +528,8 @@ export class ContextOrchestrator {
       await runAfterOverflowPlugins(plugins, preOverflowBySlot, afterOverflow);
     }
 
+    context.applyResolvedItemTokens(afterOverflow);
+
     let messages = compileMessagesForSnapshot(slots, afterOverflow);
     messages =
       pluginManager !== undefined
@@ -666,8 +646,8 @@ export class ContextOrchestrator {
 
     const pluginManager = input.pluginManager;
     const plugins = pluginManager?.getPlugins() ?? resolvePlugins(config);
-    const countTokens = resolveCountTokens(config);
     assertAuthoritativeTokenPolicy(config);
+    const countTokens = resolveCountTokens(config, providerAdapters);
 
     const deliverPipelineEvent = (ev: ContextEvent): void => {
       const payload = eventRedactor !== undefined ? eventRedactor(ev) : ev;
@@ -842,6 +822,8 @@ export class ContextOrchestrator {
         } else {
           await runAfterOverflowPlugins(plugins, lastPreOverflowBySlot, corrected);
         }
+
+        context.applyResolvedItemTokens(corrected);
 
         let messages = compileMessagesForSnapshot(slots, corrected);
         messages =

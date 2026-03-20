@@ -59,6 +59,25 @@ export type {
   CreateContentItemParams,
 } from './content/content-store.js';
 
+export { compileContentItem } from './content/compile-content-item.js';
+export {
+  DEFAULT_CHARS_PER_TOKEN_ESTIMATE,
+  estimateTokenCountFromPlainTextLen,
+  estimateTokensFromContentPayload,
+  estimateTokensFromMultimodalContent,
+} from './content/char-token-estimate.js';
+export {
+  computeBuildReuseFingerprint,
+} from './content/build-reuse-fingerprint.js';
+export type { BuildReuseFingerprintSource } from './content/build-reuse-fingerprint.js';
+export {
+  fillMissingContentItemTokens,
+  sumCachedItemTokensWithLazyFill,
+  sumCachedOrEstimatedItemTokens,
+  tryResolveTokenizerForLazyFill,
+  wrapContentItemLazyTokens,
+} from './content/lazy-item-tokens.js';
+
 // Slot manager (§20)
 export { SlotManager } from './slots/slot-manager.js';
 export type { SlotManagerOptions } from './slots/slot-manager.js';

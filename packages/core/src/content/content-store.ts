@@ -196,6 +196,24 @@ export class ContentStore {
   }
 
   /**
+   * Copies {@link ContentItem.tokens} from pipeline/working items onto canonical store rows by `id`.
+   * Used after a build so lazy-filled counts are visible to {@link getItems} (§18.2).
+   */
+  applyTokensFromPipeline(slot: string, pipelineItems: readonly ContentItem[]): void {
+    this.requireSlot(slot);
+    const list = this.listFor(slot);
+    for (const p of pipelineItems) {
+      if (p.tokens === undefined) {
+        continue;
+      }
+      const row = list.find((i) => i.id === p.id);
+      if (row !== undefined) {
+        row.tokens = p.tokens;
+      }
+    }
+  }
+
+  /**
    * Returns a shallow copy of items in insertion order.
    */
   getItems(slot: string): ContentItem[] {

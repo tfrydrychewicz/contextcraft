@@ -295,6 +295,18 @@ export interface ContextConfig {
   requireAuthoritativeTokenCounts?: boolean;
 
   /**
+   * When `true` (and no {@link tokenAccountant}), missing {@link ContentItem.tokens} are filled on first
+   * pipeline count using `providerAdapters`’ tokenizer when present, otherwise a char estimate (§18.2).
+   */
+  lazyContentItemTokens?: boolean;
+
+  /**
+   * When `true` (and no accountant / lazy mode), missing `tokens` contribute a char-length estimate to
+   * totals without mutating items — for non-critical previews only (§18.2).
+   */
+  charTokenEstimateForMissing?: boolean;
+
+  /**
    * Structured logger for the build pipeline and overflow strategies (§13.3).
    * Combined with {@link logLevel} via {@link createLeveledLogger}.
    */

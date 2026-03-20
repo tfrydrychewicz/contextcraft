@@ -186,9 +186,23 @@ export const contextConfigSchema = z
       ])
       .optional(),
     requireAuthoritativeTokenCounts: z.boolean().optional(),
+    lazyContentItemTokens: z.boolean().optional(),
+    charTokenEstimateForMissing: z.boolean().optional(),
   })
   .strict()
   .superRefine((data, ctx) => {
+    if (
+      data.lazyContentItemTokens === true &&
+      data.charTokenEstimateForMissing === true
+    ) {
+      ctx.addIssue({
+        code: 'custom',
+        message:
+          'lazyContentItemTokens and charTokenEstimateForMissing are mutually exclusive — enable only one',
+        path: ['charTokenEstimateForMissing'],
+      });
+    }
+
     if (!data.slots) return;
 
     let percentSum = 0;

@@ -83,7 +83,9 @@ export class TiktokenTokenizer implements Tokenizer {
     );
   }
 
-  /** @inheritdoc */
+  /**
+   * Uses one pooled {@link Tiktoken} instance for the whole batch (§18.2 — avoids per-string encoder lookup).
+   */
   countBatch(texts: readonly string[]): TokenCount[] {
     const enc = this.enc();
     const out: TokenCount[] = [];

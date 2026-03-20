@@ -43,6 +43,12 @@ export type ContextBuildParams = {
    * Stable id for this build in logs (§13.3). Useful in tests; otherwise a UUID is generated.
    */
   readonly operationId?: string;
+  /**
+   * When `true`, a subsequent {@link Context.build} with the same slot contents (and no blocked
+   * params) returns the previous {@link ContextOrchestratorBuildResult} without re-running the
+   * pipeline (§18.2). Do not use with per-build `providerAdapters`, `pluginManager`, or snapshot sharing.
+   */
+  readonly reuseUnchangedSnapshot?: boolean;
 };
 
 /**

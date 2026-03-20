@@ -6,6 +6,7 @@
  */
 
 import type { ParsedContextConfig } from '../config/validator.js';
+import { computeBuildReuseFingerprint } from '../content/build-reuse-fingerprint.js';
 import {
   ContentStore,
   createContentItem,
@@ -17,6 +18,7 @@ import type { ContentId } from '../types/branded.js';
 import type { SlotConfig } from '../types/config.js';
 import type { ContentItem, MessageRole, MultimodalContent } from '../types/content.js';
 import type { ContextEvent } from '../types/events.js';
+import type { ResolvedSlot } from '../types/plugin.js';
 
 import {
   mergeParsedConfigForBuild,
@@ -119,6 +121,11 @@ export class Context {
 
   private checkpointSeq = 0;
 
+  /** §18.2 — last successful {@link Context.build} result when `reuseUnchangedSnapshot` was used. */
+  private lastReuseFingerprint: string | undefined;
+
+  private lastReuseResult: ContextOrchestratorBuildResult | undefined;
+
   /**
    * Optional subscribers (e.g. `@contextcraft/debug` inspector) receive the same redacted
    * {@link ContextEvent} stream as `onEvent` (§13.2).
@@ -201,7 +208,31 @@ export class Context {
 
     const effective = mergeParsedConfigForBuild(this.parsedConfig, params?.overrides);
 
-    return ContextOrchestrator.build({
+    const hasStructuralOverrides =
+      params?.overrides !== undefined &&
+      (params.overrides.reserveForResponse !== undefined ||
+        params.overrides.maxTokens !== undefined ||
+        (params.overrides.slots !== undefined &&
+          Object.keys(params.overrides.slots).length > 0));
+
+    const reuseBlockedByParams =
+      params?.providerAdapters !== undefined ||
+      params?.pluginManager !== undefined ||
+      params?.previousSnapshot !== undefined ||
+      params?.structuralSharing !== undefined;
+
+    if (
+      params?.reuseUnchangedSnapshot === true &&
+      !hasStructuralOverrides &&
+      !reuseBlockedByParams &&
+      this.lastReuseResult !== undefined &&
+      this.lastReuseFingerprint !== undefined &&
+      computeBuildReuseFingerprint(this) === this.lastReuseFingerprint
+    ) {
+      return this.lastReuseResult;
+    }
+
+    const result = await ContextOrchestrator.build({
       config: effective,
       context: this,
       ...(params?.providerAdapters !== undefined
@@ -218,6 +249,16 @@ export class Context {
         : {}),
       ...(params?.operationId !== undefined ? { operationId: params.operationId } : {}),
     });
+
+    if (params?.reuseUnchangedSnapshot === true && !hasStructuralOverrides && !reuseBlockedByParams) {
+      this.lastReuseFingerprint = computeBuildReuseFingerprint(this);
+      this.lastReuseResult = result;
+    } else {
+      this.lastReuseFingerprint = undefined;
+      this.lastReuseResult = undefined;
+    }
+
+    return result;
   }
 
   /**
@@ -458,6 +499,17 @@ export class Context {
   ): void {
     const id = resolveContentRef(itemOrId);
     this.store.markItemEphemeral(slot, id);
+  }
+
+  /**
+   * Merges `tokens` from resolved pipeline items onto canonical store rows by `id` (lazy fill §18.2).
+   *
+   * @internal — invoked by {@link ContextOrchestrator}; keeps {@link getItems} copies in sync after build.
+   */
+  applyResolvedItemTokens(resolved: readonly ResolvedSlot[]): void {
+    for (const rs of resolved) {
+      this.store.applyTokensFromPipeline(rs.name, rs.content);
+    }
   }
 
   /**
