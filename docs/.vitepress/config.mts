@@ -29,6 +29,16 @@ export default defineConfig({
         ],
       },
       {
+        text: 'Concepts',
+        items: [
+          { text: 'Slots', link: '/concepts/slots' },
+          { text: 'Budgets', link: '/concepts/budgets' },
+          { text: 'Overflow', link: '/concepts/overflow' },
+          { text: 'Compression', link: '/concepts/compression' },
+          { text: 'Snapshots', link: '/concepts/snapshots' },
+        ],
+      },
+      {
         text: 'Reference',
         items: [
           { text: 'Overview', link: '/reference/' },
