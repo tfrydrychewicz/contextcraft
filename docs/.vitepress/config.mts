@@ -36,6 +36,11 @@ export default defineConfig({
           { text: 'Overflow', link: '/concepts/overflow' },
           { text: 'Compression', link: '/concepts/compression' },
           { text: 'Snapshots', link: '/concepts/snapshots' },
+          { text: 'Events', link: '/concepts/events' },
+          { text: 'Plugins', link: '/concepts/plugins' },
+          { text: 'Providers', link: '/concepts/providers' },
+          { text: 'Token counting', link: '/concepts/token-counting' },
+          { text: 'Presets', link: '/concepts/presets' },
         ],
       },
       {

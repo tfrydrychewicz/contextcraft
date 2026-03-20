@@ -29,3 +29,8 @@ Use the guide for tutorials and getting started. For deep dives into the core ab
 - [Overflow](/concepts/overflow) — eight strategies for when content exceeds its budget.
 - [Compression](/concepts/compression) — progressive, semantic, and lossless compression.
 - [Snapshots](/concepts/snapshots) — immutable build results with metadata, diffing, and serialization.
+- [Events](/concepts/events) — the 10-event observability system with redaction.
+- [Plugins](/concepts/plugins) — lifecycle hooks, PluginContext, and extension patterns.
+- [Providers](/concepts/providers) — adapters, auto-detection, model registry, and formatters.
+- [Token counting](/concepts/token-counting) — tokenizers, caching, overhead, and lazy counting.
+- [Presets](/concepts/presets) — chat, rag, and agent slot layouts with customization.
