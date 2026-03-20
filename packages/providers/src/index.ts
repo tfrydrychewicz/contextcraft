@@ -39,6 +39,12 @@ export {
 } from './mistral-adapter.js';
 export type { MistralChatMessage } from './mistral-adapter.js';
 export {
+  createOllamaAdapter,
+  formatOllamaMessages,
+  OllamaAdapter,
+} from './ollama-adapter.js';
+export type { OllamaChatMessage, OllamaToolCall } from './ollama-adapter.js';
+export {
   createOpenAIAdapter,
   formatOpenAIMessages,
   OpenAIAdapter,
