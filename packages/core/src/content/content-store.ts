@@ -27,6 +27,8 @@ export type CreateContentItemParams = {
   ephemeral?: boolean;
   tokens?: TokenCount;
   summarizes?: ContentId[];
+  /** Per-message locale for lossless compression (§8.3). */
+  losslessLocale?: string;
   /** When omitted, a nanoid is generated. */
   id?: ContentId;
   /** When omitted, `Date.now()` is used. */
@@ -52,6 +54,7 @@ export function createContentItem(params: CreateContentItemParams): ContentItem 
     ephemeral,
     tokens,
     summarizes,
+    losslessLocale,
   } = params;
   const item: ContentItem = {
     slot,
@@ -83,6 +86,9 @@ export function createContentItem(params: CreateContentItemParams): ContentItem 
   }
   if (summarizes !== undefined) {
     item.summarizes = summarizes;
+  }
+  if (losslessLocale !== undefined) {
+    item.losslessLocale = losslessLocale;
   }
   return item;
 }

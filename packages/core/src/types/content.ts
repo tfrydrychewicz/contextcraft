@@ -106,6 +106,12 @@ export interface ContentItem {
 
   /** Assistant `tool_use` blocks (paired with user `tool_result` / OpenAI `tool`). */
   toolUses?: readonly CompiledToolUse[];
+
+  /**
+   * BCP 47 tag for lossless phrase pack per message (§8.3).
+   * Overrides slot `overflowConfig.losslessLocale` and compressor `detectLanguage` when set.
+   */
+  losslessLocale?: string;
 }
 
 // ==========================================

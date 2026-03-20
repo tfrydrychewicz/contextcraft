@@ -214,6 +214,70 @@ describe('OverflowEngine (§7.2 — Phase 4.1)', () => {
     ).rejects.toThrow(ContextOverflowError);
   });
 
+  it('applies compress using overflowConfig.losslessLocale', async () => {
+    const countByCharLen = (items: readonly ContentItem[]): number =>
+      items.reduce(
+        (s, i) => s + (typeof i.content === 'string' ? i.content.length : 0),
+        0,
+      );
+
+    const item = createContentItem({
+      slot: 's',
+      role: 'user',
+      content: 'Naja, zum Beispiel kurz.',
+      tokens: toTokenCount(100),
+    });
+
+    const engine = new OverflowEngine({ countTokens: countByCharLen });
+    const out = await engine.resolve([
+      slot(
+        's',
+        50,
+        12,
+        {
+          priority: 50,
+          budget: { flex: true },
+          overflow: 'compress',
+          overflowConfig: { losslessLocale: 'de' },
+        },
+        [item],
+      ),
+    ]);
+
+    expect(out[0]!.content[0]!.content).toBe('z. B. kurz.');
+    expect(countByCharLen(out[0]!.content)).toBeLessThanOrEqual(12);
+  });
+
+  it('applies built-in compress strategy (lossless text)', async () => {
+    const countByCharLen = (items: readonly ContentItem[]): number =>
+      items.reduce(
+        (s, i) => s + (typeof i.content === 'string' ? i.content.length : 0),
+        0,
+      );
+
+    const item = createContentItem({
+      slot: 's',
+      role: 'user',
+      content: 'Well,   you know, for example   hello.',
+      tokens: toTokenCount(100),
+    });
+
+    const engine = new OverflowEngine({ countTokens: countByCharLen });
+    const out = await engine.resolve([
+      slot(
+        's',
+        50,
+        20,
+        { priority: 50, budget: { flex: true }, overflow: 'compress' },
+        [item],
+      ),
+    ]);
+
+    expect(out[0]!.content).toHaveLength(1);
+    expect(out[0]!.content[0]!.content).toBe('e.g. hello.');
+    expect(countByCharLen(out[0]!.content)).toBeLessThanOrEqual(20);
+  });
+
   it('throws InvalidConfigError for summarize until Phase 4.2', async () => {
     const item = createContentItem({
       slot: 's',

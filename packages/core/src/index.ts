@@ -127,6 +127,28 @@ export {
   overflowStrategyLoggerToLogger,
 } from './compression/from-overflow-context.js';
 export type { CompressionContextFromOverflowDeps } from './compression/from-overflow-context.js';
+export {
+  LOSSLESS_LANGUAGE_PACK_DE,
+  LOSSLESS_LANGUAGE_PACK_EN,
+  LOSSLESS_LANGUAGE_PACK_MINIMAL,
+  LosslessCompressor,
+  createLosslessCompressionStrategy,
+  getPlainTextForLossless,
+  losslessCompressAsOverflow,
+  registerLosslessLanguagePack,
+  resolveLosslessLanguagePack,
+  unregisterLosslessLanguagePack,
+} from './compression/lossless-bridge.js';
+export type {
+  LosslessCompressibleItem,
+  LosslessCompressorOptions,
+  LosslessDetectLanguageFn,
+  LosslessLanguagePack,
+  LosslessMultimodalBlock,
+  LosslessMultimodalImageBase64,
+  LosslessMultimodalImageUrl,
+  LosslessMultimodalText,
+} from './compression/lossless-bridge.js';
 
 // Event types (§6.6, §13.1)
 export type {

@@ -164,6 +164,18 @@ export interface OverflowConfig {
 
   /** Compression level 0.0–1.0 (compress strategy) */
   compressionLevel?: number;
+
+  /**
+   * BCP 47 language tag for built-in `compress` / lossless phrase packs
+   * (e.g. `'en'`, `'de'`). See §8.3 language packs in design doc.
+   */
+  losslessLocale?: string;
+
+  /**
+   * Optional language detector when items omit `ContentItem.losslessLocale`.
+   * Use only with in-memory `SlotConfig` (not JSON-serializable). Built-in `compress` forwards this to `LosslessCompressor`.
+   */
+  losslessDetectLanguage?: (text: string) => string | undefined;
 }
 
 // ==========================================

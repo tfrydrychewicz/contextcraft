@@ -4,6 +4,7 @@
  * @packageDocumentation
  */
 
+import { losslessCompressAsOverflow } from '../compression/lossless-bridge.js';
 import { InvalidConfigError } from '../errors.js';
 import { toTokenCount } from '../types/branded.js';
 import type {
@@ -165,9 +166,7 @@ export class OverflowEngine {
       semantic: (_items, _budget, _ctx) => {
         strategyNotImplemented('semantic');
       },
-      compress: (_items, _budget, _ctx) => {
-        strategyNotImplemented('compress');
-      },
+      compress: losslessCompressAsOverflow,
     };
 
     const userStrategies = options.strategies ?? {};
