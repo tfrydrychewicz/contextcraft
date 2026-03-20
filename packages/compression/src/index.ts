@@ -52,3 +52,7 @@ export type {
   MapReduceReduceMergeFn,
   MapReduceSummarizeDeps,
 } from './map-reduce-types.js';
+
+export { cosineSimilarity, runSemanticCompress } from './semantic-compressor.js';
+export type { RunSemanticCompressParams } from './semantic-compressor.js';
+export type { EmbedFunction, SemanticScorableItem } from './semantic-types.js';

@@ -8,6 +8,7 @@ import {
   InvalidConfigError,
   type OverflowEngineInputSlot,
 } from '../../src/index.js';
+import { semanticCompressAsOverflow } from '../../src/compression/semantic-overflow-bridge.js';
 import type { SlotConfig } from '../../src/types/config.js';
 import type { ContentItem } from '../../src/types/content.js';
 
@@ -481,6 +482,166 @@ describe('OverflowEngine (§7.2 — Phase 4.1)', () => {
     expect(out[0]!.content.some((i) => typeof i.content === 'string' && i.content === 'R')).toBe(
       true,
     );
+  });
+
+  it('throws InvalidConfigError for semantic when embedFn is missing', async () => {
+    const item = createContentItem({
+      slot: 's',
+      role: 'user',
+      content: 'x',
+      tokens: toTokenCount(50),
+    });
+    const engine = new OverflowEngine({ countTokens: countSum });
+
+    await expect(
+      engine.resolve([
+        slot('s', 50, 40, { priority: 50, budget: { flex: true }, overflow: 'semantic' }, [
+          item,
+        ]),
+      ]),
+    ).rejects.toThrow(InvalidConfigError);
+  });
+
+  it('applies semantic overflow with embedFn and lastUserMessage anchor', async () => {
+    const embedFn = vi.fn(async (text: string) => {
+      const k = text.trim();
+      if (k === 'relevant') return [1, 0, 0];
+      if (k === 'noise') return [0, 1, 0];
+      return [0, 0, 1];
+    });
+
+    const noise = createContentItem({
+      slot: 's',
+      role: 'user',
+      content: 'noise',
+      tokens: toTokenCount(10),
+      createdAt: 1000,
+    });
+    const relevant = createContentItem({
+      slot: 's',
+      role: 'user',
+      content: 'relevant',
+      tokens: toTokenCount(10),
+      createdAt: 2000,
+    });
+    const other = createContentItem({
+      slot: 's',
+      role: 'assistant',
+      content: 'other',
+      tokens: toTokenCount(10),
+      createdAt: 3000,
+    });
+
+    const engine = new OverflowEngine({ countTokens: countSum });
+    const out = await engine.resolve([
+      slot(
+        's',
+        50,
+        25,
+        {
+          priority: 50,
+          budget: { flex: true },
+          overflow: 'semantic',
+          overflowConfig: {
+            embedFn,
+            anchorTo: 'lastUserMessage',
+            similarityThreshold: 0,
+          },
+        },
+        [noise, relevant, other],
+      ),
+    ]);
+
+    expect(embedFn).toHaveBeenCalled();
+    expect(countSum(out[0]!.content)).toBeLessThanOrEqual(25);
+    expect(out[0]!.content.map((i) => i.id)).toContain(relevant.id);
+  });
+
+  it('semantic overflow respects similarityThreshold', async () => {
+    const embedFn = vi.fn(async (text: string) => {
+      const k = text.trim();
+      if (k === 'relevant') return [1, 0, 0];
+      if (k === 'noise') return [0, 1, 0];
+      return [0, 0, 1];
+    });
+
+    const low = createContentItem({
+      slot: 's',
+      role: 'user',
+      content: 'noise',
+      tokens: toTokenCount(10),
+      createdAt: 1000,
+    });
+    const anchorUser = createContentItem({
+      slot: 's',
+      role: 'user',
+      content: 'relevant',
+      tokens: toTokenCount(10),
+      createdAt: 2000,
+    });
+
+    const engine = new OverflowEngine({ countTokens: countSum });
+    const out = await engine.resolve([
+      slot(
+        's',
+        50,
+        15,
+        {
+          priority: 50,
+          budget: { flex: true },
+          overflow: 'semantic',
+          overflowConfig: {
+            embedFn,
+            anchorTo: 'lastUserMessage',
+            similarityThreshold: 0.5,
+          },
+        },
+        [low, anchorUser],
+      ),
+    ]);
+
+    expect(out[0]!.content).toHaveLength(1);
+    expect(out[0]!.content[0]!.id).toBe(anchorUser.id);
+  });
+
+  it('semanticCompressAsOverflow receives similarityThreshold from overflowConfig (direct call)', async () => {
+    const embedFn = async (text: string) => {
+      const k = text.trim();
+      if (k === 'relevant') return [1, 0, 0];
+      if (k === 'noise') return [0, 1, 0];
+      return [0, 0, 1];
+    };
+    const low = createContentItem({
+      slot: 's',
+      role: 'user',
+      content: 'noise',
+      tokens: toTokenCount(10),
+      createdAt: 1000,
+    });
+    const anchorUser = createContentItem({
+      slot: 's',
+      role: 'user',
+      content: 'relevant',
+      tokens: toTokenCount(10),
+      createdAt: 2000,
+    });
+    const slotConfig: SlotConfig = {
+      priority: 50,
+      budget: { flex: true },
+      overflow: 'semantic',
+      overflowConfig: {
+        embedFn,
+        anchorTo: 'lastUserMessage',
+        similarityThreshold: 0.5,
+      },
+    };
+    const out = await semanticCompressAsOverflow([low, anchorUser], toTokenCount(100), {
+      slot: 's',
+      slotConfig,
+      tokenAccountant: { countItems: countSum },
+    });
+    expect(out).toHaveLength(1);
+    expect(out[0]!.id).toBe(anchorUser.id);
   });
 
   it('invokes custom overflow function with strategy label custom', async () => {

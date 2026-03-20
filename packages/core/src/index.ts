@@ -144,6 +144,9 @@ export type {
   MapReduceSummarizeDeps,
   ProgressiveSummarizeOverflowDeps,
 } from './compression/progressive-overflow-bridge.js';
+export { semanticCompressAsOverflow } from './compression/semantic-overflow-bridge.js';
+export type { EmbedFunction, SemanticScorableItem } from '@contextcraft/compression';
+export { cosineSimilarity, runSemanticCompress } from '@contextcraft/compression';
 export type {
   LosslessCompressibleItem,
   LosslessCompressorOptions,

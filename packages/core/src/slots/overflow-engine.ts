@@ -11,6 +11,7 @@ import type {
 
 import { losslessCompressAsOverflow } from '../compression/lossless-bridge.js';
 import { createProgressiveSummarizeOverflow } from '../compression/progressive-overflow-bridge.js';
+import { semanticCompressAsOverflow } from '../compression/semantic-overflow-bridge.js';
 import { InvalidConfigError } from '../errors.js';
 import { toTokenCount, type TokenCount } from '../types/branded.js';
 import type {
@@ -190,9 +191,7 @@ export class OverflowEngine {
       'sliding-window': slidingWindowStrategy,
       error: errorStrategy,
       summarize: builtinSummarize,
-      semantic: (_items, _budget, _ctx) => {
-        strategyNotImplemented('semantic');
-      },
+      semantic: semanticCompressAsOverflow,
       compress: losslessCompressAsOverflow,
     };
 

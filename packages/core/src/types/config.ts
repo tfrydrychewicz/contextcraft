@@ -105,6 +105,11 @@ export interface OverflowContext {
   readonly slotConfig?: SlotConfig;
   /** Optional logger from {@link OverflowEngineOptions.strategyLogger}. */
   readonly logger?: OverflowStrategyLogger;
+  /**
+   * When using `overflow: 'semantic'` with `overflowConfig.anchorTo: 'systemPrompt'`, set this
+   * on the context (e.g. from the orchestrator) so the anchor text is available.
+   */
+  readonly systemPrompt?: string;
   /** Additional context for the strategy */
   readonly [key: string]: unknown;
 }
