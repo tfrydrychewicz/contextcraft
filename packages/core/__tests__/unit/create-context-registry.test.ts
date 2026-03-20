@@ -119,14 +119,14 @@ describe('MODEL_REGISTRY', () => {
   });
 
   it('includes flagship rows for OpenAI, Anthropic, and Google', () => {
-    expect(MODEL_REGISTRY['gpt-5.4']?.maxTokens).toBe(1_000_000);
+    expect(MODEL_REGISTRY['gpt-5.4']?.maxTokens).toBe(1_050_000);
     expect(MODEL_REGISTRY['claude-sonnet-4-6-20260217']?.maxTokens).toBe(1_000_000);
     expect(MODEL_REGISTRY['gemini-3.1-pro-preview']?.maxTokens).toBe(1_048_576);
   });
 });
 
 describe('resolveModel', () => {
-  it('prefix-matches gpt-5.* to the GPT-5.4 family', () => {
-    expect(resolveModel('gpt-5.4-thinking')?.maxTokens).toBe(1_000_000);
+  it('prefix-matches gpt-5.4.* to the GPT-5.4 family', () => {
+    expect(resolveModel('gpt-5.4-thinking')?.maxTokens).toBe(1_050_000);
   });
 });
