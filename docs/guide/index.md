@@ -22,6 +22,12 @@ Use the guide for tutorials and getting started. For deep dives into the core ab
 - [Vue](/guides/vue) — `reactiveContext` with `computed` / `watch`, composable patterns, provide/inject.
 - [Angular](/guides/angular) — injectable service with Angular Signals, `toSignal`, or `async` pipe.
 
+## Observability
+
+- [Events & observability](/guides/events-and-observability) — subscribing to events, building metrics, structured logging.
+- [Debug inspector](/guides/debug-inspector) — `@slotmux/debug` browser UI with live slot visualization.
+- [OpenTelemetry](/guides/opentelemetry) — `@slotmux/plugin-otel` spans, metrics, and distributed tracing.
+
 ## Concepts
 
 - [Slots](/concepts/slots) — named context partitions with budgets, priorities, and roles.

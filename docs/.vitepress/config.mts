@@ -63,6 +63,14 @@ export default defineConfig({
         ],
       },
       {
+        text: 'Observability',
+        items: [
+          { text: 'Events & observability', link: '/guides/events-and-observability' },
+          { text: 'Debug inspector', link: '/guides/debug-inspector' },
+          { text: 'OpenTelemetry', link: '/guides/opentelemetry' },
+        ],
+      },
+      {
         text: 'Reference',
         items: [
           { text: 'Overview', link: '/reference/' },
