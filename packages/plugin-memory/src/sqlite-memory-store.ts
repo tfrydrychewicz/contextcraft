@@ -1,12 +1,55 @@
 /**
  * {@link MemoryStore} backed by better-sqlite3 (Node.js).
  *
+ * `better-sqlite3` is an **optional** dependency: if install/build fails (e.g. Windows + Node without
+ * prebuilds), {@link InMemoryMemoryStore} still works. This module loads the native addon lazily.
+ *
  * @packageDocumentation
  */
 
-import Database from 'better-sqlite3';
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
 
 import type { MemoryRecord, MemorySetInput, MemoryStore } from './memory-types.js';
+
+const require = createRequire(fileURLToPath(import.meta.url));
+
+/** Minimal surface used by this store (avoids fragile `import('better-sqlite3').default` typings). */
+type SqliteStatement = {
+  get(...params: unknown[]): unknown;
+  all(...params: unknown[]): unknown[];
+  run(...params: unknown[]): { changes: number };
+};
+
+type SqliteDatabase = {
+  pragma(cmd: string): unknown;
+  exec(sql: string): void;
+  close(): void;
+  prepare(sql: string): SqliteStatement;
+};
+
+type SqliteDatabaseConstructor = new (path: string) => SqliteDatabase;
+
+/** True when the optional native module loaded successfully (skip SQLite tests otherwise). */
+export function isBetterSqliteAvailable(): boolean {
+  try {
+    require('better-sqlite3');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function loadDatabaseConstructor(): SqliteDatabaseConstructor {
+  try {
+    return require('better-sqlite3') as SqliteDatabaseConstructor;
+  } catch {
+    throw new Error(
+      'better-sqlite3 is not available (optional native dependency failed to install or load). ' +
+        'Use InMemoryMemoryStore, or install on a platform with prebuilt binaries / build tools.',
+    );
+  }
+}
 
 function parseRow(row: {
   id: string;
@@ -34,11 +77,14 @@ function parseRow(row: {
 
 /**
  * Persistent memory using SQLite (`:memory:` or a file path).
+ *
+ * @throws If `better-sqlite3` could not be loaded.
  */
 export class SQLiteMemoryStore implements MemoryStore {
-  private readonly db: Database.Database;
+  private readonly db: SqliteDatabase;
 
   constructor(path: string) {
+    const Database = loadDatabaseConstructor();
     this.db = new Database(path);
     if (path !== ':memory:') {
       try {

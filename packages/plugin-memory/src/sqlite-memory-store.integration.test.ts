@@ -6,9 +6,9 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { SQLiteMemoryStore } from './sqlite-memory-store.js';
+import { isBetterSqliteAvailable, SQLiteMemoryStore } from './sqlite-memory-store.js';
 
-describe('SQLiteMemoryStore', () => {
+describe.skipIf(!isBetterSqliteAvailable())('SQLiteMemoryStore', () => {
   it('supports get, set, search, delete', async () => {
     const store = new SQLiteMemoryStore(':memory:');
     try {

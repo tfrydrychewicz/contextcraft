@@ -11,5 +11,5 @@ export type { MemoryPluginOptions } from './memory-plugin.js';
 export type { MemoryRecord, MemorySetInput, MemoryStore } from './memory-types.js';
 export { jaccardSimilarity, rankMemories } from './retrieval.js';
 export type { MemoryRetrievalStrategy, RankedMemory } from './retrieval.js';
-export { SQLiteMemoryStore } from './sqlite-memory-store.js';
+export { isBetterSqliteAvailable, SQLiteMemoryStore } from './sqlite-memory-store.js';
 export { VERSION } from './version.js';
