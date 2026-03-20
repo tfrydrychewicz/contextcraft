@@ -31,7 +31,7 @@ import { summarizeLatenciesMs } from '../benchmarks/latency-stats.js';
  * flakes without indicating a code regression.
  */
 function p99CeilingMs(designTargetMs: number): number {
-  if (!process.env.CI) {
+  if (!process.env['CI']) {
     return designTargetMs;
   }
   return Math.ceil(designTargetMs * 1.6);
