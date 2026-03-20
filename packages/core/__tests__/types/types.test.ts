@@ -118,6 +118,7 @@ describe('type level: ContextSnapshot immutability', () => {
       readonly Readonly<CompiledMessage>[]
     >();
     expectTypeOf<ContextSnapshot['immutable']>().toBeBoolean();
+    expectTypeOf<ContextSnapshot['model']>().toBeString();
     expectTypeOf<ContextSnapshot['meta']>().toEqualTypeOf<SnapshotMeta>();
     expectTypeOf<ContextSnapshot['meta']['slots']>().toEqualTypeOf<
       Readonly<Record<string, SlotMeta>>

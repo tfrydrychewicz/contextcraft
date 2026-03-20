@@ -226,6 +226,14 @@ export type {
   DeserializeContextSnapshotOptions,
 } from './snapshot/context-snapshot.js';
 export {
+  BUILTIN_SNAPSHOT_MIGRATIONS,
+  CURRENT_SNAPSHOT_SCHEMA_VERSION,
+  getSnapshotMigrationSteps,
+  migrateSnapshotDataToSerializedV1,
+  registerSnapshotMigration,
+} from './snapshot/snapshot-migrations.js';
+export type { SnapshotMigrationStep } from './snapshot/snapshot-migrations.js';
+export {
   compiledMessageToPlainText,
   formatCompiledMessagesAsPlainText,
 } from './snapshot/format-plain-text.js';

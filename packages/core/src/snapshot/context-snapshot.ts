@@ -1,6 +1,6 @@
 /**
  * {@link ContextSnapshot} class — immutability, SHA-256 serialize/deserialize (§12.1 / Phase 9.1),
- * {@link ContextSnapshot.format}, and {@link ContextSnapshot.diff} (§5.5).
+ * {@link ContextSnapshot.migrate} (Phase 9.2), {@link ContextSnapshot.format}, and {@link ContextSnapshot.diff} (§5.5).
  *
  * @packageDocumentation
  */
@@ -20,6 +20,8 @@ import { cloneCompiledMessage, compiledMessageJson } from './clone-compiled-mess
 import { deepFreeze } from './deep-freeze.js';
 import { formatCompiledMessagesAsPlainText } from './format-plain-text.js';
 import { sha256HexUtf8 } from './sha256-hex.js';
+import { migrateSnapshotDataToSerializedV1 } from './snapshot-migrations.js';
+import { sealSerializedSnapshotV1, snapshotV1PayloadString } from './snapshot-seal.js';
 
 export type CreateContextSnapshotParams = {
   /** When omitted, a new content id is generated. */
@@ -48,24 +50,6 @@ export type DeserializeContextSnapshotOptions = {
   readonly immutable?: boolean;
   readonly providerAdapters?: Partial<Record<ProviderId, ProviderAdapter>>;
 };
-
-function snapshotPayloadString(params: {
-  readonly version: SerializedSnapshot['version'];
-  readonly id: string;
-  readonly model: string;
-  readonly slots: SerializedSnapshot['slots'];
-  readonly messages: readonly CompiledMessage[];
-  readonly meta: SnapshotMeta;
-}): string {
-  return JSON.stringify({
-    version: params.version,
-    id: params.id,
-    model: params.model,
-    slots: params.slots,
-    messages: params.messages,
-    meta: params.meta,
-  });
-}
 
 function buildMessageListWithOptionalSharing(params: {
   readonly incoming: readonly CompiledMessage[];
@@ -139,6 +123,11 @@ export class ContextSnapshot {
     return this._messages as readonly Readonly<CompiledMessage>[];
   }
 
+  /** Model id used when this snapshot was compiled (matches {@link SerializedSnapshot.model}). */
+  get model(): string {
+    return this._model;
+  }
+
   /**
    * Builds a snapshot from orchestrator output.
    */
@@ -208,8 +197,7 @@ export class ContextSnapshot {
     const messages = d.messages.map((m) => cloneCompiledMessage(m as CompiledMessage));
     const meta = { ...d.meta } as SnapshotMeta;
     const slotsCopy = { ...d.slots };
-    const payload = snapshotPayloadString({
-      version: d.version,
+    const payload = snapshotV1PayloadString({
       id: d.id,
       model: d.model,
       slots: slotsCopy,
@@ -240,6 +228,20 @@ export class ContextSnapshot {
     return snap;
   }
 
+  /**
+   * Upgrades persisted snapshot JSON from a registered legacy `version` to {@link SerializedSnapshot}
+   * `1.0`, then restores a {@link ContextSnapshot} (same verification as {@link ContextSnapshot.deserialize}).
+   *
+   * @throws {@link SnapshotCorruptedError} When no migration exists, the chain is invalid, or checksum fails.
+   */
+  static migrate(
+    oldData: unknown,
+    options?: DeserializeContextSnapshotOptions,
+  ): ContextSnapshot {
+    const wire = migrateSnapshotDataToSerializedV1(oldData);
+    return ContextSnapshot.deserialize(wire, options);
+  }
+
   format(target: SnapshotFormatTarget): unknown {
     const readonlyMsgs = this._messages as readonly CompiledMessage[];
     if (target === 'text') {
@@ -259,7 +261,7 @@ export class ContextSnapshot {
   serialize(): SerializedSnapshot {
     const slotsCopy = { ...this.meta.slots };
     const messagesOut = this._messages.map(cloneCompiledMessage);
-    const payload = snapshotPayloadString({
+    return sealSerializedSnapshotV1({
       version: '1.0',
       id: this.id,
       model: this._model,
@@ -267,16 +269,6 @@ export class ContextSnapshot {
       messages: messagesOut,
       meta: this.meta,
     });
-    const checksum = sha256HexUtf8(payload);
-    return {
-      version: '1.0',
-      id: this.id,
-      model: this._model,
-      slots: slotsCopy,
-      messages: messagesOut,
-      meta: this.meta,
-      checksum,
-    };
   }
 
   diff(other: ContextSnapshot): SnapshotDiff {
