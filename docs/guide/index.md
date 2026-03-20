@@ -37,6 +37,13 @@ Use the guide for tutorials and getting started. For deep dives into the core ab
 - [Multimodal content](/guides/multimodal-content) — images, token costs, provider formatting.
 - [Pinning & ephemeral](/guides/pinning-and-ephemeral) — overflow-resistant and auto-removed content.
 
+## Production
+
+- [Error handling](/guides/error-handling) — error hierarchy, fallback chain, recovery patterns.
+- [Performance tuning](/guides/performance-tuning) — lazy tokens, caching, structural sharing.
+- [Security & redaction](/guides/security-and-redaction) — PII redaction, prompt injection, checksums.
+- [Presets & defaults](/guides/presets-and-defaults) — chat, rag, agent layouts and customization.
+
 ## Concepts
 
 - [Slots](/concepts/slots) — named context partitions with budgets, priorities, and roles.

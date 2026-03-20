@@ -82,6 +82,15 @@ export default defineConfig({
         ],
       },
       {
+        text: 'Production',
+        items: [
+          { text: 'Error handling', link: '/guides/error-handling' },
+          { text: 'Performance tuning', link: '/guides/performance-tuning' },
+          { text: 'Security & redaction', link: '/guides/security-and-redaction' },
+          { text: 'Presets & defaults', link: '/guides/presets-and-defaults' },
+        ],
+      },
+      {
         text: 'Reference',
         items: [
           { text: 'Overview', link: '/reference/' },
