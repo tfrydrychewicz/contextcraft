@@ -4,9 +4,9 @@ import {
   TOKEN_OVERHEAD,
   getTokenOverhead,
   ollamaOverhead,
-} from './token-overhead.js';
+} from '../../src/index.js';
 
-describe('TOKEN_OVERHEAD registry (§2.4)', () => {
+describe('TOKEN_OVERHEAD registry (§2.4 / §9.4)', () => {
   it('matches Phase 2.4 OpenAI constants', () => {
     expect(TOKEN_OVERHEAD.openai).toEqual({
       perMessage: 4,

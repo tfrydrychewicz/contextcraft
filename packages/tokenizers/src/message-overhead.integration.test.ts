@@ -3,11 +3,11 @@
  * using real BPE backends (tiktoken, Anthropic) on {@link compiledMessageToEstimationString}.
  */
 
+import { TOKEN_OVERHEAD } from 'contextcraft';
 import { describe, expect, it, afterEach } from 'vitest';
 
 import { compiledMessageToEstimationString } from './compiled-message-string.js';
 import { countCompiledMessages } from './message-count.js';
-import { TOKEN_OVERHEAD } from './token-overhead.js';
 
 import {
   Cl100kTokenizer,

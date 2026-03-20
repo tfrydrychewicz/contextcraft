@@ -1,3 +1,4 @@
+import { TOKEN_OVERHEAD } from 'contextcraft';
 import { describe, expect, it } from 'vitest';
 
 import { compiledMessageToEstimationString } from './compiled-message-string.js';
@@ -5,7 +6,6 @@ import {
   compiledMessageTokenUnits,
   countCompiledMessages,
 } from './message-count.js';
-import { TOKEN_OVERHEAD } from './token-overhead.js';
 
 /** Deterministic “tokenizer”: one token per UTF-16 code unit. */
 function countChars(s: string): number {

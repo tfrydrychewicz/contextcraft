@@ -169,6 +169,17 @@ export type {
   ModelCapabilities,
   ProviderAdapter,
 } from './types/provider.js';
+export {
+  BaseProviderAdapter,
+  structuralOverheadForCompiledMessages,
+} from './providers/base-provider-adapter.js';
+export {
+  defaultMaxOutputTokens,
+  defaultModelCapabilities,
+  defaultTokenizerNameForProvider,
+  modelRegistryEntryToCapabilities,
+  resolveModelCapabilitiesForAdapter,
+} from './providers/resolve-model-capabilities.js';
 
 // Configuration types (§6.6)
 export type {
@@ -227,6 +238,15 @@ export {
   resolveModel,
 } from './config/model-registry.js';
 export type { ModelRegistryEntry } from './config/model-registry.js';
+export {
+  TOKEN_OVERHEAD,
+  getTokenOverhead,
+  ollamaOverhead,
+} from './config/token-overhead.js';
+export type {
+  ProviderTokenOverhead,
+  TokenOverheadProviderId,
+} from './config/token-overhead.js';
 export {
   assertTokenizerPeersAvailable,
   TOKENIZER_PEER_PACKAGES,

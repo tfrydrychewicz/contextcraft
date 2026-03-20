@@ -1,7 +1,7 @@
 /**
- * Provider-specific token overhead for compiled message lists (§9.4 / Phase 2.4).
+ * Provider-specific token overhead for compiled message lists (§9.4 / Phase 2.4 / Phase 6.1).
  *
- * Applied on top of BPE (or estimator) length of {@link compiledMessageToEstimationString}.
+ * Applied on top of BPE (or estimator) length of estimation strings in @contextcraft/tokenizers.
  *
  * @packageDocumentation
  */

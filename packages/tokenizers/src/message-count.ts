@@ -4,10 +4,13 @@
  * @packageDocumentation
  */
 
-import type { CompiledMessage } from 'contextcraft';
+import {
+  type CompiledMessage,
+  TOKEN_OVERHEAD,
+  type ProviderTokenOverhead,
+} from 'contextcraft';
 
 import { compiledMessageToEstimationString } from './compiled-message-string.js';
-import { TOKEN_OVERHEAD, type ProviderTokenOverhead } from './token-overhead.js';
 
 const OPENAI_DEFAULT = TOKEN_OVERHEAD.openai;
 

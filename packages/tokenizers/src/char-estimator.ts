@@ -6,6 +6,7 @@
 
 import {
   toTokenCount,
+  TOKEN_OVERHEAD,
   type CompiledMessage,
   type TokenCount,
 } from 'contextcraft';
@@ -14,7 +15,6 @@ import {
   compiledMessageTokenUnits,
   countCompiledMessages,
 } from './message-count.js';
-import { TOKEN_OVERHEAD } from './token-overhead.js';
 import type { Tokenizer } from './tokenizer.js';
 
 /** Default UTF-16 code units per estimated token (§18.2). */

@@ -11,6 +11,7 @@ import {
   type CompiledMessage,
   type TokenCount,
 } from 'contextcraft';
+import { TOKEN_OVERHEAD } from 'contextcraft';
 import type { Tiktoken, TiktokenEncoding } from 'tiktoken';
 
 import { tryRequireTiktoken } from './load-peer.js';
@@ -18,7 +19,6 @@ import {
   compiledMessageTokenUnits,
   countCompiledMessages,
 } from './message-count.js';
-import { TOKEN_OVERHEAD } from './token-overhead.js';
 import type { Tokenizer } from './tokenizer.js';
 
 const OVERHEAD = TOKEN_OVERHEAD.openai;
