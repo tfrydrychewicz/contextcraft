@@ -7,6 +7,15 @@ Use the guide for tutorials and getting started. For deep dives into the core ab
 - [Getting started](/guide/getting-started) — install, minimal example, and links to packages.
 - [Terminal chatbot tutorial](/guide/build-a-chatbot) — fully working interactive chat with context metadata, token budgets, and OpenAI integration.
 
+## Guides
+
+- [End-to-end chatbot](/guides/chatbot) — multi-turn management, overflow, streaming, checkpoints.
+- [RAG application](/guides/rag-application) — document slots, deduplication, semantic overflow, citations.
+- [Agent with tools](/guides/agent-with-tools) — tool definitions, results, scratchpad, agent loops.
+- [Multi-model & providers](/guides/multi-model) — provider formatters, model registry, switching models.
+- [Custom plugin](/guides/custom-plugin) — build a plugin with hooks for the build pipeline.
+- [Migration from LangChain](/guides/migration-from-langchain) — mapping LangChain memory patterns to slotmux.
+
 ## Concepts
 
 - [Slots](/concepts/slots) — named context partitions with budgets, priorities, and roles.

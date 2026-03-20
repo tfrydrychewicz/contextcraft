@@ -39,6 +39,17 @@ export default defineConfig({
         ],
       },
       {
+        text: 'Guides',
+        items: [
+          { text: 'End-to-end chatbot', link: '/guides/chatbot' },
+          { text: 'RAG application', link: '/guides/rag-application' },
+          { text: 'Agent with tools', link: '/guides/agent-with-tools' },
+          { text: 'Multi-model & providers', link: '/guides/multi-model' },
+          { text: 'Custom plugin', link: '/guides/custom-plugin' },
+          { text: 'Migration from LangChain', link: '/guides/migration-from-langchain' },
+        ],
+      },
+      {
         text: 'Reference',
         items: [
           { text: 'Overview', link: '/reference/' },
