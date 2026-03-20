@@ -154,6 +154,23 @@ describe('ContextOrchestrator Phase 5.4 (pipeline & plugins)', () => {
     );
   });
 
+  it('forwards redacted pipeline events to plugin onEvent (§10.5)', async () => {
+    const onEventPlugin = vi.fn();
+    const plugin: ContextPlugin = {
+      name: 'pipeline-events',
+      version: '1.0.0',
+      onEvent: onEventPlugin,
+    };
+    const cfg = chatConfig({
+      plugins: [plugin] as ParsedContextConfig['plugins'],
+    });
+    const ctx = Context.fromParsedConfig(cfg);
+    ctx.user('x');
+    await ContextOrchestrator.build({ config: cfg, context: ctx });
+    expect(onEventPlugin.mock.calls.some((c) => c[0]?.type === 'build:start')).toBe(true);
+    expect(onEventPlugin.mock.calls.some((c) => c[0]?.type === 'build:complete')).toBe(true);
+  });
+
   it('Step 13: records buildTimeMs in snapshot meta', async () => {
     const cfg = chatConfig();
     const ctx = Context.fromParsedConfig(cfg);

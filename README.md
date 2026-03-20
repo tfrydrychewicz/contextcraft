@@ -64,6 +64,7 @@ const { messages, meta } = ctx.build();
 | `@contextcraft/plugin-rag` | RAG integration |
 | `@contextcraft/plugin-memory` | Long-term memory |
 | `@contextcraft/plugin-tools` | Tool/function calls |
+| `@contextcraft/plugin-otel` | OpenTelemetry spans & metrics (optional) |
 
 ### Debug inspector UI
 

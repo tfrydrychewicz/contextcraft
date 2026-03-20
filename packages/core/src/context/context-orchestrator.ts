@@ -361,12 +361,6 @@ export class ContextOrchestrator {
       : noopLogger;
 
     const eventRedactor = createContextEventRedactor(config);
-    const emitToConsumer = (ev: ContextEvent): void => {
-      const payload = eventRedactor !== undefined ? eventRedactor(ev) : ev;
-      context.dispatchInspectorEvent(payload);
-      const fn = config.onEvent as ((e: ContextEvent) => void) | undefined;
-      fn?.(payload);
-    };
 
     const baseSlots = config.slots as Record<string, SlotConfig>;
     if (config.slots === undefined || Object.keys(config.slots).length === 0) {
@@ -379,11 +373,31 @@ export class ContextOrchestrator {
     const plugins = pluginManager?.getPlugins() ?? resolvePlugins(config);
     const countTokens = resolveCountTokens(config);
 
+    const deliverPipelineEvent = (ev: ContextEvent): void => {
+      const payload = eventRedactor !== undefined ? eventRedactor(ev) : ev;
+      context.dispatchInspectorEvent(payload);
+      const fn = config.onEvent as ((e: ContextEvent) => void) | undefined;
+      fn?.(payload);
+      if (pluginManager !== undefined) {
+        void pluginManager.runHook('onEvent', payload);
+      } else {
+        for (const p of plugins) {
+          if (p.onEvent !== undefined) {
+            try {
+              p.onEvent(payload);
+            } catch {
+              /* isolate plugin onEvent failures (§11.1) */
+            }
+          }
+        }
+      }
+    };
+
     const maxTokens = config.maxTokens ?? DEFAULT_MAX_TOKENS;
     const reserve = config.reserveForResponse ?? 0;
     const totalBudget = Math.max(0, maxTokens - reserve);
 
-    emitToConsumer({ type: 'build:start', totalBudget });
+    deliverPipelineEvent({ type: 'build:start', totalBudget });
     pipelineLog.debug(`build: pipeline started (totalBudget=${totalBudget})`);
 
     const slots =
@@ -397,7 +411,7 @@ export class ContextOrchestrator {
     const evictionsMeta: EvictionEvent[] = [];
 
     const forward = (e: ContextEvent): void => {
-      emitToConsumer(e);
+      deliverPipelineEvent(e);
       if (e.type === 'warning') {
         pipelineLog.warn(e.warning.message, e.warning);
       }
@@ -537,7 +551,7 @@ export class ContextOrchestrator {
 
     context.clearEphemeral();
 
-    emitToConsumer({ type: 'build:complete', snapshot });
+    deliverPipelineEvent({ type: 'build:complete', snapshot });
     pipelineLog.debug(
       `build: complete (messages=${snapshot.messages.length}, buildTimeMs=${snapshot.meta.buildTimeMs})`,
     );
