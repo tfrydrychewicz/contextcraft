@@ -1,4 +1,4 @@
-import { TokenizerNotFoundError, toTokenCount } from 'contextcraft';
+import { TokenizerNotFoundError, toTokenCount } from 'ctxforge';
 import { describe, expect, it, afterEach } from 'vitest';
 
 import {

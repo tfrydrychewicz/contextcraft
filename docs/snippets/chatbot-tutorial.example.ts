@@ -3,8 +3,8 @@
  * Validates that createContext → Context.fromParsedConfig → build → formatOpenAIMessages
  * compiles against the published types. Run via `pnpm test:docs` (after `pnpm build`).
  */
-import { formatOpenAIMessages } from '@contextcraft/providers';
-import { createContext, Context } from 'contextcraft';
+import { formatOpenAIMessages } from '@ctxforge/providers';
+import { createContext, Context } from 'ctxforge';
 
 export async function tutorialChatbotTypecheck(): Promise<void> {
   const { config } = createContext({
@@ -17,7 +17,7 @@ export async function tutorialChatbotTypecheck(): Promise<void> {
   const ctx = Context.fromParsedConfig(config);
 
   ctx.system('You are a helpful assistant. Answer concisely.');
-  ctx.user('What is contextcraft?');
+  ctx.user('What is ctxforge?');
 
   const { snapshot } = await ctx.build();
 

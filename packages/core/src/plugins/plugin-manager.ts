@@ -71,7 +71,7 @@ export type PluginManagerOptions = {
 
   /**
    * Scoped logger factory; defaults to no-op loggers.
-   * Use for `[contextcraft:pluginName]` style output (see §13.3 logging).
+   * Use for `[ctxforge:pluginName]` style output (see §13.3 logging).
    */
   readonly createLogger?: (pluginName: string) => PluginLogger;
 

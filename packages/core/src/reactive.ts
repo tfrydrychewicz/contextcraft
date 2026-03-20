@@ -1,5 +1,5 @@
 /**
- * Subpath `contextcraft/reactive` — signals and {@link reactiveContext} (§14.2).
+ * Subpath `ctxforge/reactive` — signals and {@link reactiveContext} (§14.2).
  *
  * @packageDocumentation
  */

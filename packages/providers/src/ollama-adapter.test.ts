@@ -1,8 +1,8 @@
-import type { CompiledMessage } from 'contextcraft';
+import type { CompiledMessage } from 'ctxforge';
 import {
   clearRegisteredModels,
   registerModel,
-} from 'contextcraft';
+} from 'ctxforge';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {

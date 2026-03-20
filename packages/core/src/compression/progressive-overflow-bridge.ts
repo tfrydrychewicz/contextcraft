@@ -1,6 +1,6 @@
 /**
  * Wires built-in summarization (§8.1 — progressive zones, map-reduce) to {@link OverflowStrategyFn}.
- * Implementation lives in `@contextcraft/compression`.
+ * Implementation lives in `@ctxforge/compression`.
  *
  * @packageDocumentation
  */
@@ -11,7 +11,7 @@ import {
   type MapReduceSummarizeDeps,
   type ProgressiveItem,
   type ProgressiveSummarizeTextFn,
-} from '@contextcraft/compression';
+} from '@ctxforge/compression';
 
 import { InvalidConfigError } from '../errors.js';
 import { createContentId, toTokenCount } from '../types/branded.js';
@@ -124,4 +124,4 @@ export function createProgressiveSummarizeOverflow(
   };
 }
 
-export type { MapReduceSummarizeDeps } from '@contextcraft/compression';
+export type { MapReduceSummarizeDeps } from '@ctxforge/compression';

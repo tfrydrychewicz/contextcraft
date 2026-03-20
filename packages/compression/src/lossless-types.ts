@@ -1,6 +1,6 @@
 /**
  * Minimal shapes for lossless compression — structurally compatible with
- * `contextcraft` `ContentItem` multimodal content (keep fields in sync when changing).
+ * `ctxforge` `ContentItem` multimodal content (keep fields in sync when changing).
  *
  * @packageDocumentation
  */

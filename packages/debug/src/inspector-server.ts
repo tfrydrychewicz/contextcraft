@@ -6,7 +6,7 @@
 
 import * as http from 'node:http';
 
-import type { Context, ContextEvent } from 'contextcraft';
+import type { Context, ContextEvent } from 'ctxforge';
 import { WebSocket, WebSocketServer } from 'ws';
 
 import { InspectorDisabledError } from './errors.js';
@@ -126,7 +126,7 @@ export function attachInspector(ctx: Context, options?: AttachInspectorOptions):
     if (path === '/' || path === '/health') {
       sendJson(res, 200, {
         ok: true,
-        package: '@contextcraft/debug',
+        package: '@ctxforge/debug',
         endpoints: ['/snapshot', '/slots', '/events', '/inspector/', 'WebSocket same port'],
       });
       return;
@@ -168,7 +168,7 @@ export function attachInspector(ctx: Context, options?: AttachInspectorOptions):
       lastSnapshotSerialized = (serialized as { snapshot: unknown }).snapshot;
     }
     const wsPayload = JSON.stringify({
-      type: 'contextcraft:event',
+      type: 'ctxforge:event',
       event: serialized,
     });
     for (const client of wss.clients) {

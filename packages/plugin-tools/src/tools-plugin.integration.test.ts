@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import { Context, createContext, toTokenCount } from 'contextcraft';
+import { Context, createContext, toTokenCount } from 'ctxforge';
 import { describe, expect, it } from 'vitest';
 
 import {

@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 
-import { toTokenCount } from 'contextcraft';
+import { toTokenCount } from 'ctxforge';
 import { describe, expect, it } from 'vitest';
 
 

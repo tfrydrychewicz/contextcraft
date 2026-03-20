@@ -3,7 +3,7 @@
  * using real BPE backends (tiktoken, Anthropic) on {@link compiledMessageToEstimationString}.
  */
 
-import { TOKEN_OVERHEAD } from 'contextcraft';
+import { TOKEN_OVERHEAD } from 'ctxforge';
 import { describe, expect, it, afterEach } from 'vitest';
 
 import { compiledMessageToEstimationString } from './compiled-message-string.js';

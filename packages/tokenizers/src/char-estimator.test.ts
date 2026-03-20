@@ -1,4 +1,4 @@
-import { toTokenCount } from 'contextcraft';
+import { toTokenCount } from 'ctxforge';
 import { describe, expect, it } from 'vitest';
 
 import {

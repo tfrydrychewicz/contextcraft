@@ -1,5 +1,5 @@
 /**
- * @contextcraft/providers — LLM provider adapters
+ * @ctxforge/providers — LLM provider adapters
  *
  * @packageDocumentation
  */

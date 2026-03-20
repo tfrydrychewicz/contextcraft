@@ -1,5 +1,5 @@
 /**
- * Test utility factories for contextcraft tests.
+ * Test utility factories for ctxforge tests.
  *
  * These helpers produce objects matching the expected shapes for slot resolution,
  * overflow engine, and integration tests.

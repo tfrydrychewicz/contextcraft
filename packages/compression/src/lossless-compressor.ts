@@ -2,7 +2,7 @@
  * Lossless-ish text compression (§8.3) — filler removal, whitespace,
  * abbreviations, pleasantries, and near-duplicate consecutive messages.
  *
- * Lives in `@contextcraft/compression` per design (packages/compression).
+ * Lives in `@ctxforge/compression` per design (packages/compression).
  *
  * @packageDocumentation
  */
@@ -273,7 +273,7 @@ export type LosslessCompressorOptions = {
 
 /**
  * Applies §8.3 transforms to chat text and message lists without LLM calls.
- * Works with any item that extends `LosslessCompressibleItem` (e.g. contextcraft `ContentItem`).
+ * Works with any item that extends `LosslessCompressibleItem` (e.g. ctxforge `ContentItem`).
  */
 export class LosslessCompressor {
   private readonly fixedPack: LosslessLanguagePack | undefined;

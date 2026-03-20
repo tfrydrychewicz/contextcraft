@@ -7,5 +7,5 @@ export default defineConfig({
   clean: true,
   sourcemap: true,
   target: 'es2022',
-  external: ['contextcraft', '@opentelemetry/api'],
+  external: ['ctxforge', '@opentelemetry/api'],
 });

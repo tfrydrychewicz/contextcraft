@@ -1,11 +1,11 @@
-# @contextcraft/react
+# @ctxforge/react
 
-React 18+ hooks for [`contextcraft/reactive`](https://github.com/tfrydrychewicz/contextcraft) using [`useSyncExternalStore`](https://react.dev/reference/react/useSyncExternalStore) so updates work with **Concurrent React** and **Strict Mode** (subscribe in `useEffect` alone is easy to get wrong).
+React 18+ hooks for [`ctxforge/reactive`](https://github.com/tfrydrychewicz/ctxforge) using [`useSyncExternalStore`](https://react.dev/reference/react/useSyncExternalStore) so updates work with **Concurrent React** and **Strict Mode** (subscribe in `useEffect` alone is easy to get wrong).
 
 ## Install
 
 ```bash
-pnpm add @contextcraft/react contextcraft react
+pnpm add @ctxforge/react ctxforge react
 ```
 
 ## Usage
@@ -14,12 +14,12 @@ Keep a **stable** `ReactiveContext` instance (e.g. `useRef` + lazy init, or a st
 
 ```tsx
 import { useMemo, useRef } from 'react';
-import { reactiveContext } from 'contextcraft/reactive';
+import { reactiveContext } from 'ctxforge/reactive';
 import {
   useReactiveContextMeta,
   useReactiveContextUtilization,
   useReactiveContextBuildError,
-} from '@contextcraft/react';
+} from '@ctxforge/react';
 
 function Panel() {
   const ctxRef = useRef<ReturnType<typeof reactiveContext> | null>(null);
@@ -54,4 +54,4 @@ function Panel() {
 ## Requirements
 
 - **React** `^18 || ^19`
-- **contextcraft** (same major as this package in monorepo releases)
+- **ctxforge** (same major as this package in monorepo releases)

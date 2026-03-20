@@ -7,7 +7,7 @@
 import type {
   CompiledContentPart,
   CompiledMessage,
-} from 'contextcraft';
+} from 'ctxforge';
 
 function compiledPartsToString(parts: CompiledContentPart[]): string {
   let s = '';

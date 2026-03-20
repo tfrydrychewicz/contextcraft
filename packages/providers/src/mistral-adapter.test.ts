@@ -1,4 +1,4 @@
-import type { CompiledMessage } from 'contextcraft';
+import type { CompiledMessage } from 'ctxforge';
 import { describe, expect, it } from 'vitest';
 
 import {

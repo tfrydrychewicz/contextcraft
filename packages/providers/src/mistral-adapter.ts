@@ -11,13 +11,13 @@ import {
   Cl100kTokenizer,
   FallbackTokenizer,
   O200kTokenizer,
-} from '@contextcraft/tokenizers';
+} from '@ctxforge/tokenizers';
 import {
   BaseProviderAdapter,
   type CompiledMessage,
   type ModelId,
   type Tokenizer,
-} from 'contextcraft';
+} from 'ctxforge';
 
 import {
   formatOpenAIMessages,

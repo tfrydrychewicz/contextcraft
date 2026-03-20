@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { toolsPlugin, VERSION } from './index.js';
 
-describe('@contextcraft/plugin-tools', () => {
+describe('@ctxforge/plugin-tools', () => {
   it('exports version', () => {
     expect(VERSION).toBe('0.0.1');
   });

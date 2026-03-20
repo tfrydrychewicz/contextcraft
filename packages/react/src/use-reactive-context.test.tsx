@@ -1,12 +1,12 @@
 /**
- * @contextcraft/react — hook smoke tests (jsdom).
+ * @ctxforge/react — hook smoke tests (jsdom).
  *
  * @packageDocumentation
  */
 
 import { renderHook, waitFor, act } from '@testing-library/react';
-import { SlotOverflow } from 'contextcraft';
-import { reactiveContext, type ReactiveContextInit } from 'contextcraft/reactive';
+import { SlotOverflow } from 'ctxforge';
+import { reactiveContext, type ReactiveContextInit } from 'ctxforge/reactive';
 import { describe, expect, it, vi } from 'vitest';
 
 import {
@@ -53,7 +53,7 @@ function testInit(
   };
 }
 
-describe('@contextcraft/react hooks', () => {
+describe('@ctxforge/react hooks', () => {
   it('useReactiveContextMeta tracks initial and debounced build', async () => {
     const ctx = reactiveContext(testInit());
     const { result } = renderHook(() => useReactiveContextMeta(ctx));

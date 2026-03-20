@@ -1,5 +1,5 @@
 /**
- * Re-exports `@contextcraft/compression` and wires lossless compression to core types
+ * Re-exports `@ctxforge/compression` and wires lossless compression to core types
  * (`OverflowStrategyFn`, `CompressionStrategy`). Implementation lives in `packages/compression/`.
  *
  * @packageDocumentation
@@ -14,7 +14,7 @@ export type {
   LosslessMultimodalImageBase64,
   LosslessMultimodalImageUrl,
   LosslessMultimodalText,
-} from '@contextcraft/compression';
+} from '@ctxforge/compression';
 export {
   LOSSLESS_LANGUAGE_PACK_DE,
   LOSSLESS_LANGUAGE_PACK_EN,
@@ -24,12 +24,12 @@ export {
   registerLosslessLanguagePack,
   resolveLosslessLanguagePack,
   unregisterLosslessLanguagePack,
-} from '@contextcraft/compression';
+} from '@ctxforge/compression';
 
 import {
   LosslessCompressor,
   type LosslessCompressorOptions,
-} from '@contextcraft/compression';
+} from '@ctxforge/compression';
 
 import type { CompressionStrategy } from '../types/compression.js';
 import type { OverflowStrategyFn } from '../types/config.js';

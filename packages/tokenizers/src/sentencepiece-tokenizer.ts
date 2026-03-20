@@ -13,8 +13,8 @@ import {
   toTokenCount,
   type CompiledMessage,
   type TokenCount,
-} from 'contextcraft';
-import { TOKEN_OVERHEAD } from 'contextcraft';
+} from 'ctxforge';
+import { TOKEN_OVERHEAD } from 'ctxforge';
 
 import { tryRequireGptTokenizerEncoding } from './load-peer.js';
 import {

@@ -1,5 +1,5 @@
 /**
- * @contextcraft/plugin-tools — Tool / function-call slot helpers.
+ * @ctxforge/plugin-tools — Tool / function-call slot helpers.
  *
  * @packageDocumentation
  */

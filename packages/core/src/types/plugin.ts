@@ -1,5 +1,5 @@
 /**
- * Plugin types for contextcraft extensibility.
+ * Plugin types for ctxforge extensibility.
  *
  * @packageDocumentation
  */

@@ -1,6 +1,6 @@
 /**
  * Wires semantic (embedding) selection (§8.2) to {@link OverflowStrategyFn}.
- * Implementation lives in `@contextcraft/compression`.
+ * Implementation lives in `@ctxforge/compression`.
  *
  * @packageDocumentation
  */
@@ -9,7 +9,7 @@ import {
   getPlainTextForLossless,
   runSemanticCompress,
   type SemanticScorableItem,
-} from '@contextcraft/compression';
+} from '@ctxforge/compression';
 
 import { InvalidConfigError } from '../errors.js';
 import type { OverflowContext, OverflowStrategyFn } from '../types/config.js';

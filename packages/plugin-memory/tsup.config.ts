@@ -7,5 +7,5 @@ export default defineConfig({
   clean: true,
   sourcemap: true,
   target: 'es2022',
-  external: ['contextcraft', 'better-sqlite3'],
+  external: ['ctxforge', 'better-sqlite3'],
 });

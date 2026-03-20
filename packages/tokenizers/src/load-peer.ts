@@ -6,7 +6,7 @@
 
 import { createRequire } from 'node:module';
 
-import { TokenizerNotFoundError } from 'contextcraft';
+import { TokenizerNotFoundError } from 'ctxforge';
 
 const require = createRequire(import.meta.url);
 

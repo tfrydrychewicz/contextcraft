@@ -7,14 +7,14 @@
 import {
   ClaudeTokenizer,
   FallbackTokenizer,
-} from '@contextcraft/tokenizers';
+} from '@ctxforge/tokenizers';
 import {
   BaseProviderAdapter,
   type CompiledContentPart,
   type CompiledMessage,
   type ModelId,
   type Tokenizer,
-} from 'contextcraft';
+} from 'ctxforge';
 
 /** Anthropic text block. */
 export type AnthropicTextBlock = { type: 'text'; text: string };

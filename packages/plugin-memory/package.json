@@ -1,5 +1,5 @@
 {
-  "name": "@contextcraft/plugin-memory",
+  "name": "@ctxforge/plugin-memory",
   "version": "0.0.1",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -31,7 +31,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "contextcraft": "workspace:*"
+    "ctxforge": "workspace:*"
   },
   "optionalDependencies": {
     "better-sqlite3": "^12.8.0"

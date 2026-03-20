@@ -1,5 +1,5 @@
 {
-  "name": "@contextcraft/tokenizers",
+  "name": "@ctxforge/tokenizers",
   "version": "0.0.1",
   "type": "module",
   "main": "./dist/index.js",
@@ -25,7 +25,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "contextcraft": "workspace:*"
+    "ctxforge": "workspace:*"
   },
   "peerDependencies": {
     "@anthropic-ai/tokenizer": "*",

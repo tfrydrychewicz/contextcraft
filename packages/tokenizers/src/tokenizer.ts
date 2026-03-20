@@ -4,4 +4,4 @@
  * @packageDocumentation
  */
 
-export type { Tokenizer } from 'contextcraft';
+export type { Tokenizer } from 'ctxforge';

@@ -1,5 +1,5 @@
 /**
- * @contextcraft/compression — compression strategies (see `contextcraft-design.md` package layout).
+ * @ctxforge/compression — compression strategies (see `ctxforge-design.md` package layout).
  *
  * @packageDocumentation
  */

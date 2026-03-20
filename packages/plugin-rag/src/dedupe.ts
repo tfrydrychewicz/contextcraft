@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { ContentItem, MultimodalContent } from 'contextcraft';
+import type { ContentItem, MultimodalContent } from 'ctxforge';
 
 /** Extract searchable text from a content item. */
 export function ragItemPlainText(item: ContentItem): string {

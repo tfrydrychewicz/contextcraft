@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { ReactiveContext } from 'contextcraft/reactive';
+import type { ReactiveContext } from 'ctxforge/reactive';
 import { useCallback, useSyncExternalStore } from 'react';
 
 /**

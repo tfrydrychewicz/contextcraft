@@ -1,5 +1,5 @@
 {
-  "name": "@contextcraft/plugin-rag",
+  "name": "@ctxforge/plugin-rag",
   "version": "0.0.1",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -29,6 +29,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "contextcraft": "workspace:*"
+    "ctxforge": "workspace:*"
   }
 }

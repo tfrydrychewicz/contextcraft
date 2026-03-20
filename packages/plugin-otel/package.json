@@ -1,7 +1,7 @@
 {
-  "name": "@contextcraft/plugin-otel",
+  "name": "@ctxforge/plugin-otel",
   "version": "0.0.1",
-  "description": "OpenTelemetry spans and metrics for contextcraft builds (§13.4)",
+  "description": "OpenTelemetry spans and metrics for ctxforge builds (§13.4)",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -33,7 +33,7 @@
     "@opentelemetry/api": "^1.9.0"
   },
   "dependencies": {
-    "contextcraft": "workspace:*"
+    "ctxforge": "workspace:*"
   },
   "devDependencies": {
     "@opentelemetry/api": "^1.9.0",

@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 
 import { VERSION, otelPlugin } from './index.js';
 
-describe('@contextcraft/plugin-otel', () => {
+describe('@ctxforge/plugin-otel', () => {
   it('exports VERSION', () => {
     expect(VERSION).toMatch(/^\d+\.\d+\.\d+$/);
   });

@@ -10,7 +10,7 @@ import type { LosslessCompressibleItem } from './lossless-types.js';
 export type ProgressiveLayer = 1 | 2 | 3;
 
 /**
- * Message shape for progressive summarize — structurally compatible with `contextcraft` `ContentItem`.
+ * Message shape for progressive summarize — structurally compatible with `ctxforge` `ContentItem`.
  */
 export type ProgressiveItem = LosslessCompressibleItem & {
   readonly id: string;

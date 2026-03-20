@@ -8,14 +8,14 @@ import {
   Cl100kTokenizer,
   FallbackTokenizer,
   O200kTokenizer,
-} from '@contextcraft/tokenizers';
+} from '@ctxforge/tokenizers';
 import {
   BaseProviderAdapter,
   type CompiledContentPart,
   type CompiledMessage,
   type ModelId,
   type Tokenizer,
-} from 'contextcraft';
+} from 'ctxforge';
 
 /** OpenAI `content` part — text or image URL (incl. data URLs for vision). */
 export type OpenAIChatContentPart =

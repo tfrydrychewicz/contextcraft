@@ -10,8 +10,8 @@ import {
   toTokenCount,
   type CompiledMessage,
   type TokenCount,
-} from 'contextcraft';
-import { TOKEN_OVERHEAD } from 'contextcraft';
+} from 'ctxforge';
+import { TOKEN_OVERHEAD } from 'ctxforge';
 import type { Tiktoken, TiktokenEncoding } from 'tiktoken';
 
 import { tryRequireTiktoken } from './load-peer.js';

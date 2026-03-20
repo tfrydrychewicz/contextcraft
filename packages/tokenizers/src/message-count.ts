@@ -8,7 +8,7 @@ import {
   type CompiledMessage,
   TOKEN_OVERHEAD,
   type ProviderTokenOverhead,
-} from 'contextcraft';
+} from 'ctxforge';
 
 import { compiledMessageToEstimationString } from './compiled-message-string.js';
 

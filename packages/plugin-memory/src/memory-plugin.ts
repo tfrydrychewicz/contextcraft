@@ -13,14 +13,14 @@ import {
   type SlotBudget,
   type SlotConfig,
   SlotOverflow,
-} from 'contextcraft';
+} from 'ctxforge';
 
 import { extractFactCandidatesFromMessages } from './auto-extract.js';
 import type { MemoryStore } from './memory-types.js';
 import { jaccardSimilarity, rankMemories, type MemoryRetrievalStrategy } from './retrieval.js';
 import { VERSION } from './version.js';
 
-const PLUGIN_NAME = '@contextcraft/plugin-memory';
+const PLUGIN_NAME = '@ctxforge/plugin-memory';
 const META_INJECTED = 'memory.injected';
 const META_RECORD_ID = 'memory.recordId';
 

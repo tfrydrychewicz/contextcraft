@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { CompiledMessage } from 'contextcraft';
+import type { CompiledMessage } from 'ctxforge';
 
 import { CharEstimatorTokenizer } from './char-estimator.js';
 import type { Tokenizer } from './tokenizer.js';

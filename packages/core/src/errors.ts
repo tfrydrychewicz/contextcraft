@@ -1,11 +1,11 @@
 /**
- * Error types for contextcraft.
+ * Error types for ctxforge.
  *
  * @packageDocumentation
  */
 
 /**
- * Base error class for all contextcraft errors.
+ * Base error class for all ctxforge errors.
  *
  * @see {@link BudgetExceededError}
  * @see {@link ContextOverflowError}
@@ -18,8 +18,8 @@
  * @see {@link MaxItemsExceededError}
  * @see {@link InvalidBudgetError}
  */
-export class ContextCraftError extends Error {
-  override readonly name: string = 'ContextCraftError';
+export class CtxForgeError extends Error {
+  override readonly name: string = 'CtxForgeError';
 
   readonly code: string;
 
@@ -37,12 +37,12 @@ export class ContextCraftError extends Error {
     },
   ) {
     super(message, options?.cause ? { cause: options.cause } : undefined);
-    this.code = options?.code ?? 'CONTEXT_CRAFT_ERROR';
+    this.code = options?.code ?? 'CTX_FORGE_ERROR';
     this.recoverable = options?.recoverable ?? false;
     if (options?.context !== undefined) {
       this.context = options.context;
     }
-    Object.setPrototypeOf(this, ContextCraftError.prototype);
+    Object.setPrototypeOf(this, CtxForgeError.prototype);
   }
 }
 
@@ -56,7 +56,7 @@ export class ContextCraftError extends Error {
  * });
  * ```
  */
-export class BudgetExceededError extends ContextCraftError {
+export class BudgetExceededError extends CtxForgeError {
   override readonly name = 'BudgetExceededError';
 
   override readonly code = 'BUDGET_EXCEEDED';
@@ -75,7 +75,7 @@ export class BudgetExceededError extends ContextCraftError {
 /**
  * Slot percentage budgets are invalid (e.g. sum of percents above 100).
  */
-export class InvalidBudgetError extends ContextCraftError {
+export class InvalidBudgetError extends CtxForgeError {
   override readonly name = 'InvalidBudgetError';
 
   override readonly code = 'INVALID_BUDGET';
@@ -101,7 +101,7 @@ export class InvalidBudgetError extends ContextCraftError {
  * });
  * ```
  */
-export class ContextOverflowError extends ContextCraftError {
+export class ContextOverflowError extends CtxForgeError {
   override readonly name = 'ContextOverflowError';
 
   override readonly code = 'CONTEXT_OVERFLOW';
@@ -150,7 +150,7 @@ export class ContextOverflowError extends ContextCraftError {
  * throw new TokenizerNotFoundError('Tokenizer cl100k_base not found. Install tiktoken.');
  * ```
  */
-export class TokenizerNotFoundError extends ContextCraftError {
+export class TokenizerNotFoundError extends CtxForgeError {
   override readonly name = 'TokenizerNotFoundError';
 
   override readonly code = 'TOKENIZER_NOT_FOUND';
@@ -180,7 +180,7 @@ export class TokenizerNotFoundError extends ContextCraftError {
  * });
  * ```
  */
-export class CompressionFailedError extends ContextCraftError {
+export class CompressionFailedError extends CtxForgeError {
   override readonly name = 'CompressionFailedError';
 
   override readonly code = 'COMPRESSION_FAILED';
@@ -218,7 +218,7 @@ export class CompressionFailedError extends ContextCraftError {
  * });
  * ```
  */
-export class SnapshotCorruptedError extends ContextCraftError {
+export class SnapshotCorruptedError extends CtxForgeError {
   override readonly name = 'SnapshotCorruptedError';
 
   override readonly code = 'SNAPSHOT_CORRUPTED';
@@ -248,7 +248,7 @@ export class SnapshotCorruptedError extends ContextCraftError {
  * });
  * ```
  */
-export class InvalidConfigError extends ContextCraftError {
+export class InvalidConfigError extends CtxForgeError {
   override readonly name = 'InvalidConfigError';
 
   override readonly code = 'INVALID_CONFIG';
@@ -271,7 +271,7 @@ export class InvalidConfigError extends ContextCraftError {
 /**
  * Slot name is not registered on the content store.
  */
-export class SlotNotFoundError extends ContextCraftError {
+export class SlotNotFoundError extends CtxForgeError {
   override readonly name = 'SlotNotFoundError';
 
   override readonly code = 'SLOT_NOT_FOUND';
@@ -298,7 +298,7 @@ export class SlotNotFoundError extends ContextCraftError {
 /**
  * No content item with the given id exists in the slot.
  */
-export class ItemNotFoundError extends ContextCraftError {
+export class ItemNotFoundError extends CtxForgeError {
   override readonly name = 'ItemNotFoundError';
 
   override readonly code = 'ITEM_NOT_FOUND';
@@ -337,7 +337,7 @@ export class ItemNotFoundError extends ContextCraftError {
 /**
  * {@link SlotConfig.maxItems} would be exceeded.
  */
-export class MaxItemsExceededError extends ContextCraftError {
+export class MaxItemsExceededError extends CtxForgeError {
   override readonly name = 'MaxItemsExceededError';
 
   override readonly code = 'MAX_ITEMS_EXCEEDED';

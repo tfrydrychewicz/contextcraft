@@ -1,4 +1,4 @@
-import type { ContentId } from 'contextcraft';
+import type { ContentId } from 'ctxforge';
 import { describe, expect, it } from 'vitest';
 
 import {

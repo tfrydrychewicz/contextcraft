@@ -1,5 +1,5 @@
 /**
- * @contextcraft/tokenizers — Token counting abstractions
+ * @ctxforge/tokenizers — Token counting abstractions
  *
  * @packageDocumentation
  */
@@ -26,11 +26,11 @@ export {
   TOKEN_OVERHEAD,
   getTokenOverhead,
   ollamaOverhead,
-} from 'contextcraft';
+} from 'ctxforge';
 export type {
   ProviderTokenOverhead,
   TokenOverheadProviderId,
-} from 'contextcraft';
+} from 'ctxforge';
 
 export { Cl100kTokenizer, O200kTokenizer, freeTiktokenEncodings } from './tiktoken-adapters.js';
 

@@ -35,12 +35,12 @@ body:
       label: Affected package
       description: Which package would this affect?
       options:
-        - contextcraft (core)
-        - @contextcraft/tokenizers
-        - @contextcraft/providers
-        - @contextcraft/compression
-        - @contextcraft/debug
-        - @contextcraft/plugin-rag
-        - @contextcraft/plugin-memory
-        - @contextcraft/plugin-tools
+        - ctxforge (core)
+        - @ctxforge/tokenizers
+        - @ctxforge/providers
+        - @ctxforge/compression
+        - @ctxforge/debug
+        - @ctxforge/plugin-rag
+        - @ctxforge/plugin-memory
+        - @ctxforge/plugin-tools
         - Multiple / unsure

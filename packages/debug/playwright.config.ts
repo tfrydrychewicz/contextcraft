@@ -1,5 +1,5 @@
 /**
- * Playwright config for @contextcraft/debug inspector UI.
+ * Playwright config for @ctxforge/debug inspector UI.
  *
  * @packageDocumentation
  */

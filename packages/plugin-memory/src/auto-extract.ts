@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { CompiledMessage } from 'contextcraft';
+import type { CompiledMessage } from 'ctxforge';
 
 function compiledPlainText(m: CompiledMessage): string {
   if (typeof m.content === 'string') {

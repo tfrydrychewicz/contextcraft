@@ -1,5 +1,5 @@
 /**
- * @contextcraft/debug — Debug inspector (§13.2: HTTP/WS server + Preact UI at `/inspector/`).
+ * @ctxforge/debug — Debug inspector (§13.2: HTTP/WS server + Preact UI at `/inspector/`).
  *
  * @packageDocumentation
  */

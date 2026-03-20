@@ -138,7 +138,7 @@ export function useInspector(pollMs = 2000): {
     ws.onmessage = (msg) => {
       try {
         const data: unknown = JSON.parse(String(msg.data));
-        if (isRecord(data) && data['type'] === 'contextcraft:event') {
+        if (isRecord(data) && data['type'] === 'ctxforge:event') {
           scheduleRefresh();
         }
       } catch {

@@ -9,14 +9,14 @@
 import {
   Cl100kTokenizer,
   FallbackTokenizer,
-} from '@contextcraft/tokenizers';
+} from '@ctxforge/tokenizers';
 import {
   BaseProviderAdapter,
   type CompiledContentPart,
   type CompiledMessage,
   type ModelId,
   type Tokenizer,
-} from 'contextcraft';
+} from 'ctxforge';
 
 /** Multimodal / tool parts for `contents[].parts` and `systemInstruction.parts`. */
 export type GeminiPart =

@@ -1,4 +1,4 @@
-import { TOKEN_OVERHEAD } from 'contextcraft';
+import { TOKEN_OVERHEAD } from 'ctxforge';
 import { describe, expect, it } from 'vitest';
 
 import { compiledMessageToEstimationString } from './compiled-message-string.js';

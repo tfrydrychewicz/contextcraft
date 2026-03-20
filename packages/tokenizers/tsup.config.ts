@@ -9,7 +9,7 @@ export default defineConfig({
   sourcemap: true,
   target: 'es2022',
   external: [
-    'contextcraft',
+    'ctxforge',
     'tiktoken',
     '@anthropic-ai/tokenizer',
     'gpt-tokenizer',

@@ -1,5 +1,5 @@
 /**
- * @contextcraft/plugin-otel — OpenTelemetry for contextcraft (§13.4).
+ * @ctxforge/plugin-otel — OpenTelemetry for ctxforge (§13.4).
  *
  * @packageDocumentation
  */

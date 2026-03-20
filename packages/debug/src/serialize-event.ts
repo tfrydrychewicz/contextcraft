@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-import type { ContextEvent } from 'contextcraft';
+import type { ContextEvent } from 'ctxforge';
 
 /**
  * Serializes {@link ContextEvent} for HTTP/WebSocket (build:complete uses {@link ContextSnapshot.serialize}).

@@ -1,5 +1,5 @@
 /**
- * Contextcraft debug inspector shell.
+ * Ctxforge debug inspector shell.
  *
  * @packageDocumentation
  */
@@ -30,7 +30,7 @@ export function App() {
     <div class="inspector">
       <header class="inspector__header">
         <div>
-          <h1 class="inspector__title">Contextcraft Inspector</h1>
+          <h1 class="inspector__title">Ctxforge Inspector</h1>
           <p class="muted" style={{ margin: '0.25rem 0 0' }}>
             Live view of slots, budgets, and pipeline events.
           </p>

@@ -1,5 +1,5 @@
 /**
- * @contextcraft/plugin-memory — Long-term memory.
+ * @ctxforge/plugin-memory — Long-term memory.
  *
  * @packageDocumentation
  */

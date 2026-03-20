@@ -1,5 +1,5 @@
 /**
- * @contextcraft/plugin-rag — RAG integration.
+ * @ctxforge/plugin-rag — RAG integration.
  *
  * @packageDocumentation
  */

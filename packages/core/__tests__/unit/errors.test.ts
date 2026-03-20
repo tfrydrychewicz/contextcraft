@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  ContextCraftError,
+  CtxForgeError,
   BudgetExceededError,
   ContextOverflowError,
   TokenizerNotFoundError,
@@ -14,9 +14,9 @@ import {
   MaxItemsExceededError,
 } from '../../src/errors.js';
 
-describe('ContextCraftError', () => {
+describe('CtxForgeError', () => {
   it('creates error with message and options', () => {
-    const err = new ContextCraftError('Test error', {
+    const err = new CtxForgeError('Test error', {
       code: 'TEST',
       recoverable: true,
       context: { foo: 'bar' },
@@ -25,18 +25,18 @@ describe('ContextCraftError', () => {
     expect(err.code).toBe('TEST');
     expect(err.recoverable).toBe(true);
     expect(err.context).toEqual({ foo: 'bar' });
-    expect(err.name).toBe('ContextCraftError');
+    expect(err.name).toBe('CtxForgeError');
   });
 
-  it('is instanceof Error and ContextCraftError', () => {
-    const err = new ContextCraftError('Test');
+  it('is instanceof Error and CtxForgeError', () => {
+    const err = new CtxForgeError('Test');
     expect(err).toBeInstanceOf(Error);
-    expect(err).toBeInstanceOf(ContextCraftError);
+    expect(err).toBeInstanceOf(CtxForgeError);
   });
 
   it('preserves cause', () => {
     const cause = new Error('Original');
-    const err = new ContextCraftError('Wrapped', { cause });
+    const err = new CtxForgeError('Wrapped', { cause });
     expect(err.cause).toBe(cause);
   });
 });
@@ -148,17 +148,17 @@ describe('MaxItemsExceededError', () => {
 });
 
 describe('Error inheritance', () => {
-  it('all errors extend ContextCraftError', () => {
-    expect(new BudgetExceededError('x')).toBeInstanceOf(ContextCraftError);
-    expect(new ContextOverflowError('x', { slot: 's', budgetTokens: 1, actualTokens: 2 })).toBeInstanceOf(ContextCraftError);
-    expect(new TokenizerNotFoundError('x')).toBeInstanceOf(ContextCraftError);
-    expect(new CompressionFailedError('x', { fallbackStrategy: 'y' })).toBeInstanceOf(ContextCraftError);
-    expect(new SnapshotCorruptedError('x')).toBeInstanceOf(ContextCraftError);
-    expect(new InvalidConfigError('x')).toBeInstanceOf(ContextCraftError);
-    expect(new InvalidBudgetError('x')).toBeInstanceOf(ContextCraftError);
-    expect(new SlotNotFoundError('x', { slot: 's' })).toBeInstanceOf(ContextCraftError);
+  it('all errors extend CtxForgeError', () => {
+    expect(new BudgetExceededError('x')).toBeInstanceOf(CtxForgeError);
+    expect(new ContextOverflowError('x', { slot: 's', budgetTokens: 1, actualTokens: 2 })).toBeInstanceOf(CtxForgeError);
+    expect(new TokenizerNotFoundError('x')).toBeInstanceOf(CtxForgeError);
+    expect(new CompressionFailedError('x', { fallbackStrategy: 'y' })).toBeInstanceOf(CtxForgeError);
+    expect(new SnapshotCorruptedError('x')).toBeInstanceOf(CtxForgeError);
+    expect(new InvalidConfigError('x')).toBeInstanceOf(CtxForgeError);
+    expect(new InvalidBudgetError('x')).toBeInstanceOf(CtxForgeError);
+    expect(new SlotNotFoundError('x', { slot: 's' })).toBeInstanceOf(CtxForgeError);
     expect(new ItemNotFoundError('x', { slot: 's', itemId: 'i' })).toBeInstanceOf(
-      ContextCraftError,
+      CtxForgeError,
     );
     expect(
       new MaxItemsExceededError('x', {
@@ -166,6 +166,6 @@ describe('Error inheritance', () => {
         maxItems: 1,
         currentCount: 1,
       }),
-    ).toBeInstanceOf(ContextCraftError);
+    ).toBeInstanceOf(CtxForgeError);
   });
 });

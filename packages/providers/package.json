@@ -1,5 +1,5 @@
 {
-  "name": "@contextcraft/providers",
+  "name": "@ctxforge/providers",
   "version": "0.0.1",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -39,12 +39,12 @@
     "gpt-tokenizer": { "optional": true }
   },
   "dependencies": {
-    "@contextcraft/tokenizers": "workspace:*",
-    "contextcraft": "workspace:*"
+    "@ctxforge/tokenizers": "workspace:*",
+    "ctxforge": "workspace:*"
   },
   "size-limit": [
     {
-      "name": "@contextcraft/providers (barrel)",
+      "name": "@ctxforge/providers (barrel)",
       "path": "dist/index.js",
       "limit": "25 kB",
       "gzip": true

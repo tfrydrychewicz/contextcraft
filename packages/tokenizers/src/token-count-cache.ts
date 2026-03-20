@@ -6,7 +6,7 @@
 
 import { createHash } from 'node:crypto';
 
-import type { TokenCount } from 'contextcraft';
+import type { TokenCount } from 'ctxforge';
 
 import { LRUCache } from './lru-cache.js';
 import type { Tokenizer } from './tokenizer.js';
