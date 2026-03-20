@@ -27,7 +27,7 @@ const SLOTS = {
   },
 };
 
-describe('Redaction on events + logs (Phase 10.2)', () => {
+describe('Redaction on events + logs (Phase 10.2 / 13.3)', () => {
   it('redacts onEvent payloads when redaction: true and logLevel is not TRACE', async () => {
     const onEvent = vi.fn();
     const parsed = validateContextConfig({
@@ -46,6 +46,44 @@ describe('Redaction on events + logs (Phase 10.2)', () => {
     const item = added![0].item as { content: string };
     expect(item.content).not.toContain('123-45-6789');
     expect(item.content).toContain('[REDACTED]');
+  });
+
+  it('redacts onEvent when redaction omitted (default §13.3)', async () => {
+    const onEvent = vi.fn();
+    const parsed = validateContextConfig({
+      model: 'm',
+      maxTokens: 800,
+      slots: SLOTS,
+      onEvent,
+    });
+    const ctx = Context.fromParsedConfig(parsed);
+    ctx.system('secret 123-45-6789');
+    await ctx.build();
+
+    const added = onEvent.mock.calls.find((c) => c[0]?.type === 'content:added');
+    expect(added).toBeDefined();
+    const item = added![0].item as { content: string };
+    expect(item.content).not.toContain('123-45-6789');
+    expect(item.content).toContain('[REDACTED]');
+  });
+
+  it('does not redact onEvent when redaction: false', async () => {
+    const onEvent = vi.fn();
+    const parsed = validateContextConfig({
+      model: 'm',
+      maxTokens: 800,
+      slots: SLOTS,
+      redaction: false,
+      onEvent,
+    });
+    const ctx = Context.fromParsedConfig(parsed);
+    ctx.system('visible 123-45-6789');
+    await ctx.build();
+
+    const added = onEvent.mock.calls.find((c) => c[0]?.type === 'content:added');
+    expect(added).toBeDefined();
+    const item = added![0].item as { content: string };
+    expect(item.content).toContain('123-45-6789');
   });
 
   it('does not redact onEvent when logLevel is TRACE', async () => {

@@ -26,7 +26,7 @@ export enum LogLevel {
   WARN = 1,
   INFO = 2,
   DEBUG = 3,
-  /** Most verbose; with {@link ContextConfig.redaction} set, disables redaction for logs/events (§19.2 — Phase 10.2). */
+  /** Most verbose; at this level, redaction is disabled for logs/events when it would otherwise apply (§19.2 — Phase 13.3). */
   TRACE = 4,
 }
 

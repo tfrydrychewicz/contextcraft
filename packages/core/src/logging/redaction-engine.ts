@@ -1,5 +1,5 @@
 /**
- * Configurable PII redaction for logs and observability events (§19.2 — Phase 10.2).
+ * Configurable PII redaction for logs and observability events (§19.2 — Phase 10.2 / 13.3).
  *
  * @packageDocumentation
  */
@@ -67,13 +67,20 @@ export class RedactionEngine {
 }
 
 export type ObservabilityRedactionConfig = {
-  readonly redaction?: true | RedactionOptions | undefined;
+  /**
+   * When omitted, PII redaction is **on** for `onEvent` and `logger` output (§19.2 — Phase 13.3).
+   * Set to `false` to disable. {@link LogLevelConst.TRACE} still disables redaction for full observability.
+   */
+  readonly redaction?: true | false | RedactionOptions | undefined;
   readonly logLevel?: LogLevel | undefined;
 };
 
-/** When `redaction` is set and log level is not {@link LogLevelConst.TRACE}, redact logs and events. */
+/**
+ * Whether logs and {@link ContextEvent} payloads should be redacted.
+ * Default: redact when `redaction` is not `false` and `logLevel` is not {@link LogLevelConst.TRACE}.
+ */
 export function shouldRedactObservability(config: ObservabilityRedactionConfig): boolean {
-  if (config.redaction === undefined) {
+  if (config.redaction === false) {
     return false;
   }
   if (config.logLevel === LogLevelConst.TRACE) {
@@ -89,10 +96,10 @@ export function createContextEventRedactor(
     return undefined;
   }
   const raw = config.redaction;
-  if (raw === undefined) {
-    return undefined;
-  }
-  const engine = RedactionEngine.fromConfig(raw === true ? true : raw);
+  const engine =
+    typeof raw === 'object' && raw !== null
+      ? RedactionEngine.fromConfig(raw)
+      : RedactionEngine.defaultEngine();
   return (event) => redactContextEvent(event, engine);
 }
 
@@ -124,11 +131,16 @@ function redactSnapshotMeta(meta: Readonly<SnapshotMeta>, engine: RedactionEngin
 export function redactContextEvent(event: ContextEvent, engine: RedactionEngine): ContextEvent {
   switch (event.type) {
     case 'content:added':
-    case 'content:evicted':
     case 'content:pinned':
       return {
         ...event,
         item: redactContentItemLike(event.item, engine) as (typeof event)['item'],
+      };
+    case 'content:evicted':
+      return {
+        ...event,
+        item: redactContentItemLike(event.item, engine) as (typeof event)['item'],
+        reason: engine.redactString(event.reason),
       };
     case 'warning':
       return {
@@ -148,7 +160,15 @@ export function redactContextEvent(event: ContextEvent, engine: RedactionEngine)
       });
       return { type: 'build:complete', snapshot: redactedSnapshot };
     }
-    default:
-      return event;
+    case 'slot:overflow':
+    case 'slot:budget-resolved':
+    case 'compression:start':
+    case 'compression:complete':
+    case 'build:start':
+      return engine.redactUnknown(cloneForRedaction(event)) as ContextEvent;
+    default: {
+      const _exhaustive: never = event;
+      return _exhaustive;
+    }
   }
 }

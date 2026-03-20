@@ -165,6 +165,17 @@ describe('contextConfigSchema — cross-slot rules', () => {
 });
 
 describe('validateContextConfig / safeParseContextConfig', () => {
+  it('accepts redaction: false (Phase 13.3)', () => {
+    const r = contextConfigSchema.safeParse({
+      model: 'gpt-4o',
+      redaction: false,
+    });
+    expect(r.success).toBe(true);
+    if (r.success) {
+      expect(r.data.redaction).toBe(false);
+    }
+  });
+
   it('returns parsed data for valid config', () => {
     const data = baseContext();
     expect(validateContextConfig(data)).toMatchObject({ model: 'gpt-4o' });

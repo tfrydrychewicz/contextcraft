@@ -307,8 +307,9 @@ export interface ContextConfig {
   logLevel?: LogLevel;
 
   /**
-   * When set, redacts PII in {@link onEvent} payloads and in {@link logger} output (not in stored context).
-   * {@link LogLevel.TRACE} disables redaction for observability (§19.2 — Phase 10.2).
+   * PII redaction for {@link onEvent} payloads and {@link logger} output (not stored context).
+   * **Default:** redaction is on when omitted (§19.2 — Phase 13.3). Set to `false` to disable.
+   * {@link LogLevel.TRACE} disables redaction for full observability (§19.2).
    */
-  redaction?: true | RedactionOptions;
+  redaction?: true | false | RedactionOptions;
 }

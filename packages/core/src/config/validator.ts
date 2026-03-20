@@ -175,6 +175,7 @@ export const contextConfigSchema = z
     logLevel: z.nativeEnum(LogLevel).optional(),
     redaction: z
       .union([
+        z.literal(false),
         z.literal(true),
         z
           .object({

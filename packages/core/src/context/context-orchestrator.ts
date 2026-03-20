@@ -402,7 +402,9 @@ export class ContextOrchestrator {
       : noopLogger;
     if (hasUserLogger && shouldRedactObservability(config)) {
       const r: RedactionOptions | true =
-        config.redaction === true ? true : (config.redaction as RedactionOptions);
+        config.redaction === undefined || config.redaction === true
+          ? true
+          : (config.redaction as RedactionOptions);
       baseLogger = createRedactingLogger({ delegate: baseLogger, redaction: r });
     }
     const pipelineLog = hasUserLogger
@@ -644,7 +646,9 @@ export class ContextOrchestrator {
       : noopLogger;
     if (hasUserLogger && shouldRedactObservability(config)) {
       const r: RedactionOptions | true =
-        config.redaction === true ? true : (config.redaction as RedactionOptions);
+        config.redaction === undefined || config.redaction === true
+          ? true
+          : (config.redaction as RedactionOptions);
       baseLogger = createRedactingLogger({ delegate: baseLogger, redaction: r });
     }
     const pipelineLog = hasUserLogger

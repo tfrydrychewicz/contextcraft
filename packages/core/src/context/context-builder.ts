@@ -54,7 +54,7 @@ export class ContextBuilder {
 
   private _logLevel: LogLevel | undefined;
 
-  private _redaction: true | RedactionOptions | undefined;
+  private _redaction: true | false | RedactionOptions | undefined;
 
   private readonly _ops: BuilderOp[] = [];
 
@@ -110,10 +110,10 @@ export class ContextBuilder {
   }
 
   /**
-   * Enable PII redaction for {@link onEvent} and {@link logger} (§19.2 — Phase 10.2).
-   * Use `true` for default patterns; pass `{ patterns }` to customize.
+   * PII redaction for {@link onEvent} and {@link logger} (§19.2 — Phase 13.3).
+   * Omit this call to use the default (redaction on). Pass `false` to disable.
    */
-  redaction(options: true | RedactionOptions): this {
+  redaction(options: true | false | RedactionOptions): this {
     this._redaction = options;
     return this;
   }
