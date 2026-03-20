@@ -143,6 +143,28 @@ export type ContextEventEmitter = import('./events/emitter.js').TypedEventEmitte
   import('./types/events.js').ContextEvent
 >;
 
+// Logging (§13.3 — Phase 7.3)
+export { LogLevel } from './logging/logger.js';
+export {
+  createConsoleLogger,
+  createLeveledLogger,
+  createPluginLoggerFactory,
+  createRedactingLogger,
+  createScopedLogger,
+} from './logging/logger.js';
+export type {
+  ConsoleLoggerOptions,
+  Logger,
+  PluginLoggerFactoryOptions,
+  RedactingLoggerOptions,
+} from './logging/logger.js';
+export {
+  DEFAULT_REDACTION_PATTERNS,
+  redactString,
+  redactUnknown,
+} from './logging/redact.js';
+export type { RedactionOptions } from './logging/redact.js';
+
 // Snapshot types (§6.6)
 export type {
   SlotMeta,

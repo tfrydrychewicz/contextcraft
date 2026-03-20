@@ -26,6 +26,7 @@ import type {
 } from '../types/plugin.js';
 
 const noopLogger: PluginLogger = {
+  debug: () => {},
   info: () => {},
   warn: () => {},
   error: () => {},

@@ -58,10 +58,12 @@ describe('CompressionStrategy', () => {
 describe('PluginLogger', () => {
   it('accepts logger with required methods', () => {
     const logger: PluginLogger = {
+      debug: () => {},
       info: () => {},
       warn: () => {},
       error: () => {},
     };
+    expect(logger.debug).toBeDefined();
     expect(logger.info).toBeDefined();
     expect(logger.warn).toBeDefined();
     expect(logger.error).toBeDefined();
@@ -75,7 +77,7 @@ describe('PluginContext', () => {
       tokenCounter: { count: () => toTokenCount(0) },
       registerOverflowStrategy: () => {},
       registerCompressor: () => {},
-      logger: { info: () => {}, warn: () => {}, error: () => {} },
+      logger: { debug: () => {}, info: () => {}, warn: () => {}, error: () => {} },
     };
     expect(ctx.getSlots()).toEqual({});
   });

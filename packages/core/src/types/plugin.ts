@@ -4,6 +4,7 @@
  * @packageDocumentation
  */
 
+import type { Logger } from '../logging/logger.js';
 import type { ContextSnapshot } from '../snapshot/context-snapshot.js';
 
 import type { TokenCount } from './branded.js';
@@ -50,20 +51,8 @@ export interface CompressionStrategy {
   ): ContentItem[] | Promise<ContentItem[]>;
 }
 
-/** Logger interface for plugin logging */
-export interface PluginLogger {
-  /** Log info message */
-  info(message: string, ...args: unknown[]): void;
-
-  /** Log warning */
-  warn(message: string, ...args: unknown[]): void;
-
-  /** Log error */
-  error(message: string, ...args: unknown[]): void;
-
-  /** Log debug message */
-  debug?(message: string, ...args: unknown[]): void;
-}
+/** Plugin-facing logger — same shape as {@link Logger} (§13.3 / Phase 7.3). */
+export type PluginLogger = Logger;
 
 // ==========================================
 // Plugin Context
