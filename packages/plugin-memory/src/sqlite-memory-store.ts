@@ -30,10 +30,15 @@ type SqliteDatabase = {
 
 type SqliteDatabaseConstructor = new (path: string) => SqliteDatabase;
 
-/** True when the optional native module loaded successfully (skip SQLite tests otherwise). */
+/**
+ * True when `better-sqlite3` can open a database (native `.node` present).
+ * `require('better-sqlite3')` alone is not enough — install can leave JS without bindings.
+ */
 export function isBetterSqliteAvailable(): boolean {
   try {
-    require('better-sqlite3');
+    const Database = require('better-sqlite3') as SqliteDatabaseConstructor;
+    const probe = new Database(':memory:');
+    probe.close();
     return true;
   } catch {
     return false;
