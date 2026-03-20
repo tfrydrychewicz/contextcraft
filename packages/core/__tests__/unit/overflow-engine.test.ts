@@ -11,6 +11,7 @@ import {
 import { semanticCompressAsOverflow } from '../../src/compression/semantic-overflow-bridge.js';
 import type { SlotConfig } from '../../src/types/config.js';
 import type { ContentItem } from '../../src/types/content.js';
+import type { ContextEvent } from '../../src/types/events.js';
 
 function slot(
   name: string,
@@ -144,6 +145,136 @@ describe('OverflowEngine (§7.2 — Phase 4.1)', () => {
     expect(out[0]!.content).toHaveLength(1);
     expect(events.some((e) => e.type === 'warning')).toBe(true);
     expect(events.some((e) => e.type === 'content:evicted')).toBe(false);
+  });
+
+  it('emits compression:start and compression:complete for compress (§8.7)', async () => {
+    const countByCharLen = (items: readonly ContentItem[]): number =>
+      items.reduce(
+        (s, i) => s + (typeof i.content === 'string' ? i.content.length : 0),
+        0,
+      );
+
+    const events: ContextEvent[] = [];
+    const item = createContentItem({
+      slot: 's',
+      role: 'user',
+      content: 'Well,   you know, for example   hello.',
+      tokens: toTokenCount(100),
+    });
+
+    const engine = new OverflowEngine({
+      countTokens: countByCharLen,
+      onEvent: (e) => events.push(e),
+    });
+
+    const out = await engine.resolve([
+      slot(
+        's',
+        50,
+        20,
+        { priority: 50, budget: { flex: true }, overflow: 'compress' },
+        [item],
+      ),
+    ]);
+
+    const beforeTokens = countByCharLen([item]);
+    const afterTokens = countByCharLen(out[0]!.content);
+
+    const starts = events.filter((e) => e.type === 'compression:start');
+    const completes = events.filter((e) => e.type === 'compression:complete');
+    expect(starts).toHaveLength(1);
+    expect(starts[0]!.slot).toBe('s');
+    expect(starts[0]!.itemCount).toBe(1);
+
+    expect(completes).toHaveLength(1);
+    const c = completes[0]!;
+    expect(c.slot).toBe('s');
+    expect(c.beforeTokens).toBe(beforeTokens);
+    expect(c.afterTokens).toBe(afterTokens);
+    expect(c.ratio).toBe(beforeTokens > 0 ? 1 - afterTokens / beforeTokens : 0);
+
+    const iStart = events.findIndex((e) => e.type === 'compression:start');
+    const iComplete = events.findIndex((e) => e.type === 'compression:complete');
+    const iOverflow = events.findIndex((e) => e.type === 'slot:overflow');
+    expect(iStart).toBeGreaterThanOrEqual(0);
+    expect(iComplete).toBeGreaterThan(iStart);
+    expect(iOverflow).toBeGreaterThan(iComplete);
+  });
+
+  it('does not emit compression:* for truncate (§8.7)', async () => {
+    const events: ContextEvent[] = [];
+    const i1 = createContentItem({
+      slot: 'h',
+      role: 'user',
+      content: 'a',
+      tokens: toTokenCount(40),
+    });
+    const i2 = createContentItem({
+      slot: 'h',
+      role: 'user',
+      content: 'b',
+      tokens: toTokenCount(40),
+    });
+
+    const engine = new OverflowEngine({
+      countTokens: countSum,
+      onEvent: (e) => events.push(e),
+    });
+
+    await engine.resolve([
+      slot(
+        'h',
+        50,
+        50,
+        { priority: 50, budget: { flex: true }, overflow: 'truncate' },
+        [i1, i2],
+      ),
+    ]);
+
+    expect(events.some((e) => e.type === 'compression:start')).toBe(false);
+    expect(events.some((e) => e.type === 'compression:complete')).toBe(false);
+  });
+
+  it('emits compression:start but not compression:complete when summarize throws (§8.7)', async () => {
+    const events: ContextEvent[] = [];
+    const item = createContentItem({
+      slot: 's',
+      role: 'user',
+      content: 'x',
+      tokens: toTokenCount(100),
+    });
+
+    const engine = new OverflowEngine({
+      countTokens: countSum,
+      onEvent: (e) => events.push(e),
+      progressiveSummarize: {
+        summarizeText: async () => 'unused',
+      },
+    });
+
+    await expect(
+      engine.resolve([
+        slot(
+          's',
+          50,
+          50,
+          {
+            priority: 50,
+            budget: { flex: true },
+            overflow: 'summarize',
+            overflowConfig: {
+              summarizer: async () => {
+                throw new Error('summarize-fail');
+              },
+            },
+          },
+          [item],
+        ),
+      ]),
+    ).rejects.toThrow('summarize-fail');
+
+    expect(events.some((e) => e.type === 'compression:start')).toBe(true);
+    expect(events.some((e) => e.type === 'compression:complete')).toBe(false);
   });
 
   it('emits slot:overflow and content:evicted when truncating', async () => {

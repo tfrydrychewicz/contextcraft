@@ -23,6 +23,8 @@ import type {
 } from '../types/config.js';
 import type { ContentItem } from '../types/content.js';
 import type {
+  CompressionCompleteEvent,
+  CompressionStartEvent,
   ContentEvictedEvent,
   ContextEvent,
   SlotOverflowEvent,
@@ -150,6 +152,11 @@ function isNamedStrategy(s: string): s is NamedOverflowStrategy {
   );
 }
 
+/** Strategies that transform content for token reduction (§13.1 / Phase 8.7 — compression events). */
+function isCompressionLikeOverflowLabel(label: string): boolean {
+  return label === 'compress' || label === 'summarize' || label === 'semantic';
+}
+
 /**
  * Resolves slot overflows: sorts by **ascending** priority (lowest first),
  * applies strategies, optional global escalation, emits events.
@@ -242,6 +249,34 @@ export class OverflowEngine {
     this.emit(ev);
   }
 
+  private emitCompressionStart(slot: string, itemCount: number): void {
+    const ev: CompressionStartEvent = {
+      type: 'compression:start',
+      slot,
+      itemCount,
+    };
+    this.emit(ev);
+  }
+
+  /**
+   * `ratio` = fraction of tokens removed: `1 - afterTokens/beforeTokens` (see {@link SnapshotMeta.compressions}).
+   */
+  private emitCompressionComplete(
+    slot: string,
+    beforeTokens: number,
+    afterTokens: number,
+  ): void {
+    const ratio = beforeTokens > 0 ? 1 - afterTokens / beforeTokens : 0;
+    const ev: CompressionCompleteEvent = {
+      type: 'compression:complete',
+      slot,
+      beforeTokens,
+      afterTokens,
+      ratio,
+    };
+    this.emit(ev);
+  }
+
   private emitEvicted(
     slot: string,
     item: ContentItem,
@@ -325,8 +360,17 @@ export class OverflowEngine {
     const ctx = this.buildOverflowContext(slot);
 
     const beforeTokens = used;
+    const compressionLike = isCompressionLikeOverflowLabel(label);
+    if (compressionLike) {
+      this.emitCompressionStart(slot.name, slot.content.length);
+    }
+
     const newContent = await fn(slot.content, budget, ctx);
     const afterTokens = this.countTokens(newContent);
+
+    if (compressionLike) {
+      this.emitCompressionComplete(slot.name, beforeTokens, afterTokens);
+    }
 
     this.emitOverflow(slot.name, label, beforeTokens, afterTokens);
     this.diffEvictions(
