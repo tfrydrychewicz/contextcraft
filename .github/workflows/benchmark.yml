@@ -6,10 +6,17 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   benchmark:
     name: Run benchmarks
     runs-on: ubuntu-latest
+    env:
+      BENCH_ALERT_THRESHOLD: '1.2'
+      BENCH_FAIL_ON_ALERT: 'false'
     steps:
       - uses: actions/checkout@v6
 
@@ -22,5 +29,48 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      # §2.6 — compare against committed baseline (see benchmarks/README.md)
-      - run: pnpm exec vitest bench --compare benchmarks/baseline.json
+
+      - name: Vitest bench (JSON for CI)
+        run: pnpm exec vitest bench --outputJson benchmarks/current.json
+
+      - name: Compare to baseline + write PR report
+        id: bench_compare
+        continue-on-error: true
+        run: node scripts/bench-ci-report.mjs
+
+      - name: Report file present
+        id: report
+        if: always()
+        run: |
+          echo "exists=$([ -f benchmark-report.md ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      - name: Job summary
+        if: steps.report.outputs.exists == 'true'
+        run: head -n 80 benchmark-report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload benchmark artifacts (trend / history)
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results-${{ github.run_id }}
+          path: |
+            benchmarks/current.json
+            benchmark-report.md
+          if-no-files-found: ignore
+          retention-days: 90
+
+      - name: Sticky PR comment (benchmark table)
+        if: >
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.head.repo.full_name == github.repository &&
+          steps.report.outputs.exists == 'true'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: vitest-benchmark
+          path: benchmark-report.md
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fail on regression (when BENCH_FAIL_ON_ALERT=true)
+        if: env.BENCH_FAIL_ON_ALERT == 'true' && steps.bench_compare.outcome == 'failure'
+        run: |
+          echo "::error::Benchmark mean exceeded ${BENCH_ALERT_THRESHOLD}× baseline for one or more tasks (see report / logs)."
+          exit 1

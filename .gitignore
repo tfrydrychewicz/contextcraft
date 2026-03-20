@@ -11,6 +11,9 @@ coverage/
 test-results/
 playwright-report/
 blob-report/
+# Vitest bench CI outputs (not committed)
+benchmarks/current.json
+benchmark-report.md
 
 # Debug inspector UI build output
 packages/debug/inspector-static/

@@ -6,9 +6,23 @@
   pnpm test:bench:baseline
   ```
 
-- **CI** (`.github/workflows/benchmark.yml`) runs `vitest bench --compare benchmarks/baseline.json` so runs show deltas vs this file.
+- **Local CI parity** (same flow as GitHub Actions, writes `benchmarks/current.json` + `benchmark-report.md`):
 
-- `filepath` entries inside `baseline.json` are machine-specific; Vitest matches benchmarks by internal task id. If compare ever mis-aligns on a new runner, re-run the command above and commit the updated JSON.
+  ```bash
+  pnpm build && pnpm bench:ci
+  ```
+
+- **CI** (`.github/workflows/benchmark.yml`, Phase 14.4):
+
+  1. Runs `vitest bench --outputJson benchmarks/current.json` after `pnpm build`.
+  2. `scripts/bench-ci-report.mjs` compares `benchmarks/current.json` to **`benchmarks/baseline.json`** (matched by Vitest group `fullName` + benchmark `name`), writes **`benchmark-report.md`**, and prints regressions where **current mean > baseline mean × `BENCH_ALERT_THRESHOLD`** (default **1.2** = 120%).
+  3. Uploads **`benchmark-results-<run_id>`** artifact (`current.json` + report) with **90-day retention** for historical / trend review (download from the Actions run).
+  4. On **same-repo** pull requests, posts a **sticky comment** with the markdown table (`marocchino/sticky-pull-request-comment`).
+  5. **Strict gate:** set `BENCH_FAIL_ON_ALERT: 'true'` in the workflow **after** refreshing the baseline on **`ubuntu-latest` + Node 22** so means match CI; otherwise leave `'false'` (alerts only in logs + PR comment).
+
+- `filepath` entries inside `baseline.json` are machine-specific; the CI script matches by **`fullName` + benchmark `name`**, not path. Refresh baseline when benchmark names change.
+
+- `benchmarks/current.json` and `benchmark-report.md` are gitignored.
 
 ## Context build benchmark suite (§17.5, §18.1)
 

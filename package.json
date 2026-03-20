@@ -21,6 +21,7 @@
     "test:perf-sla": "NODE_OPTIONS='--expose-gc' vitest run packages/core/__tests__/integration/performance-slas.integration.test.ts",
     "test:bench": "vitest bench",
     "test:bench:baseline": "vitest bench --outputJson benchmarks/baseline.json",
+    "bench:ci": "vitest bench --outputJson benchmarks/current.json && node scripts/bench-ci-report.mjs",
     "bench:latency-report": "vitest run --config packages/core/vitest.benchmark-report.config.ts",
     "lint": "eslint .",
     "audit": "pnpm audit --audit-level=high",
