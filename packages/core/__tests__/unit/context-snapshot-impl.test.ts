@@ -103,3 +103,97 @@ describe('ContextSnapshot Phase 5.5', () => {
     expect(second.messages[0]).not.toBe(first.messages[0]);
   });
 });
+
+describe('Phase 9.1 — snapshot serialization (§12.1)', () => {
+  it('serialize → JSON.stringify/parse → deserialize round-trip (JSON-safe wire)', () => {
+    const messages: CompiledMessage[] = [
+      { role: 'system', content: 'sys' },
+      { role: 'user', content: 'hello' },
+    ];
+    const snap = ContextSnapshot.create({
+      id: 'wire-1',
+      messages,
+      meta: meta({
+        slots: {
+          a: {
+            name: 'a',
+            budgetTokens: toTokenCount(10),
+            usedTokens: toTokenCount(5),
+            itemCount: 1,
+            evictedCount: 0,
+            overflowTriggered: false,
+            utilization: 0.5,
+          },
+        },
+      }),
+      model: 'gpt-4o',
+      immutable: true,
+    });
+    const serialized = snap.serialize();
+    const onDisk = JSON.stringify(serialized);
+    const parsed = JSON.parse(onDisk) as unknown;
+    const restored = ContextSnapshot.deserialize(parsed);
+    expect(restored.id).toBe(snap.id);
+    expect(restored.model).toBe(snap.model);
+    expect(restored.messages).toEqual(snap.messages);
+    expect(restored.meta.slots.a?.name).toBe('a');
+  });
+
+  it('deserialize throws when payload is tampered (messages) but checksum unchanged', () => {
+    const snap = ContextSnapshot.create({
+      messages: [{ role: 'user', content: 'original' }],
+      meta: meta(),
+      model: 'm',
+      immutable: false,
+    });
+    const wire = snap.serialize();
+    const tampered = {
+      ...wire,
+      messages: [{ role: 'user', content: 'hacked' }],
+    };
+    expect(() => ContextSnapshot.deserialize(tampered)).toThrow(SnapshotCorruptedError);
+  });
+
+  it('deserialize throws when meta.slots is tampered but checksum unchanged', () => {
+    const snap = ContextSnapshot.create({
+      messages: [{ role: 'user', content: 'x' }],
+      meta: meta({
+        slots: {
+          s: {
+            name: 's',
+            budgetTokens: toTokenCount(100),
+            usedTokens: toTokenCount(10),
+            itemCount: 1,
+            evictedCount: 0,
+            overflowTriggered: false,
+            utilization: 0.1,
+          },
+        },
+      }),
+      model: 'm',
+      immutable: false,
+    });
+    const wire = snap.serialize();
+    const tampered = {
+      ...wire,
+      slots: {
+        ...wire.slots,
+        s: { ...wire.slots.s!, usedTokens: toTokenCount(99) },
+      },
+    };
+    expect(() => ContextSnapshot.deserialize(tampered)).toThrow(SnapshotCorruptedError);
+  });
+
+  it('deserialize throws SnapshotCorruptedError for unsupported version', () => {
+    const snap = ContextSnapshot.create({
+      messages: [{ role: 'user', content: 'x' }],
+      meta: meta(),
+      model: 'm',
+      immutable: false,
+    });
+    const wire = snap.serialize();
+    expect(() =>
+      ContextSnapshot.deserialize({ ...wire, version: '0.9' as '1.0' }),
+    ).toThrow(SnapshotCorruptedError);
+  });
+});

@@ -156,7 +156,11 @@ export type SerializedSlot = SlotMeta;
 /** Serialized message (JSON-safe, same structure as CompiledMessage) */
 export type SerializedMessage = CompiledMessage;
 
-/** Serializable snapshot format for persistence */
+/**
+ * Serializable snapshot format for persistence (§12.1 / Phase 9.1).
+ * Checksum is SHA-256 (hex) of UTF-8 JSON payload built by {@link ContextSnapshot.serialize}
+ * over `version`, `id`, `model`, `slots`, `messages`, and `meta` (the `checksum` field is excluded).
+ */
 export interface SerializedSnapshot {
   /** Schema version */
   version: '1.0';

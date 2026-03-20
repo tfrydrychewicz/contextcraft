@@ -1,5 +1,6 @@
 /**
- * {@link ContextSnapshot} class — immutability, SHA-256, deserialize, format, diff (§5.5).
+ * {@link ContextSnapshot} class — immutability, SHA-256 serialize/deserialize (§12.1 / Phase 9.1),
+ * {@link ContextSnapshot.format}, and {@link ContextSnapshot.diff} (§5.5).
  *
  * @packageDocumentation
  */
@@ -251,6 +252,10 @@ export class ContextSnapshot {
     return readonlyMsgs.map(cloneCompiledMessage);
   }
 
+  /**
+   * Produces a JSON-serializable {@link SerializedSnapshot} with `version: '1.0'` and a
+   * SHA-256 checksum over the payload (version, id, model, slots, messages, meta — checksum field excluded).
+   */
   serialize(): SerializedSnapshot {
     const slotsCopy = { ...this.meta.slots };
     const messagesOut = this._messages.map(cloneCompiledMessage);
