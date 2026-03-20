@@ -130,20 +130,43 @@ export interface SnapshotMeta {
 // Snapshot Diff
 // ==========================================
 
-/** Diff result between two snapshots */
+/**
+ * A slot whose {@link SlotMeta} differs between two snapshots (same slot name in both).
+ *
+ * @see {@link ContextSnapshot.diff} (Phase 9.4 / §12.1).
+ */
+export interface SnapshotSlotMetaDiff {
+  readonly name: string;
+  readonly before: Readonly<SlotMeta>;
+  readonly after: Readonly<SlotMeta>;
+}
+
+/**
+ * Diff result between two snapshots (§12.1 — Phase 9.4).
+ *
+ * **Message semantics** for `this.diff(other)` (treat `this` as baseline, `other` as comparison):
+ * - **`added`** — trailing messages in `other` beyond `this.messages.length` (append-only extension).
+ * - **`removed`** — trailing messages in `this` beyond `other.messages.length` (truncation).
+ * - **`modified`** — same index, different serialized message shape (see {@link CompiledMessage}).
+ *
+ * **Slots**: **`slotsModified`** lists slots present in both metas where any {@link SlotMeta} field differs.
+ */
 export interface SnapshotDiff {
-  /** Messages added in the newer snapshot */
+  /** Messages present in `other` after the shared prefix vs `this` (longer `other`). */
   readonly added: readonly Readonly<CompiledMessage>[];
 
-  /** Messages removed from the older snapshot */
+  /** Messages present in `this` after the shared prefix vs `other` (longer `this`). */
   readonly removed: readonly Readonly<CompiledMessage>[];
 
-  /** Messages modified (same position, different content) */
+  /** Same index in both snapshots, different message JSON. */
   readonly modified: readonly Readonly<{
     readonly index: number;
     readonly before: Readonly<CompiledMessage>;
     readonly after: Readonly<CompiledMessage>;
   }>[];
+
+  /** Slots whose metadata changed (budget, utilization, counts, overflow flag). */
+  readonly slotsModified: readonly Readonly<SnapshotSlotMetaDiff>[];
 }
 
 // ==========================================

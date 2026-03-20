@@ -214,6 +214,7 @@ export type {
   ContextWarning,
   SnapshotMeta,
   SnapshotDiff,
+  SnapshotSlotMetaDiff,
   SerializedSlot,
   SerializedMessage,
   SerializedSnapshot,

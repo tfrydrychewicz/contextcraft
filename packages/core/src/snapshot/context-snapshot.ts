@@ -1,6 +1,6 @@
 /**
  * {@link ContextSnapshot} class — immutability, SHA-256 serialize/deserialize (§12.1 / Phase 9.1),
- * {@link ContextSnapshot.migrate} (Phase 9.2), {@link ContextSnapshot.format}, and {@link ContextSnapshot.diff} (§5.5).
+ * {@link ContextSnapshot.migrate} (Phase 9.2), {@link ContextSnapshot.format}, and {@link ContextSnapshot.diff} (§5.5, Phase 9.4).
  *
  * @packageDocumentation
  */
@@ -14,6 +14,8 @@ import type {
   SerializedSnapshot,
   SnapshotDiff,
   SnapshotMeta,
+  SnapshotSlotMetaDiff,
+  SlotMeta,
 } from '../types/snapshot.js';
 
 import { cloneCompiledMessage, compiledMessageJson } from './clone-compiled-message.js';
@@ -50,6 +52,34 @@ export type DeserializeContextSnapshotOptions = {
   readonly immutable?: boolean;
   readonly providerAdapters?: Partial<Record<ProviderId, ProviderAdapter>>;
 };
+
+function slotMetaFieldsEqual(a: Readonly<SlotMeta>, b: Readonly<SlotMeta>): boolean {
+  return (
+    a.name === b.name &&
+    a.budgetTokens === b.budgetTokens &&
+    a.usedTokens === b.usedTokens &&
+    a.itemCount === b.itemCount &&
+    a.evictedCount === b.evictedCount &&
+    a.overflowTriggered === b.overflowTriggered &&
+    a.utilization === b.utilization
+  );
+}
+
+function diffSlotMeta(
+  beforeSlots: Readonly<Record<string, SlotMeta>>,
+  afterSlots: Readonly<Record<string, SlotMeta>>,
+): SnapshotSlotMetaDiff[] {
+  const out: SnapshotSlotMetaDiff[] = [];
+  const names = new Set([...Object.keys(beforeSlots), ...Object.keys(afterSlots)]);
+  for (const name of [...names].sort()) {
+    const before = beforeSlots[name];
+    const after = afterSlots[name];
+    if (before !== undefined && after !== undefined && !slotMetaFieldsEqual(before, after)) {
+      out.push({ name, before, after });
+    }
+  }
+  return out;
+}
 
 function buildMessageListWithOptionalSharing(params: {
   readonly incoming: readonly CompiledMessage[];
@@ -271,6 +301,10 @@ export class ContextSnapshot {
     });
   }
 
+  /**
+   * Structural diff vs `other` (§12.1 — Phase 9.4): positional message changes plus
+   * {@link SnapshotDiff.slotsModified} for {@link SlotMeta} drift on shared slot names.
+   */
   diff(other: ContextSnapshot): SnapshotDiff {
     const added: CompiledMessage[] = [];
     const removed: CompiledMessage[] = [];
@@ -301,6 +335,7 @@ export class ContextSnapshot {
         added.push(b[i]!);
       }
     }
-    return { added, removed, modified };
+    const slotsModified = diffSlotMeta(this.meta.slots, other.meta.slots);
+    return { added, removed, modified, slotsModified };
   }
 }

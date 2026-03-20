@@ -103,7 +103,7 @@ describe('SnapshotMeta', () => {
 });
 
 describe('SnapshotDiff', () => {
-  it('accepts diff with added, removed, modified', () => {
+  it('accepts diff with added, removed, modified, slotsModified', () => {
     const msg: CompiledMessage = { role: 'user', content: 'Hello' };
     const diff: SnapshotDiff = {
       added: [msg],
@@ -111,6 +111,7 @@ describe('SnapshotDiff', () => {
       modified: [
         { index: 0, before: { role: 'system', content: 'Old' }, after: { role: 'system', content: 'New' } },
       ],
+      slotsModified: [],
     };
     expect(diff.added).toHaveLength(1);
     expect(diff.modified).toHaveLength(1);
