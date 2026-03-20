@@ -1,5 +1,5 @@
 /**
- * §2.6 / §18.1 — asserts plan targets with `performance.now()` (median / p99 to reduce CI noise).
+ * Phase 14.2 / §2.6 / §18.1 — token counting SLAs (`performance.now()`, median / p99 to reduce CI noise).
  */
 
 import { describe, expect, it, afterEach } from 'vitest';
@@ -25,7 +25,7 @@ function percentile(sorted: readonly number[], p: number): number {
   return sorted[idx]!;
 }
 
-describe('§2.6 performance SLAs', () => {
+describe('§18.1 token counting SLAs (Phase 14.2 / §2.6)', () => {
   const USER_MSG = {
     role: 'user' as const,
     content:

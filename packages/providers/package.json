@@ -42,7 +42,16 @@
     "@contextcraft/tokenizers": "workspace:*",
     "contextcraft": "workspace:*"
   },
+  "size-limit": [
+    {
+      "name": "@contextcraft/providers (barrel)",
+      "path": "dist/index.js",
+      "limit": "25 kB",
+      "gzip": true
+    }
+  ],
   "devDependencies": {
+    "@size-limit/file": "^12.0.1",
     "@types/node": "^22.10.0",
     "gpt-tokenizer": "^3.4.0",
     "tiktoken": "^1.0.22",
