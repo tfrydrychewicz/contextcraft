@@ -69,6 +69,8 @@ export {
 export type { BudgetAllocatorOptions } from './slots/budget-allocator.js';
 
 // Overflow engine (§7.2 — Phase 4.1)
+export { SlotOverflow } from './slots/slot-overflow.js';
+export type { SlotOverflowPreset } from './slots/slot-overflow.js';
 export {
   OverflowEngine,
   builtinTruncateFifo,

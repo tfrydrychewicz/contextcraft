@@ -4,6 +4,7 @@
  * @packageDocumentation
  */
 
+import { SlotOverflow } from '../slots/slot-overflow.js';
 import type { SlotConfig } from '../types/config.js';
 
 /** Built-in {@link createContext} preset ids. */
@@ -18,14 +19,14 @@ export const CHAT_DEFAULTS = {
     budget: { fixed: 2000 },
     defaultRole: 'system',
     position: 'before',
-    overflow: 'error',
+    overflow: SlotOverflow.ERROR,
   },
   history: {
     priority: 50,
     budget: { flex: true },
     defaultRole: 'user',
     position: 'after',
-    overflow: 'summarize',
+    overflow: SlotOverflow.SUMMARIZE,
   },
 } as const satisfies Record<string, SlotConfig>;
 
@@ -38,28 +39,28 @@ export const RAG_DEFAULTS = {
     budget: { fixed: 2000 },
     defaultRole: 'system',
     position: 'before',
-    overflow: 'error',
+    overflow: SlotOverflow.ERROR,
   },
   rag: {
     priority: 80,
     budget: { flex: true },
     defaultRole: 'user',
     position: 'before',
-    overflow: 'truncate',
+    overflow: SlotOverflow.TRUNCATE,
   },
   history: {
     priority: 50,
     budget: { flex: true },
     defaultRole: 'user',
     position: 'after',
-    overflow: 'summarize',
+    overflow: SlotOverflow.SUMMARIZE,
   },
   output: {
     priority: 40,
     budget: { flex: true },
     defaultRole: 'assistant',
     position: 'after',
-    overflow: 'truncate',
+    overflow: SlotOverflow.TRUNCATE,
   },
 } as const satisfies Record<string, SlotConfig>;
 
@@ -72,14 +73,14 @@ export const AGENT_DEFAULTS = {
     budget: { fixed: 2000 },
     defaultRole: 'system',
     position: 'before',
-    overflow: 'error',
+    overflow: SlotOverflow.ERROR,
   },
   tools: {
     priority: 85,
     budget: { flex: true },
     defaultRole: 'tool',
     position: 'before',
-    overflow: 'truncate',
+    overflow: SlotOverflow.TRUNCATE,
   },
   scratchpad: {
     priority: 65,
@@ -87,14 +88,14 @@ export const AGENT_DEFAULTS = {
     defaultRole: 'user',
     position: 'interleave',
     order: 10,
-    overflow: 'truncate',
+    overflow: SlotOverflow.TRUNCATE,
   },
   history: {
     priority: 50,
     budget: { flex: true },
     defaultRole: 'user',
     position: 'after',
-    overflow: 'summarize',
+    overflow: SlotOverflow.SUMMARIZE,
   },
 } as const satisfies Record<string, SlotConfig>;
 

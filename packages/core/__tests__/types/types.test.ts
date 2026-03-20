@@ -8,6 +8,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { ContextSnapshot } from '../../src/snapshot/context-snapshot.js';
 import type { TokenCount, ContentId, SlotPriority } from '../../src/types/branded.js';
+import { SlotOverflow } from '../../src/slots/slot-overflow.js';
 import type {
   OverflowStrategyFn,
   SlotBudget,
@@ -101,6 +102,13 @@ describe('type level: OverflowStrategyFn', () => {
       overflow: custom,
     };
     expect(slot.overflow).toBe(custom);
+  });
+});
+
+describe('type level: SlotOverflow', () => {
+  it('presets are assignable to SlotOverflowStrategy', () => {
+    expectTypeOf(SlotOverflow.SUMMARIZE).toExtend<SlotOverflowStrategy>();
+    expectTypeOf(SlotOverflow.TRUNCATE_LATEST).toExtend<SlotOverflowStrategy>();
   });
 });
 

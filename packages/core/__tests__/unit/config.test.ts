@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { SlotOverflow } from '../../src/slots/slot-overflow.js';
 import { createContentId, toTokenCount } from '../../src/types/branded.js';
 import type {
   ContextConfig,
@@ -76,6 +77,21 @@ describe('SlotOverflowStrategy', () => {
       'fallback-chain',
     ];
     expect(strategies).toHaveLength(8);
+  });
+
+  it('SlotOverflow presets match named SlotOverflowStrategy literals', () => {
+    const all: SlotOverflowStrategy[] = [
+      SlotOverflow.TRUNCATE,
+      SlotOverflow.TRUNCATE_LATEST,
+      SlotOverflow.SUMMARIZE,
+      SlotOverflow.SLIDING_WINDOW,
+      SlotOverflow.SEMANTIC,
+      SlotOverflow.COMPRESS,
+      SlotOverflow.ERROR,
+      SlotOverflow.FALLBACK_CHAIN,
+    ];
+    expect(all).toContain('summarize');
+    expect(all).toContain('truncate-latest');
   });
 
   it('accepts custom strategy function', () => {

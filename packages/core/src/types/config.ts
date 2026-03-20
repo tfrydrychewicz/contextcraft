@@ -127,7 +127,10 @@ export type SummarizerFn = (
   budget: TokenCount,
 ) => ContentItem[] | Promise<ContentItem[]>;
 
-/** Named overflow strategies plus custom function */
+/**
+ * Named overflow strategies plus custom function.
+ * Use the {@link SlotOverflow} export for built-in name literals (§8.6).
+ */
 export type SlotOverflowStrategy =
   | 'truncate'
   | 'truncate-latest'
