@@ -26,7 +26,7 @@ import { createContext, Context } from 'slotmux';
 import { formatOpenAIMessages } from '@slotmux/providers';
 
 const { config } = createContext({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   preset: 'chat',
   reserveForResponse: 4096,
   lazyContentItemTokens: true,
@@ -142,13 +142,13 @@ Three presets get you started instantly:
 
 ```typescript
 // Chat — system + history slots
-createContext({ model: 'gpt-4o', preset: 'chat' });
+createContext({ model: 'gpt-5.4', preset: 'chat' });
 
 // RAG — system + documents + history + output slots
-createContext({ model: 'gpt-4o', preset: 'rag' });
+createContext({ model: 'gpt-5.4', preset: 'rag' });
 
 // Agent — system + tools + scratchpad + history slots
-createContext({ model: 'gpt-4o', preset: 'agent' });
+createContext({ model: 'gpt-5.4', preset: 'agent' });
 ```
 
 Or define your own slot layout from scratch — see the [concepts documentation](https://tfrydrychewicz.github.io/slotmux/concepts/slots).

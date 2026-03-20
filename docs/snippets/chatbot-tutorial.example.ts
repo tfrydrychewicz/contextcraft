@@ -8,7 +8,7 @@ import { createContext, Context } from 'slotmux';
 
 export async function tutorialChatbotTypecheck(): Promise<void> {
   const { config } = createContext({
-    model: 'gpt-4o-mini',
+    model: 'gpt-5.4-mini',
     preset: 'chat',
     reserveForResponse: 4096,
     lazyContentItemTokens: true,

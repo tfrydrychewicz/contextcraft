@@ -39,7 +39,7 @@ import { createContext, Context } from 'slotmux';
 import { formatOpenAIMessages } from '@slotmux/providers';
 
 const { config } = createContext({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   preset: 'chat',
   reserveForResponse: 4096,
   lazyContentItemTokens: true,
@@ -70,7 +70,7 @@ memory = ConversationBufferWindowMemory(k=10)
 
 ```typescript
 const { config } = createContext({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   preset: 'chat',
   reserveForResponse: 4096,
   lazyContentItemTokens: true,
@@ -101,7 +101,7 @@ memory = ConversationSummaryMemory(llm=llm)
 
 ```typescript
 const { config } = createContext({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   preset: 'chat',
   reserveForResponse: 4096,
   lazyContentItemTokens: true,
@@ -145,7 +145,7 @@ import { ragPlugin } from '@slotmux/plugin-rag';
 const plugin = ragPlugin({ maxChunks: 20, citationTracking: true });
 
 const { config } = createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'rag',
   reserveForResponse: 4096,
   lazyContentItemTokens: true,
@@ -191,7 +191,7 @@ import { memoryPlugin, InMemoryMemoryStore } from '@slotmux/plugin-memory';
 const store = new InMemoryMemoryStore();
 
 const { config } = createContext({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   preset: 'chat',
   reserveForResponse: 4096,
   lazyContentItemTokens: true,

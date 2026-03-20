@@ -3,7 +3,7 @@ import { reactiveContext } from 'slotmux/reactive';
 import type { SnapshotMeta } from 'slotmux';
 
 const rctx = reactiveContext({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   preset: 'chat',
   reserveForResponse: 4096,
   charTokenEstimateForMissing: true,

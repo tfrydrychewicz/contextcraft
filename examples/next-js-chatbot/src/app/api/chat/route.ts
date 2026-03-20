@@ -16,7 +16,7 @@ export async function POST(request: Request) {
   }
 
   const { config } = createContext({
-    model: 'gpt-4o-mini',
+    model: 'gpt-5.4-mini',
     preset: 'chat',
     reserveForResponse: 4096,
     charTokenEstimateForMissing: true,
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'gpt-4o-mini',
+      model: 'gpt-5.4-mini',
       messages: formatted,
       max_tokens: 1024,
     }),

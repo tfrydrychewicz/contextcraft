@@ -15,7 +15,7 @@ import type { SnapshotMeta } from 'slotmux';
 @Injectable({ providedIn: 'root' })
 export class SlotmuxService implements OnDestroy {
   private readonly rctx: ReactiveContext = reactiveContext({
-    model: 'gpt-4o-mini',
+    model: 'gpt-5.4-mini',
     preset: 'chat',
     reserveForResponse: 4096,
     charTokenEstimateForMissing: true,

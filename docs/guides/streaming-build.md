@@ -18,7 +18,7 @@ For small contexts (under 10K tokens) or contexts with few slots, `build()` is s
 import { createContext, Context } from 'slotmux';
 
 const { config } = createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'chat',
 });
 const ctx = Context.fromParsedConfig(config);
@@ -173,7 +173,7 @@ try {
 import { reactiveContext } from 'slotmux/reactive';
 
 const ctx = reactiveContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'chat',
   debounceMs: 100,
 });

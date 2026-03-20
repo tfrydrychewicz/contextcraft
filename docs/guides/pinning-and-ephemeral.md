@@ -114,7 +114,7 @@ The slot-level `protected` flag is different from per-item pinning:
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   slots: {
     system: {
       priority: 100,

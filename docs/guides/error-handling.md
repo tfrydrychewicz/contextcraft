@@ -49,7 +49,7 @@ throw new SlotmuxError('Something failed', { cause: originalError });
 ```typescript
 try {
   createContext({
-    model: 'gpt-4o-mini',
+    model: 'gpt-5.4-mini',
     maxTokens: 10_000,
     slots: {
       system: { priority: 100, budget: { fixed: 6000 } },
@@ -92,7 +92,7 @@ try {
 
 ```typescript
 // gpt-tokenizer not installed
-createContext({ model: 'gpt-4o' });
+createContext({ model: 'gpt-5.4' });
 // → TokenizerNotFoundError: Tokenizer "o200k_base" requires peer dependency "gpt-tokenizer"
 ```
 

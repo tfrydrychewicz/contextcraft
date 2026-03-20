@@ -71,7 +71,7 @@ Pass `slots` to `createContext` to define your own layout, or combine with a pre
 
 ```typescript
 const { config } = createContext({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   preset: 'chat',
   slots: {
     history: {

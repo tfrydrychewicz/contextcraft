@@ -8,12 +8,12 @@ Every slot has a **token budget** — the maximum number of tokens it may use. S
 totalBudget = maxTokens − reserveForResponse
 ```
 
-- **`maxTokens`** — Inferred from the model registry (e.g. 128 000 for `gpt-4o-mini`) or set explicitly in the config.
+- **`maxTokens`** — Inferred from the model registry (e.g. 128 000 for `gpt-5.4-mini`) or set explicitly in the config.
 - **`reserveForResponse`** — Tokens held back for the model's reply. This is subtracted up front; slots never compete for it.
 
 ```typescript
 const { config } = createContext({
-  model: 'gpt-4o-mini',       // maxTokens: 128 000
+  model: 'gpt-5.4-mini',       // maxTokens: 128 000
   preset: 'chat',
   reserveForResponse: 4096,   // totalBudget: 123 904
 });

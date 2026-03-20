@@ -112,7 +112,7 @@ Register it:
 
 ```typescript
 const { config } = createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'chat',
   lazyContentItemTokens: true,
   plugins: [

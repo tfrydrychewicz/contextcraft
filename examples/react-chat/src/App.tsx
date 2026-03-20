@@ -7,7 +7,7 @@ import {
 } from '@slotmux/react';
 
 const rctx = reactiveContext({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   preset: 'chat',
   reserveForResponse: 4096,
   charTokenEstimateForMissing: true,

@@ -53,7 +53,7 @@ import { formatOpenAIMessages } from '@slotmux/providers';
 //   • history — priority 50,  flex budget,        overflow: summarize
 
 const { config } = createContext({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   preset: 'chat',
   reserveForResponse: 4096,
   lazyContentItemTokens: true,
@@ -86,7 +86,7 @@ async function callOpenAI(messages) {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${OPENAI_API_KEY}`,
     },
-    body: JSON.stringify({ model: 'gpt-4o-mini', messages }),
+    body: JSON.stringify({ model: 'gpt-5.4-mini', messages }),
   });
   if (!res.ok) {
     const body = await res.text();
@@ -223,7 +223,7 @@ Each time you type a message, slotmux does all of this before the API call:
 
 | Feature | Where |
 | --- | --- |
-| **Model registry** | `createContext({ model: 'gpt-4o-mini' })` resolves maxTokens, tokenizer, provider from the built-in registry. |
+| **Model registry** | `createContext({ model: 'gpt-5.4-mini' })` resolves maxTokens, tokenizer, provider from the built-in registry. |
 | **Preset slots** | `preset: 'chat'` creates `system` (fixed budget) + `history` (flex budget) automatically. |
 | **Mutable Context** | `ctx.user()` / `ctx.assistant()` append to the right slots; the context grows turn by turn. |
 | **Immutable snapshot** | `ctx.build()` produces a frozen `ContextSnapshot` — safe to cache, serialize, or diff. |

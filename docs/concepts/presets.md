@@ -16,7 +16,7 @@ Two slots for a conversational interface. System instructions are fixed and prot
 | `history` | 50 | flex | after | `user` | `summarize` |
 
 ```typescript
-createContext({ model: 'gpt-4o', preset: 'chat' });
+createContext({ model: 'gpt-5.4', preset: 'chat' });
 ```
 
 ### `rag`
@@ -31,7 +31,7 @@ Four slots for retrieval-augmented generation. Retrieved documents get their own
 | `output` | 40 | flex | after | `assistant` | `truncate` |
 
 ```typescript
-createContext({ model: 'gpt-4o', preset: 'rag' });
+createContext({ model: 'gpt-5.4', preset: 'rag' });
 ```
 
 ### `agent`
@@ -46,7 +46,7 @@ Four slots for tool-calling agent loops. Tool definitions and results have high 
 | `history` | 50 | flex | after | `user` | `summarize` |
 
 ```typescript
-createContext({ model: 'gpt-4o', preset: 'agent' });
+createContext({ model: 'gpt-5.4', preset: 'agent' });
 ```
 
 ## Using a preset
@@ -57,7 +57,7 @@ Pass the `preset` option to `createContext`:
 import { createContext, Context } from 'slotmux';
 
 const { config } = createContext({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   preset: 'chat',
   reserveForResponse: 4096,
   lazyContentItemTokens: true,
@@ -74,7 +74,7 @@ When both `preset` and `slots` are provided, custom slots **override** preset sl
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'chat',
   slots: {
     // Override history slot: use truncate instead of summarize
@@ -94,7 +94,7 @@ You can also **add** new slots on top of a preset:
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'chat',
   slots: {
     rag: {
@@ -121,7 +121,7 @@ createContext({
 This means if you pass no `preset` and no `slots`, you get the chat layout:
 
 ```typescript
-createContext({ model: 'gpt-4o' });
+createContext({ model: 'gpt-5.4' });
 // → same as preset: 'chat'
 ```
 
@@ -133,7 +133,7 @@ Plugins with a `prepareSlots` hook run **after** preset resolution but **before*
 import { ragPlugin } from '@slotmux/plugin-rag';
 
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'chat',
   plugins: [ragPlugin({ maxChunks: 20 })],
 });
@@ -148,7 +148,7 @@ For full control, skip presets entirely and define every slot yourself:
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   maxTokens: 128_000,
   reserveForResponse: 8192,
   slots: {

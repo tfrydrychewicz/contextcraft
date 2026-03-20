@@ -67,7 +67,7 @@ Slotmux ships a built-in model registry that maps model IDs to capabilities:
 import { createContext } from 'slotmux';
 
 // Automatically resolves maxTokens, provider, and tokenizer
-const { config: gptConfig } = createContext({ model: 'gpt-4o' });
+const { config: gptConfig } = createContext({ model: 'gpt-5.4' });
 // → maxTokens: 128000, provider: 'openai'
 
 const { config: claudeConfig } = createContext({ model: 'claude-sonnet-4-20250514' });
@@ -77,7 +77,7 @@ const { config: geminiConfig } = createContext({ model: 'gemini-2.0-flash' });
 // → maxTokens: 1048576, provider: 'google'
 ```
 
-The registry uses prefix matching — `gpt-4o-mini`, `gpt-4o-2024-08-06`, etc. all resolve through the `gpt-4o` family.
+The registry uses prefix matching — `gpt-5.4-mini`, `gpt-5.4-nano`, etc. all resolve through the `gpt-5.4` family.
 
 ### Registering custom models
 
@@ -103,7 +103,7 @@ import { createContext, Context } from 'slotmux';
 import { formatOpenAIMessages, formatAnthropicMessages } from '@slotmux/providers';
 
 const { config } = createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'chat',
   reserveForResponse: 4096,
   lazyContentItemTokens: true,

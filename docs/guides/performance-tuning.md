@@ -23,7 +23,7 @@ By default, slotmux counts tokens **lazily** — the `tokens` field on each `Con
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   lazyContentItemTokens: true,  // default
 });
 ```
@@ -41,7 +41,7 @@ For non-critical paths where approximate counts are acceptable, use character es
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   charTokenEstimateForMissing: true,
 });
 ```
@@ -142,7 +142,7 @@ By default, snapshots are deeply frozen with `Object.freeze()`. This provides sa
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   immutableSnapshots: false,  // skip Object.freeze()
 });
 ```
@@ -155,7 +155,7 @@ Use the built-in event system to measure build performance:
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   onEvent(event) {
     if (event.type === 'build:complete') {
       const { buildTimeMs, utilization, totalTokens } = event.snapshot.meta;

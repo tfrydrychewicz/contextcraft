@@ -1,7 +1,7 @@
 import { createContext, Context } from 'slotmux';
 
 const { config } = createContext({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   reserveForResponse: 4096,
   charTokenEstimateForMissing: true,
   slots: {

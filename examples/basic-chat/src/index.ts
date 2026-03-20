@@ -11,7 +11,7 @@ if (!OPENAI_KEY) {
 }
 
 const { config } = createContext({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   preset: 'chat',
   reserveForResponse: 4096,
   lazyContentItemTokens: true,
@@ -42,7 +42,7 @@ while (true) {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${OPENAI_KEY}`,
     },
-    body: JSON.stringify({ model: 'gpt-4o-mini', messages, max_tokens: 1024 }),
+    body: JSON.stringify({ model: 'gpt-5.4-mini', messages, max_tokens: 1024 }),
   });
 
   const json = (await res.json()) as {

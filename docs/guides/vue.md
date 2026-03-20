@@ -17,7 +17,7 @@ import { reactiveContext } from 'slotmux/reactive';
 import { SlotOverflow } from 'slotmux';
 
 const ctx = reactiveContext({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   maxTokens: 128_000,
   reserveForResponse: 4096,
   strictTokenizerPeers: false,
@@ -101,7 +101,7 @@ import { SlotOverflow } from 'slotmux';
 import { formatOpenAIMessages } from '@slotmux/providers';
 
 const { ctx, meta, utilization, buildError } = useSlotmux({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   maxTokens: 128_000,
   reserveForResponse: 4096,
   strictTokenizerPeers: false,

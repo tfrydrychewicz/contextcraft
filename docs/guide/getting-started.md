@@ -35,7 +35,7 @@ import { createContext, Context } from 'slotmux';
 
 // 1. Configure — pick a model, choose a preset
 const { config } = createContext({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   preset: 'chat',           // → system + history slots
   reserveForResponse: 4096, // leave room for the model's reply
 });
@@ -68,7 +68,7 @@ const messages = formatOpenAIMessages(snapshot.messages);
 
 // Pass to your preferred OpenAI client
 const response = await openai.chat.completions.create({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   messages,
 });
 ```
@@ -97,20 +97,20 @@ Three presets cover the most common patterns:
 
 ```typescript
 // Chatbot — system instructions + conversation history
-createContext({ model: 'gpt-4o', preset: 'chat' });
+createContext({ model: 'gpt-5.4', preset: 'chat' });
 
 // RAG — system + retrieved documents + history + output
-createContext({ model: 'gpt-4o', preset: 'rag' });
+createContext({ model: 'gpt-5.4', preset: 'rag' });
 
 // Agent — system + tools + scratchpad + history
-createContext({ model: 'gpt-4o', preset: 'agent' });
+createContext({ model: 'gpt-5.4', preset: 'agent' });
 ```
 
 Or define a fully custom slot layout:
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   slots: {
     system:  { priority: 100, budget: { fixed: 2000 },  overflow: 'error',      defaultRole: 'system',    position: 'before' },
     docs:    { priority: 80,  budget: { percent: 30 },   overflow: 'semantic',   defaultRole: 'user',      position: 'before' },

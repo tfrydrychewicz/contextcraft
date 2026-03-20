@@ -10,7 +10,7 @@ Pass an `onEvent` callback in your context config:
 import { createContext, Context } from 'slotmux';
 
 const { config } = createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'chat',
   onEvent(event) {
     console.log(`[${event.type}]`, event);
@@ -151,7 +151,7 @@ The simplest setup:
 import { createConsoleLogger, createContext } from 'slotmux';
 
 const { config } = createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'chat',
   logger: createConsoleLogger({ prefix: '[slotmux]' }),
 });
@@ -175,7 +175,7 @@ const console = createConsoleLogger({ prefix: '[slotmux]' });
 const leveled = createLeveledLogger(console, LogLevel.WARN);
 
 const { config } = createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   logger: leveled,
   logLevel: LogLevel.WARN,
 });
@@ -302,7 +302,7 @@ By default, event payloads delivered to `onEvent` and loggers are **redacted** â
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   redaction: {
     patterns: [/\bAPI_KEY_\w+/g, /Bearer\s+\S+/g],
     replacement: '[HIDDEN]',

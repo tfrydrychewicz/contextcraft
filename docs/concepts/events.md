@@ -8,7 +8,7 @@ Pass an `onEvent` callback when creating a context:
 
 ```typescript
 const { config } = createContext({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   preset: 'chat',
   onEvent(event) {
     switch (event.type) {
@@ -158,7 +158,7 @@ Content in the actual context (what gets sent to the LLM) is **never** redacted 
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   redaction: {
     patterns: [/\bSECRET_\w+/g],
     replacement: '[HIDDEN]',

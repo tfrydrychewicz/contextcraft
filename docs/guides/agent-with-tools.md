@@ -19,7 +19,7 @@ The compile order is: **system → tools → scratchpad → history**. Tool defi
 import { createContext, Context } from 'slotmux';
 
 const { config } = createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'agent',
   reserveForResponse: 4096,
   lazyContentItemTokens: true,
@@ -44,7 +44,7 @@ npm install @slotmux/plugin-tools
 import { toolsPlugin } from '@slotmux/plugin-tools';
 
 const { config } = createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'agent',
   reserveForResponse: 4096,
   lazyContentItemTokens: true,
@@ -132,7 +132,7 @@ async function agentLoop(userMessage: string) {
     const messages = formatOpenAIMessages(snapshot.messages);
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: 'gpt-5.4',
       messages,
       tools: toolDefinitions,
     });
@@ -203,7 +203,7 @@ For agent workloads, consider giving tools a fixed or percent budget to ensure s
 
 ```typescript
 const { config } = createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'agent',
   reserveForResponse: 4096,
   lazyContentItemTokens: true,

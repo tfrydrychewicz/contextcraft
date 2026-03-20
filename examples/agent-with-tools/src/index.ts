@@ -73,7 +73,7 @@ async function chatWithTools(
       Authorization: `Bearer ${OPENAI_KEY}`,
     },
     body: JSON.stringify({
-      model: 'gpt-4o-mini',
+      model: 'gpt-5.4-mini',
       messages,
       tools,
       tool_choice: 'auto',
@@ -95,7 +95,7 @@ async function chatWithTools(
 
 // --- Set up slotmux ---
 const { config } = createContext({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   preset: 'agent',
   reserveForResponse: 4096,
   lazyContentItemTokens: true,

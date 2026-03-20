@@ -17,7 +17,7 @@ The system slot is protected — it throws if the system prompt exceeds 2 000 to
 import { createContext, Context } from 'slotmux';
 
 const { config } = createContext({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   preset: 'chat',
   reserveForResponse: 4096,
   lazyContentItemTokens: true,
@@ -84,7 +84,7 @@ The `summarize` strategy requires a summarization function to be injected (via `
 
 ```typescript
 const { config } = createContext({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   preset: 'chat',
   reserveForResponse: 4096,
   lazyContentItemTokens: true,
@@ -198,7 +198,7 @@ const response = await fetch('https://api.openai.com/v1/chat/completions', {
     'Content-Type': 'application/json',
   },
   body: JSON.stringify({
-    model: 'gpt-4o-mini',
+    model: 'gpt-5.4-mini',
     messages,
   }),
 });

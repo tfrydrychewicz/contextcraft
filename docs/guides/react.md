@@ -36,7 +36,7 @@ function useChatContext() {
   return useMemo(
     () =>
       reactiveContext({
-        model: 'gpt-4o-mini',
+        model: 'gpt-5.4-mini',
         maxTokens: 128_000,
         reserveForResponse: 4096,
         strictTokenizerPeers: false,
@@ -164,7 +164,7 @@ function useChat(): ReactiveContext {
   return useMemo(
     () =>
       reactiveContext({
-        model: 'gpt-4o-mini',
+        model: 'gpt-5.4-mini',
         maxTokens: 128_000,
         reserveForResponse: 4096,
         strictTokenizerPeers: false,

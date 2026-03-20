@@ -150,7 +150,7 @@ import { ragPlugin } from '@slotmux/plugin-rag';
 import { toolsPlugin } from '@slotmux/plugin-tools';
 
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   plugins: [
     ragPlugin({ maxChunks: 20, deduplication: true }),
     toolsPlugin({ maxToolResults: 10 }),

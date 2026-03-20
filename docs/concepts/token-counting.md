@@ -66,7 +66,7 @@ When a model requires a tokenizer whose peer dependency isn't installed, slotmux
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   strictTokenizerPeers: false,  // fall back to char estimation if gpt-tokenizer is missing
 });
 ```
@@ -122,7 +122,7 @@ By default, slotmux counts tokens **lazily** — the `tokens` field on a `Conten
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   lazyContentItemTokens: true,  // default
 });
 ```
@@ -166,7 +166,7 @@ For security-sensitive applications, enable `requireAuthoritativeTokenCounts`:
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   requireAuthoritativeTokenCounts: true,
 });
 ```
@@ -179,7 +179,7 @@ You can supply a custom token counting function via `tokenAccountant`:
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   tokenAccountant: {
     countItems: (items) =>
       items.reduce((total, item) =>

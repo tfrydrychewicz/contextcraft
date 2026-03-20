@@ -37,7 +37,7 @@ async function chat(
       'Content-Type': 'application/json',
       Authorization: `Bearer ${OPENAI_KEY}`,
     },
-    body: JSON.stringify({ model: 'gpt-4o-mini', messages, max_tokens: 1024 }),
+    body: JSON.stringify({ model: 'gpt-5.4-mini', messages, max_tokens: 1024 }),
   });
   const json = (await res.json()) as {
     choices: Array<{ message: { content: string } }>;
@@ -53,7 +53,7 @@ const index = pc.index(INDEX_NAME);
 const rag = ragPlugin({ maxChunks: 10, deduplication: true });
 
 const { config } = createContext({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   preset: 'rag',
   reserveForResponse: 4096,
   lazyContentItemTokens: true,

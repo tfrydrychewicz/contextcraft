@@ -102,7 +102,7 @@ import { createContext, Context } from 'slotmux';
 import { formatOpenAIMessages } from '@slotmux/providers';
 
 const { config } = createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'chat',                  // system + history slots, ready to go
   reserveForResponse: 4096,
 });

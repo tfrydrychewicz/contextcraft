@@ -24,7 +24,7 @@ Set the overflow strategy to `'compress'` on a slot:
 import { createContext, Context, SlotOverflow } from 'slotmux';
 
 const { config } = createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   slots: {
     system: {
       priority: 100,
@@ -88,7 +88,7 @@ Set `overflowConfig.losslessLocale` on the slot:
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   slots: {
     history: {
       priority: 50,

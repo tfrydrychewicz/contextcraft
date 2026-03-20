@@ -19,7 +19,7 @@ Higher-priority slots get their budget first. The `rag` slot (priority 80) is al
 import { createContext, Context } from 'slotmux';
 
 const { config } = createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'rag',
   reserveForResponse: 4096,
   lazyContentItemTokens: true,
@@ -71,7 +71,7 @@ const plugin = ragPlugin({
 });
 
 const { config } = createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'rag',
   reserveForResponse: 4096,
   lazyContentItemTokens: true,
@@ -115,7 +115,7 @@ For smarter overflow that keeps the most relevant chunks based on embedding simi
 
 ```typescript
 const { config } = createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'rag',
   reserveForResponse: 4096,
   lazyContentItemTokens: true,

@@ -185,7 +185,7 @@ const text = snapshot.format('text');
 import { createContext, Context } from 'slotmux';
 
 const { config } = createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'chat',
 });
 const ctx = Context.fromParsedConfig(config);
@@ -226,7 +226,7 @@ Images can consume significant tokens. Use `tokenEstimate` to give the budget al
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   slots: {
     system: { priority: 100, budget: { fixed: 1000 }, defaultRole: 'system', position: 'before' },
     images: { priority: 80, budget: { percent: 30 }, defaultRole: 'user', position: 'before', overflow: 'truncate' },

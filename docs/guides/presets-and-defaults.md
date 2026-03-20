@@ -8,7 +8,7 @@ Slotmux ships three preset slot layouts — `chat`, `rag`, and `agent` — that 
 import { createContext, Context } from 'slotmux';
 
 const { config } = createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'chat',
 });
 const ctx = Context.fromParsedConfig(config);
@@ -33,7 +33,7 @@ Two slots for a conversational interface:
 **Best for:** Chatbots, Q&A interfaces, customer support bots, personal assistants.
 
 ```typescript
-createContext({ model: 'gpt-4o', preset: 'chat' });
+createContext({ model: 'gpt-5.4', preset: 'chat' });
 ```
 
 ## RAG preset
@@ -56,7 +56,7 @@ Four slots for retrieval-augmented generation:
 **Best for:** Document Q&A, knowledge bases, search-augmented chat.
 
 ```typescript
-createContext({ model: 'gpt-4o', preset: 'rag' });
+createContext({ model: 'gpt-5.4', preset: 'rag' });
 ```
 
 ## Agent preset
@@ -79,7 +79,7 @@ Four slots for tool-calling agent loops:
 **Best for:** Function-calling agents, ReAct loops, multi-step tool pipelines.
 
 ```typescript
-createContext({ model: 'gpt-4o', preset: 'agent' });
+createContext({ model: 'gpt-5.4', preset: 'agent' });
 ```
 
 ## Default when nothing is specified
@@ -87,7 +87,7 @@ createContext({ model: 'gpt-4o', preset: 'agent' });
 When you pass neither `preset` nor `slots`, slotmux defaults to the **chat** preset:
 
 ```typescript
-createContext({ model: 'gpt-4o' });
+createContext({ model: 'gpt-5.4' });
 // → same as preset: 'chat'
 ```
 
@@ -101,7 +101,7 @@ Pass `slots` alongside `preset` to override specific slots. Unmentioned preset s
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'chat',
   slots: {
     history: {
@@ -123,7 +123,7 @@ You can add new slots on top of a preset:
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'chat',
   slots: {
     rag: {
@@ -142,7 +142,7 @@ createContext({
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'agent',
   slots: {
     system: {
@@ -177,7 +177,7 @@ Plugins with a `prepareSlots` hook run after preset resolution. This lets plugin
 import { ragPlugin } from '@slotmux/plugin-rag';
 
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'chat',
   plugins: [ragPlugin({ maxChunks: 20 })],
 });
@@ -206,7 +206,7 @@ For full control, skip presets and define every slot yourself:
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   maxTokens: 128_000,
   reserveForResponse: 8192,
   slots: {

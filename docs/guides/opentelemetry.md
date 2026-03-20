@@ -25,7 +25,7 @@ import { createContext, Context } from 'slotmux';
 import { otelPlugin } from '@slotmux/plugin-otel';
 
 const { config } = createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'chat',
   plugins: [
     otelPlugin({ serviceName: 'my-chatbot' }),
@@ -99,7 +99,7 @@ function handleRequest(req: IncomingMessage) {
   const parentCtx = propagation.extract(otelContext.active(), req.headers);
 
   const { config } = createContext({
-    model: 'gpt-4o',
+    model: 'gpt-5.4',
     preset: 'chat',
     plugins: [
       otelPlugin({ parentContext: parentCtx, serviceName: 'my-chatbot' }),
@@ -133,7 +133,7 @@ const sdk = new NodeSDK({
 sdk.start();
 
 const { config } = createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'chat',
   plugins: [otelPlugin({ serviceName: 'example' })],
 });

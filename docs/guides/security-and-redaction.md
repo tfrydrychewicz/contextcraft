@@ -23,14 +23,14 @@ Slotmux ships four built-in patterns:
 import { createContext } from 'slotmux';
 
 // Default: redaction on with built-in patterns
-createContext({ model: 'gpt-4o' });
+createContext({ model: 'gpt-5.4' });
 
 // Explicit on
-createContext({ model: 'gpt-4o', redaction: true });
+createContext({ model: 'gpt-5.4', redaction: true });
 
 // Custom patterns
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   redaction: {
     patterns: [
       /\bAPI_KEY_\w+/g,
@@ -42,7 +42,7 @@ createContext({
 });
 
 // Disable redaction
-createContext({ model: 'gpt-4o', redaction: false });
+createContext({ model: 'gpt-5.4', redaction: false });
 ```
 
 ### Full observability mode
@@ -53,7 +53,7 @@ Setting `logLevel: LogLevel.TRACE` disables redaction entirely, giving you raw e
 import { LogLevel, createConsoleLogger } from 'slotmux';
 
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   logger: createConsoleLogger(),
   logLevel: LogLevel.TRACE,  // disables redaction
 });
@@ -77,7 +77,7 @@ The `sanitizePlugin` strips common prompt injection patterns from compiled messa
 import { createContext, sanitizePlugin } from 'slotmux';
 
 const { config } = createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'chat',
   plugins: [sanitizePlugin()],
 });
@@ -153,7 +153,7 @@ For billing-sensitive or safety-critical applications, ensure token counts come 
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   requireAuthoritativeTokenCounts: true,
 });
 ```
@@ -168,7 +168,7 @@ Every slot has a `maxItems` cap (default 10,000) to prevent memory exhaustion:
 
 ```typescript
 createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   slots: {
     history: {
       priority: 50,

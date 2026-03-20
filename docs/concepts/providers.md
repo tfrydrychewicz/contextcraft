@@ -72,7 +72,7 @@ Slotmux ships a built-in `MODEL_REGISTRY` that maps model IDs to their capabilit
 
 ```typescript
 // These are resolved automatically when you pass a model string:
-createContext({ model: 'gpt-4o' });
+createContext({ model: 'gpt-5.4' });
 // → infers: maxTokens=128000, provider=openai, tokenizer=o200k_base
 
 createContext({ model: 'claude-sonnet-4-20250514' });
@@ -83,8 +83,8 @@ createContext({ model: 'claude-sonnet-4-20250514' });
 
 | Model | Provider | Context window | Tokenizer |
 | --- | --- | --- | --- |
-| `gpt-4o` | openai | 128 000 | o200k_base |
-| `gpt-4o-mini` | openai | 128 000 | o200k_base |
+| `gpt-5.4` | openai | 128 000 | o200k_base |
+| `gpt-5.4-mini` | openai | 128 000 | o200k_base |
 | `gpt-4-turbo` | openai | 128 000 | cl100k_base |
 | `o1` / `o3` / `o3-mini` | openai | 200 000 | o200k_base |
 | `gpt-5.4` | openai | 1 000 000 | o200k_base |

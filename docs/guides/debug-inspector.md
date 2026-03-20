@@ -19,7 +19,7 @@ import { createContext, Context } from 'slotmux';
 import { attachInspector } from '@slotmux/debug';
 
 const { config } = createContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'chat',
 });
 const ctx = Context.fromParsedConfig(config);
@@ -158,7 +158,7 @@ import { attachInspector } from '@slotmux/debug';
 
 async function main() {
   const { config } = createContext({
-    model: 'gpt-4o-mini',
+    model: 'gpt-5.4-mini',
     preset: 'chat',
   });
   const ctx = Context.fromParsedConfig(config);

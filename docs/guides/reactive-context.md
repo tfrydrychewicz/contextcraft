@@ -10,7 +10,7 @@ This guide covers the framework-agnostic API. For framework-specific integration
 import { reactiveContext } from 'slotmux/reactive';
 
 const ctx = reactiveContext({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   maxTokens: 128_000,
   reserveForResponse: 4096,
   preset: 'chat',
@@ -129,7 +129,7 @@ Handle auto-rebuild failures without subscribing to `buildError`:
 
 ```typescript
 const ctx = reactiveContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'chat',
   onBuildError(error) {
     console.error('Auto-rebuild failed:', error);
@@ -214,7 +214,7 @@ This clears any pending debounce timer, increments the generation counter (preve
 import { reactiveContext } from 'slotmux/reactive';
 
 const ctx = reactiveContext({
-  model: 'gpt-4o',
+  model: 'gpt-5.4',
   preset: 'chat',
   debounceMs: 100,
 });

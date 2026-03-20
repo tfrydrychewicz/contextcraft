@@ -100,7 +100,7 @@ To disable freezing (for performance-critical paths where you know you won't mut
 
 ```typescript
 const { config } = createContext({
-  model: 'gpt-4o-mini',
+  model: 'gpt-5.4-mini',
   preset: 'chat',
   immutableSnapshots: false,
 });

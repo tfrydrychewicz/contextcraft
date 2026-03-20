@@ -17,7 +17,7 @@ if (!OPENAI_KEY && !ANTHROPIC_KEY) {
 // Same context content — built once, formatted for different providers
 function buildContext() {
   const { config } = createContext({
-    model: 'gpt-4o-mini',
+    model: 'gpt-5.4-mini',
     preset: 'chat',
     reserveForResponse: 4096,
     charTokenEstimateForMissing: true,
@@ -38,7 +38,7 @@ async function callOpenAI(
       'Content-Type': 'application/json',
       Authorization: `Bearer ${OPENAI_KEY}`,
     },
-    body: JSON.stringify({ model: 'gpt-4o-mini', messages, max_tokens: 512 }),
+    body: JSON.stringify({ model: 'gpt-5.4-mini', messages, max_tokens: 512 }),
   });
   const json = (await res.json()) as {
     choices: Array<{ message: { content: string } }>;
@@ -81,13 +81,13 @@ console.log(
 const results: Array<{ provider: string; response: string }> = [];
 
 if (OPENAI_KEY) {
-  console.log('Sending to OpenAI (gpt-4o-mini)...');
+  console.log('Sending to OpenAI (gpt-5.4-mini)...');
   const messages = formatOpenAIMessages(snapshot.messages) as Array<{
     role: string;
     content: string;
   }>;
   const response = await callOpenAI(messages);
-  results.push({ provider: 'OpenAI (gpt-4o-mini)', response });
+  results.push({ provider: 'OpenAI (gpt-5.4-mini)', response });
 }
 
 if (ANTHROPIC_KEY) {
