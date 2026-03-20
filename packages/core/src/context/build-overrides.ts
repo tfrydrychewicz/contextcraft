@@ -39,6 +39,10 @@ export type ContextBuildParams = {
   readonly structuralSharing?: boolean;
   /** When set, overrides `config.plugins` for the build pipeline (Phase 7.2). */
   readonly pluginManager?: PluginManager;
+  /**
+   * Stable id for this build in logs (§13.3 — Phase 10.1). Useful in tests; otherwise a UUID is generated.
+   */
+  readonly operationId?: string;
 };
 
 /**

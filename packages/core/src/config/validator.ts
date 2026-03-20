@@ -7,7 +7,22 @@
 import { prettifyError, z } from 'zod';
 
 import { InvalidConfigError } from '../errors.js';
+import { LogLevel } from '../logging/logger.js';
+import type { Logger } from '../logging/logger.js';
 import type { TokenAccountant } from '../types/token-accountant.js';
+
+function isLogger(val: unknown): val is Logger {
+  if (typeof val !== 'object' || val === null) {
+    return false;
+  }
+  const o = val as Record<string, unknown>;
+  return (
+    typeof o['debug'] === 'function' &&
+    typeof o['info'] === 'function' &&
+    typeof o['warn'] === 'function' &&
+    typeof o['error'] === 'function'
+  );
+}
 
 /** Named overflow strategies */
 export const slotOverflowNamedSchema = z.enum([
@@ -151,6 +166,13 @@ export const contextConfigSchema = z
         { message: 'tokenAccountant must be an object with countItems(items) => number' },
       )
       .optional(),
+    logger: z
+      .custom<Logger | undefined>(
+        (val) => val === undefined || isLogger(val),
+        { message: 'logger must be an object with debug, info, warn, and error methods' },
+      )
+      .optional(),
+    logLevel: z.nativeEnum(LogLevel).optional(),
   })
   .strict()
   .superRefine((data, ctx) => {

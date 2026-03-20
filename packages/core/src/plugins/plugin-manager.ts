@@ -27,7 +27,7 @@ import type {
   TokenCountCache,
 } from '../types/plugin.js';
 
-const noopLogger: PluginLogger = {
+const noopPluginLogger: PluginLogger = {
   debug: () => {},
   info: () => {},
   warn: () => {},
@@ -78,6 +78,11 @@ export type PluginManagerOptions = {
    * this {@link Logger} is passed as {@link CompressionContext.logger}.
    */
   readonly compressionFallbackLogger?: Logger;
+
+  /**
+   * Receives {@link ContextPlugin.install} failures before rethrow (§13.3 — Phase 10.1).
+   */
+  readonly logger?: Logger;
 };
 
 /** Hook names supported by {@link PluginManager.runHook}. */
@@ -105,6 +110,8 @@ export class PluginManager {
 
   private readonly compressionFallbackLogger: Logger;
 
+  private readonly pipelineLogger: Logger;
+
   private readonly plugins: ContextPlugin[] = [];
 
   private readonly seen = new Set<ContextPlugin>();
@@ -116,8 +123,9 @@ export class PluginManager {
   constructor(options: PluginManagerOptions) {
     this.getSlots = options.getSlots;
     this.tokenCounter = options.tokenCounter;
-    this.createLogger = options.createLogger ?? (() => noopLogger);
-    this.compressionFallbackLogger = options.compressionFallbackLogger ?? noopLogger;
+    this.createLogger = options.createLogger ?? (() => noopPluginLogger);
+    this.compressionFallbackLogger = options.compressionFallbackLogger ?? noopPluginLogger;
+    this.pipelineLogger = options.logger ?? noopPluginLogger;
   }
 
   /** Plugins in registration order. */
@@ -193,6 +201,10 @@ export class PluginManager {
         await Promise.resolve(plugin.install(ctx));
       }
     } catch (error) {
+      this.pipelineLogger.error(
+        `Plugin "${plugin.name}" install failed; registrations rolled back`,
+        error,
+      );
       this.overflowRegs = this.overflowRegs.filter((r) => r.plugin !== plugin);
       this.compressorRegs = this.compressorRegs.filter((r) => r.plugin !== plugin);
       throw error;

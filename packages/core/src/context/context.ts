@@ -186,6 +186,7 @@ export class Context {
       ...(params?.pluginManager !== undefined
         ? { pluginManager: params.pluginManager }
         : {}),
+      ...(params?.operationId !== undefined ? { operationId: params.operationId } : {}),
     });
   }
 

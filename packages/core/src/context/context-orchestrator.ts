@@ -6,6 +6,14 @@
 
 import type { ParsedContextConfig } from '../config/validator.js';
 import { InvalidConfigError } from '../errors.js';
+import {
+  createContextualLogger,
+  createLeveledLogger,
+  LogLevel,
+  newBuildOperationId,
+  noopLogger,
+} from '../logging/logger.js';
+import { overflowStrategyLoggerFromLogger } from '../logging/overflow-strategy-logger.js';
 import type { PluginManager } from '../plugins/plugin-manager.js';
 import {
   BudgetAllocator,
@@ -169,6 +177,11 @@ export type ContextOrchestratorBuildInput = {
    * When set, hooks and strategy registrations come from the manager instead of `config.plugins`.
    */
   readonly pluginManager?: PluginManager;
+  /**
+   * Correlates log lines for one {@link ContextOrchestrator.build} run (§13.3 — Phase 10.1).
+   * Defaults to a UUID from {@link newBuildOperationId} when omitted.
+   */
+  readonly operationId?: string;
 };
 
 export type ContextOrchestratorBuildResult = {
@@ -326,8 +339,24 @@ export class ContextOrchestrator {
     input: ContextOrchestratorBuildInput,
   ): Promise<ContextOrchestratorBuildResult> {
     const t0 = Date.now();
-    const { config, context, providerAdapters, previousSnapshot, structuralSharing } =
-      input;
+    const {
+      config,
+      context,
+      providerAdapters,
+      previousSnapshot,
+      structuralSharing,
+      operationId: operationIdInput,
+    } = input;
+    const operationId = operationIdInput ?? newBuildOperationId();
+    const userLogger = config.logger;
+    const hasUserLogger = userLogger !== undefined;
+    const baseLogger = hasUserLogger
+      ? createLeveledLogger(userLogger, config.logLevel ?? LogLevel.INFO)
+      : noopLogger;
+    const pipelineLog = hasUserLogger
+      ? createContextualLogger(baseLogger, { operationId })
+      : noopLogger;
+
     const baseSlots = config.slots as Record<string, SlotConfig>;
     if (config.slots === undefined || Object.keys(config.slots).length === 0) {
       throw new InvalidConfigError('ContextOrchestrator.build: config.slots is required', {
@@ -344,6 +373,7 @@ export class ContextOrchestrator {
     const totalBudget = Math.max(0, maxTokens - reserve);
 
     emitEvent(config, { type: 'build:start', totalBudget });
+    pipelineLog.debug(`build: pipeline started (totalBudget=${totalBudget})`);
 
     const slots =
       pluginManager !== undefined
@@ -357,6 +387,9 @@ export class ContextOrchestrator {
 
     const forward = (e: ContextEvent): void => {
       emitEvent(config, e);
+      if (e.type === 'warning') {
+        pipelineLog.warn(e.warning.message, e.warning);
+      }
       if (e.type === 'content:evicted') {
         evictionsBySlot.set(e.slot, (evictionsBySlot.get(e.slot) ?? 0) + 1);
         evictionsMeta.push({
@@ -373,8 +406,10 @@ export class ContextOrchestrator {
 
     const allocator = new BudgetAllocator({
       onEvent: (e) => forward(e),
+      ...(hasUserLogger ? { logger: pipelineLog } : {}),
     });
     const budgetResolved = allocator.resolve(slots, totalBudget);
+    pipelineLog.debug('build: slot budgets resolved');
 
     if (pluginManager !== undefined) {
       await pluginManager.runHook('afterBudgetResolve', budgetResolved);
@@ -388,6 +423,14 @@ export class ContextOrchestrator {
       onEvent: (e) => forward(e),
       ...(namedStrategies !== undefined && Object.keys(namedStrategies).length > 0
         ? { namedStrategies }
+        : {}),
+      ...(hasUserLogger
+        ? {
+            strategyLoggerFactory: (slot) =>
+              overflowStrategyLoggerFromLogger(
+                createContextualLogger(pipelineLog, { slot }),
+              ),
+          }
         : {}),
     });
 
@@ -416,9 +459,11 @@ export class ContextOrchestrator {
       overflowInputs.map((s) => [s.name, s.content] as const),
     );
 
+    pipelineLog.debug('build: overflow resolution');
     const afterOverflow = await engine.resolve(overflowInputs, {
       totalBudget,
     });
+    pipelineLog.debug('build: overflow complete');
 
     if (pluginManager !== undefined) {
       await pluginManager.runHook('afterOverflow', preOverflowBySlot, afterOverflow);
@@ -482,6 +527,9 @@ export class ContextOrchestrator {
     context.clearEphemeral();
 
     emitEvent(config, { type: 'build:complete', snapshot });
+    pipelineLog.debug(
+      `build: complete (messages=${snapshot.messages.length}, buildTimeMs=${snapshot.meta.buildTimeMs})`,
+    );
 
     return { snapshot, context };
   }

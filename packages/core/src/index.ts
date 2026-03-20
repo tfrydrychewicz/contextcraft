@@ -188,17 +188,22 @@ export type ContextEventEmitter = import('./events/emitter.js').TypedEventEmitte
 export { LogLevel } from './logging/logger.js';
 export {
   createConsoleLogger,
+  createContextualLogger,
   createLeveledLogger,
   createPluginLoggerFactory,
   createRedactingLogger,
   createScopedLogger,
+  newBuildOperationId,
+  noopLogger,
 } from './logging/logger.js';
 export type {
   ConsoleLoggerOptions,
+  LogContextFields,
   Logger,
   PluginLoggerFactoryOptions,
   RedactingLoggerOptions,
 } from './logging/logger.js';
+export { overflowStrategyLoggerFromLogger } from './logging/overflow-strategy-logger.js';
 export {
   DEFAULT_REDACTION_PATTERNS,
   redactString,

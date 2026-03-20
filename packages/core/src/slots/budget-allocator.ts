@@ -5,6 +5,7 @@
  */
 
 import { BudgetExceededError, InvalidBudgetError } from '../errors.js';
+import type { Logger } from '../logging/logger.js';
 import type { SlotBudget, SlotConfig } from '../types/config.js';
 import type { SlotBudgetResolvedEvent } from '../types/events.js';
 import type { ResolvedSlot } from '../types/plugin.js';
@@ -12,6 +13,8 @@ import type { ResolvedSlot } from '../types/plugin.js';
 export type BudgetAllocatorOptions = {
   /** Fired once per slot after budgets are computed (§3.3). */
   onEvent?: (event: SlotBudgetResolvedEvent) => void;
+  /** When set, validation failures are also logged before throw (§13.3 — Phase 10.1). */
+  logger?: Logger;
 };
 
 type SlotEntry = { readonly name: string; readonly config: SlotConfig };
@@ -168,7 +171,11 @@ export class BudgetAllocator {
     slots: Record<string, SlotConfig>,
     totalBudget: number,
   ): ResolvedSlot[] {
+    const log = this.options.logger;
     if (!Number.isInteger(totalBudget) || totalBudget < 0) {
+      log?.error(`totalBudget must be a non-negative integer, got ${totalBudget}`, {
+        totalBudget,
+      });
       throw new InvalidBudgetError(
         `totalBudget must be a non-negative integer, got ${totalBudget}`,
         { context: { totalBudget } },
@@ -184,6 +191,7 @@ export class BudgetAllocator {
       if ('fixed' in b) {
         const f = b.fixed;
         if (!Number.isInteger(f) || f < 0) {
+          log?.error(`Invalid fixed budget for slot "${name}"`, { slot: name, fixed: f });
           throw new InvalidBudgetError(`Invalid fixed budget for slot "${name}"`, {
             context: { slot: name, fixed: f },
           });
@@ -194,6 +202,7 @@ export class BudgetAllocator {
     }
 
     if (fixedSum > totalBudget) {
+      log?.error(`Fixed slot budgets exceed total budget`, { fixedSum, totalBudget });
       throw new BudgetExceededError(
         `Fixed slot budgets (${fixedSum}) exceed total budget (${totalBudget})`,
         { context: { fixedSum, totalBudget } },
@@ -209,6 +218,7 @@ export class BudgetAllocator {
     );
 
     if (sumPercent > 100) {
+      log?.error(`Sum of slot percentage budgets must not exceed 100`, { sumPercent });
       throw new InvalidBudgetError(
         `Sum of slot percentage budgets (${sumPercent}) must not exceed 100`,
         { context: { sumPercent } },
@@ -236,7 +246,13 @@ export class BudgetAllocator {
       distributePercentBonus(percentSlots, alloc, flexPool);
       flexPool = 0;
     } else {
-      const flexAlloc = allocateFlexPool(flexSlots, flexPool);
+      let flexAlloc: Map<string, number>;
+      try {
+        flexAlloc = allocateFlexPool(flexSlots, flexPool);
+      } catch (err) {
+        log?.error('Flex slot allocation failed', err);
+        throw err;
+      }
       for (const [name, v] of flexAlloc) {
         alloc.set(name, v);
       }
@@ -254,6 +270,10 @@ export class BudgetAllocator {
     }
 
     if (totalAllocated > totalBudget) {
+      log?.error(`Internal error: allocated tokens exceed budget`, {
+        totalAllocated,
+        totalBudget,
+      });
       throw new BudgetExceededError(
         `Internal error: allocated ${totalAllocated} exceeds budget ${totalBudget}`,
         { context: { totalAllocated, totalBudget } },

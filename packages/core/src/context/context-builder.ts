@@ -11,6 +11,7 @@ import {
   type ParsedContextConfig,
 } from '../config/validator.js';
 import { InvalidConfigError } from '../errors.js';
+import { LogLevel, type Logger } from '../logging/logger.js';
 import type { ContextConfig, ModelId, SlotConfig } from '../types/config.js';
 import type { MultimodalContent } from '../types/content.js';
 import type { ContextEvent } from '../types/events.js';
@@ -48,6 +49,10 @@ export class ContextBuilder {
 
   private _onEvent: ((event: ContextEvent) => void) | undefined;
 
+  private _logger: Logger | undefined;
+
+  private _logLevel: LogLevel | undefined;
+
   private readonly _ops: BuilderOp[] = [];
 
   /** Set the model id (required before {@link ContextBuilder.build}). */
@@ -83,6 +88,21 @@ export class ContextBuilder {
   slot(name: string, config: unknown): this {
     const parsed = validateSlotConfig(config);
     this._slotOverrides[name] = parsed as SlotConfig;
+    return this;
+  }
+
+  /**
+   * Structured logger for the build pipeline (§13.3 — Phase 10.1).
+   * Use with {@link logLevel}; merged into validated config.
+   */
+  logger(instance: Logger): this {
+    this._logger = instance;
+    return this;
+  }
+
+  /** Minimum log level when {@link logger} is set (defaults to {@link LogLevel.INFO}). */
+  logLevel(level: LogLevel): this {
+    this._logLevel = level;
     return this;
   }
 
@@ -148,6 +168,8 @@ export class ContextBuilder {
       ...(this._onEvent !== undefined
         ? { onEvent: this._onEvent as NonNullable<ContextConfig['onEvent']> }
         : {}),
+      ...(this._logger !== undefined ? { logger: this._logger } : {}),
+      ...(this._logLevel !== undefined ? { logLevel: this._logLevel } : {}),
     };
   }
 

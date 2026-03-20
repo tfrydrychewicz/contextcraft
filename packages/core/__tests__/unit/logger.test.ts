@@ -2,11 +2,13 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
   createConsoleLogger,
+  createContextualLogger,
   createLeveledLogger,
   createPluginLoggerFactory,
   createRedactingLogger,
   createScopedLogger,
   LogLevel,
+  newBuildOperationId,
 } from '../../src/logging/logger.js';
 import type { Logger } from '../../src/logging/logger.js';
 
@@ -78,6 +80,36 @@ describe('createConsoleLogger', () => {
     const log = createConsoleLogger({ prefix: '[ctx]' });
     log.info('m');
     expect(console.info).toHaveBeenCalledWith('[ctx] m');
+  });
+});
+
+describe('createContextualLogger', () => {
+  it('prefixes with op and slot when both set', () => {
+    const info = vi.fn();
+    const log = createContextualLogger(
+      { debug: vi.fn(), info, warn: vi.fn(), error: vi.fn() },
+      { operationId: 'op-1', slot: 'history' },
+    );
+    log.info('hello');
+    expect(info).toHaveBeenCalledWith('[op=op-1 slot=history] hello');
+  });
+
+  it('returns delegate unchanged when no fields', () => {
+    const inner: Logger = {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+    };
+    expect(createContextualLogger(inner, {})).toBe(inner);
+  });
+});
+
+describe('newBuildOperationId', () => {
+  it('returns a non-empty string', () => {
+    const id = newBuildOperationId();
+    expect(typeof id).toBe('string');
+    expect(id.length).toBeGreaterThan(4);
   });
 });
 

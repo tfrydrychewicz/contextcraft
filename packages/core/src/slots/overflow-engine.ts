@@ -64,6 +64,12 @@ export type OverflowEngineOptions = {
   strategyLogger?: OverflowStrategyLogger;
 
   /**
+   * Per-slot logger for {@link OverflowContext.logger} (§13.3 — Phase 10.1).
+   * When set, takes precedence over {@link strategyLogger}.
+   */
+  strategyLoggerFactory?: (slot: string) => OverflowStrategyLogger;
+
+  /**
    * Override built-in named strategies (tests or advanced wiring).
    * Unspecified names use the engine defaults.
    */
@@ -169,6 +175,10 @@ export class OverflowEngine {
 
   private readonly strategyLogger: OverflowStrategyLogger | undefined;
 
+  private readonly strategyLoggerFactory:
+    | ((slot: string) => OverflowStrategyLogger)
+    | undefined;
+
   private readonly builtins: Record<NamedOverflowStrategy, OverflowStrategyFn>;
 
   private readonly namedStrategies: Record<string, OverflowStrategyFn>;
@@ -177,6 +187,7 @@ export class OverflowEngine {
     this.countTokens = options.countTokens;
     this.onEvent = options.onEvent;
     this.strategyLogger = options.strategyLogger;
+    this.strategyLoggerFactory = options.strategyLoggerFactory;
 
     const builtinSummarize =
       options.progressiveSummarize !== undefined
@@ -315,6 +326,9 @@ export class OverflowEngine {
       slotConfig: slot.config,
       tokenAccountant,
     };
+    if (this.strategyLoggerFactory !== undefined) {
+      return { ...base, logger: this.strategyLoggerFactory(slot.name) };
+    }
     if (this.strategyLogger !== undefined) {
       return { ...base, logger: this.strategyLogger };
     }
@@ -342,10 +356,14 @@ export class OverflowEngine {
   }
 
   private async processSlot(slot: WorkingSlot): Promise<void> {
+    const ctx = this.buildOverflowContext(slot);
     const used = this.countTokens(slot.content);
     if (used <= slot.budgetTokens) return;
 
     if (slot.config.protected) {
+      ctx.logger?.warn(
+        `Slot is over token budget but marked protected; skipping overflow`,
+      );
       this.emitWarning({
         code: 'SLOT_PROTECTED_OVER_BUDGET',
         message: `Slot "${slot.name}" is over token budget but marked protected; skipping overflow`,
@@ -355,9 +373,18 @@ export class OverflowEngine {
       return;
     }
 
-    const { label, fn } = this.resolveStrategy(slot.config.overflow);
+    let label: string;
+    let fn: OverflowStrategyFn;
+    try {
+      const resolved = this.resolveStrategy(slot.config.overflow);
+      label = resolved.label;
+      fn = resolved.fn;
+    } catch (err) {
+      ctx.logger?.error('Overflow strategy resolution failed', err);
+      throw err;
+    }
+
     const budget = toTokenCount(slot.budgetTokens);
-    const ctx = this.buildOverflowContext(slot);
 
     const beforeTokens = used;
     const compressionLike = isCompressionLikeOverflowLabel(label);
@@ -365,7 +392,13 @@ export class OverflowEngine {
       this.emitCompressionStart(slot.name, slot.content.length);
     }
 
-    const newContent = await fn(slot.content, budget, ctx);
+    let newContent: ContentItem[];
+    try {
+      newContent = await fn(slot.content, budget, ctx);
+    } catch (err) {
+      ctx.logger?.error('Overflow strategy execution failed', err);
+      throw err;
+    }
     const afterTokens = this.countTokens(newContent);
 
     if (compressionLike) {

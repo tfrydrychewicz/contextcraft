@@ -4,6 +4,8 @@
  * @packageDocumentation
  */
 
+import type { LogLevel, Logger } from '../logging/logger.js';
+
 import type { TokenCount } from './branded.js';
 import type { ContentItem, MessageRole } from './content.js';
 import type { ContextEvent } from './events.js';
@@ -280,4 +282,16 @@ export interface ContextConfig {
    * per-item estimates ({@link ContentItem.tokens} / char heuristics).
    */
   tokenAccountant?: TokenAccountant;
+
+  /**
+   * Structured logger for the build pipeline and overflow strategies (§13.3 — Phase 10.1).
+   * Combined with {@link logLevel} via {@link createLeveledLogger}.
+   */
+  logger?: Logger;
+
+  /**
+   * Minimum severity to forward to {@link logger} (default {@link LogLevel.INFO}).
+   * When {@link logger} is omitted, level is ignored.
+   */
+  logLevel?: LogLevel;
 }

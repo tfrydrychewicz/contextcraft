@@ -81,7 +81,8 @@ export function createConsoleLogger(options?: ConsoleLoggerOptions): Logger {
   };
 }
 
-const noopLogger: Logger = {
+/** No-op sink — default when no {@link ContextConfig.logger} is set. */
+export const noopLogger: Logger = {
   debug: () => {},
   info: () => {},
   warn: () => {},
@@ -133,6 +134,61 @@ export function createScopedLogger(delegate: Logger, scope: string): Logger {
     warn: (message, ...args) => delegate.warn(fmt(message), ...args),
     error: (message, ...args) => delegate.error(fmt(message), ...args),
   };
+}
+
+/**
+ * Fields prepended to each message as `[op=… slot=…]` for pipeline / overflow tracing (§13.3 — Phase 10.1).
+ * Omitted keys are not shown.
+ */
+export type LogContextFields = {
+  readonly operationId?: string;
+  readonly slot?: string;
+};
+
+function formatLogContextPrefix(fields: LogContextFields): string {
+  const parts: string[] = [];
+  if (fields.operationId !== undefined && fields.operationId !== '') {
+    parts.push(`op=${fields.operationId}`);
+  }
+  if (fields.slot !== undefined && fields.slot !== '') {
+    parts.push(`slot=${fields.slot}`);
+  }
+  if (parts.length === 0) {
+    return '';
+  }
+  return `[${parts.join(' ')}] `;
+}
+
+/**
+ * Wraps a {@link Logger} so every message is prefixed with {@link LogContextFields} (build operation id, slot name).
+ * When no fields are set, returns `delegate` unchanged.
+ */
+export function createContextualLogger(delegate: Logger, fields: LogContextFields): Logger {
+  const prefix = formatLogContextPrefix(fields);
+  if (prefix === '') {
+    return delegate;
+  }
+  const fmt = (message: string): string => `${prefix}${message}`;
+
+  return {
+    debug: (message, ...args) => delegate.debug(fmt(message), ...args),
+    info: (message, ...args) => delegate.info(fmt(message), ...args),
+    warn: (message, ...args) => delegate.warn(fmt(message), ...args),
+    error: (message, ...args) => delegate.error(fmt(message), ...args),
+  };
+}
+
+/**
+ * Best-effort unique id for a single {@link Context.build} / orchestrator run (UUID when `crypto.randomUUID` exists).
+ */
+export function newBuildOperationId(): string {
+  const c = globalThis as typeof globalThis & {
+    crypto?: { randomUUID?: () => string };
+  };
+  if (c.crypto?.randomUUID !== undefined) {
+    return c.crypto.randomUUID();
+  }
+  return `build-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 }
 
 export type RedactingLoggerOptions = {
