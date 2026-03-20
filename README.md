@@ -1,4 +1,8 @@
 <p align="center">
+  <img src="docs/public/slotmux.svg" alt="Slotmux logo" width="96" height="96" />
+</p>
+
+<p align="center">
   <b>slotmux</b><br/>
   <i>The memory allocator for LLM context windows.</i>
 </p>

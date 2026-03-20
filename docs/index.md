@@ -4,6 +4,9 @@ layout: home
 hero:
   name: Slotmux
   text: The memory allocator for LLM context windows
+  image:
+    src: /slotmux.svg
+    alt: Slotmux logo
   tagline: Stop concatenating strings and hoping they fit. Declare slots, set budgets, call build() — slotmux handles the rest.
   actions:
     - theme: brand

@@ -10,8 +10,9 @@ export default defineConfig({
   title: 'Slotmux',
   description: 'Intelligent context window management for AI applications',
   base: vitepressBase(),
-  head: [['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }]],
+  head: [['link', { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]],
   themeConfig: {
+    logo: '/slotmux.svg',
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Guide', link: '/guide/' },
