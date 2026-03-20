@@ -1,0 +1,256 @@
+:root {
+  color-scheme: dark;
+  --bg: #0f1419;
+  --panel: #1a2332;
+  --border: #2d3a4d;
+  --text: #e7ecf3;
+  --muted: #8b9cb3;
+  --accent: #5b9fd4;
+  --warn: #e6a23c;
+  --danger: #f56c6c;
+  --ok: #67c23a;
+  font-family:
+    'JetBrains Mono',
+    'SF Mono',
+    ui-monospace,
+    monospace;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.inspector {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 2rem;
+}
+
+.inspector__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.inspector__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.inspector__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.pill {
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.pill--ok {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+
+.pill--bad {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.inspector__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 960px) {
+  .inspector__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.panel h2 {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.bar-row {
+  margin-bottom: 0.65rem;
+}
+
+.bar-row__label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.bar-row__track {
+  height: 10px;
+  background: #0d1117;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.bar-row__fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent), #8ec5fc);
+  transition: width 0.25s ease;
+}
+
+.bar-row__fill--over {
+  background: linear-gradient(90deg, var(--warn), var(--danger));
+}
+
+.waterfall {
+  display: flex;
+  height: 28px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.waterfall__seg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+  min-width: 2px;
+}
+
+.timeline {
+  max-height: 320px;
+  overflow: auto;
+  font-size: 12px;
+}
+
+.timeline table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.timeline th,
+.timeline td {
+  text-align: left;
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.timeline th {
+  color: var(--muted);
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  background: var(--panel);
+}
+
+.diff-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+@media (max-width: 700px) {
+  .diff-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.diff-col {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.5rem;
+  max-height: 240px;
+  overflow: auto;
+}
+
+.diff-col h3 {
+  margin: 0 0 0.5rem;
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.diff-col pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 11px;
+}
+
+.whatif {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.whatif__row {
+  display: grid;
+  grid-template-columns: 100px 1fr 120px;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.whatif__row label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.whatif__row input[type='range'] {
+  width: 100%;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.error-banner {
+  background: rgba(245, 108, 108, 0.12);
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 12px;
+}

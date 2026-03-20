@@ -61,6 +61,10 @@ const { messages, meta } = ctx.build();
 | `@contextcraft/plugin-memory` | Long-term memory |
 | `@contextcraft/plugin-tools` | Tool/function calls |
 
+### Debug inspector UI
+
+With `attachInspector(ctx)` running, open **`/inspector/`** on the same host/port (e.g. `http://127.0.0.1:4200/inspector/`). Build the debug package first (`pnpm --filter @contextcraft/debug build`) so static assets exist. Browser E2E: `pnpm test:e2e` (install Chromium once: `pnpm --filter @contextcraft/debug exec playwright install chromium`).
+
 ## Links
 
 - [Documentation](https://github.com/tfrydrychewicz/contextcraft#readme) (coming soon)

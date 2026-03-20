@@ -8,6 +8,12 @@ build/
 
 # Testing
 coverage/
+test-results/
+playwright-report/
+blob-report/
+
+# Debug inspector UI build output
+packages/debug/inspector-static/
 
 # Turbo
 .turbo/

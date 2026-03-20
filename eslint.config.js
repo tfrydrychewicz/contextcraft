@@ -2,10 +2,29 @@ import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import importPlugin from 'eslint-plugin-import';
 import unicorn from 'eslint-plugin-unicorn';
+import globals from 'globals';
 
 export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  {
+    files: ['packages/debug/ui/**/*.{ts,tsx}'],
+    languageOptions: {
+      globals: globals.browser,
+    },
+  },
+  {
+    files: ['packages/debug/playwright.config.ts', 'packages/debug/e2e/**/*.ts'],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
+  {
+    files: ['packages/debug/e2e/fixtures/**/*.mjs'],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
   {
     files: ['**/*.ts', '**/*.tsx'],
     plugins: {
@@ -51,6 +70,12 @@ export default [
     },
   },
   {
-    ignores: ['node_modules/', '**/dist/**', 'coverage/', '.turbo/'],
+    ignores: [
+      'node_modules/',
+      '**/dist/**',
+      'coverage/',
+      '.turbo/',
+      'packages/debug/inspector-static/**',
+    ],
   },
 ];

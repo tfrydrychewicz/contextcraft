@@ -31,6 +31,27 @@ jobs:
       - run: pnpm test
       - run: pnpm size-limit
 
+  e2e:
+    name: Inspector UI (Playwright)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm build
+
+      - run: pnpm --filter @contextcraft/debug exec playwright install chromium --with-deps
+
+      - run: pnpm test:e2e
+
   compatibility:
     name: ${{ matrix.os }} / Node ${{ matrix.node }}
     runs-on: ${{ matrix.os }}

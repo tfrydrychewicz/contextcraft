@@ -75,6 +75,11 @@ describe('attachInspector (Phase 10.3)', () => {
       const evBody = (await evRes.json()) as { ok: boolean; events: unknown[] };
       expect(evBody.ok).toBe(true);
       expect(evBody.events.length).toBeGreaterThan(0);
+
+      const uiRes = await fetch(`${base}/inspector/`);
+      expect(uiRes.ok).toBe(true);
+      const html = await uiRes.text();
+      expect(html).toContain('Contextcraft Inspector');
     } finally {
       await handle.close();
     }

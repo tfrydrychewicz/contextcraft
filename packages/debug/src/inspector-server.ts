@@ -11,6 +11,7 @@ import { WebSocket, WebSocketServer } from 'ws';
 
 import { InspectorDisabledError } from './errors.js';
 import { serializeContextEventForJson } from './serialize-event.js';
+import { serveInspectorStatic } from './serve-inspector-static.js';
 
 const DEFAULT_PORT = 4200;
 const DEFAULT_MAX_EVENTS = 500;
@@ -118,11 +119,15 @@ export function attachInspector(ctx: Context, options?: AttachInspectorOptions):
     const url = new URL(req.url ?? '/', `http://${host}`);
     const path = url.pathname;
 
+    if (serveInspectorStatic(path, res)) {
+      return;
+    }
+
     if (path === '/' || path === '/health') {
       sendJson(res, 200, {
         ok: true,
         package: '@contextcraft/debug',
-        endpoints: ['/snapshot', '/slots', '/events', 'WebSocket same port'],
+        endpoints: ['/snapshot', '/slots', '/events', '/inspector/', 'WebSocket same port'],
       });
       return;
     }
