@@ -183,7 +183,14 @@ function emitEvent(
 
 function compileContentItem(item: ContentItem): CompiledMessage {
   if (typeof item.content === 'string') {
-    return { role: item.role, content: item.content };
+    const m: CompiledMessage = { role: item.role, content: item.content };
+    if (item.name !== undefined) {
+      m.name = item.name;
+    }
+    if (item.toolCallId !== undefined) {
+      m.tool_call_id = item.toolCallId;
+    }
+    return m;
   }
   const parts: CompiledContentPart[] = [];
   for (const block of item.content as MultimodalContent[]) {
@@ -206,7 +213,14 @@ function compileContentItem(item: ContentItem): CompiledMessage {
       });
     }
   }
-  return { role: item.role, content: parts };
+  const m: CompiledMessage = { role: item.role, content: parts };
+  if (item.name !== undefined) {
+    m.name = item.name;
+  }
+  if (item.toolCallId !== undefined) {
+    m.tool_call_id = item.toolCallId;
+  }
+  return m;
 }
 
 type SlotEntry = { readonly name: string; readonly config: SlotConfig };

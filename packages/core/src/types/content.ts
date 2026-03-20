@@ -87,6 +87,12 @@ export interface ContentItem {
 
   /** If this item is a summary of other items, track the originals */
   summarizes?: ContentId[];
+
+  /** OpenAI-style participant name (multi-user / named assistants). */
+  name?: string;
+
+  /** OpenAI `tool` role: id of the tool call this message responds to. */
+  toolCallId?: string;
 }
 
 // ==========================================
@@ -130,4 +136,10 @@ export interface CompiledMessage {
 
   /** Optional name (e.g. for multi-user conversations) */
   name?: string;
+
+  /**
+   * OpenAI Chat Completions: required for `tool` role (paired with assistant `tool_calls`).
+   * Prefer setting {@link ContentItem.toolCallId} at compile time.
+   */
+  tool_call_id?: string;
 }

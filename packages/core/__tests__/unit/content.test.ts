@@ -148,4 +148,13 @@ describe('CompiledMessage', () => {
     };
     expect(msg.name).toBe('alice');
   });
+
+  it('accepts tool message with tool_call_id', () => {
+    const msg: CompiledMessage = {
+      role: 'tool',
+      tool_call_id: 'call_1',
+      content: '{}',
+    };
+    expect(msg.tool_call_id).toBe('call_1');
+  });
 });

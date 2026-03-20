@@ -37,5 +37,15 @@
     "tiktoken": { "optional": true },
     "@anthropic-ai/tokenizer": { "optional": true },
     "gpt-tokenizer": { "optional": true }
+  },
+  "dependencies": {
+    "@contextcraft/tokenizers": "workspace:*",
+    "contextcraft": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "gpt-tokenizer": "^3.4.0",
+    "tiktoken": "^1.0.22",
+    "typescript": "^5.7.2"
   }
 }

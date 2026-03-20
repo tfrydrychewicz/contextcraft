@@ -17,6 +17,9 @@ export function cloneCompiledMessage(m: CompiledMessage): CompiledMessage {
   if (m.name !== undefined) {
     out.name = m.name;
   }
+  if (m.tool_call_id !== undefined) {
+    out.tool_call_id = m.tool_call_id;
+  }
   return out;
 }
 

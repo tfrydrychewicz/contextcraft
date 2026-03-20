@@ -19,6 +19,8 @@ export type CreateContentItemParams = {
   slot: string;
   role: MessageRole;
   content: ContentItem['content'];
+  name?: string;
+  toolCallId?: string;
   metadata?: Record<string, unknown>;
   pinned?: boolean;
   ephemeral?: boolean;
