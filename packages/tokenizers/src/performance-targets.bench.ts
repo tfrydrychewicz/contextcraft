@@ -1,5 +1,5 @@
 /**
- * Phase 2.6 / §18.1 — performance targets (documented via Vitest bench; enforced in `performance-targets.sla.test.ts`).
+ * §18.1 — performance targets (documented via Vitest bench; enforced in `performance-targets.sla.test.ts`).
  *
  * Targets:
  * - Single `countMessage` mean < **0.1 ms** per call (see SLA test).

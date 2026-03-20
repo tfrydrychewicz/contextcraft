@@ -1,5 +1,5 @@
 /**
- * Anthropic Messages API adapter (Phase 6.4, §10).
+ * Anthropic Messages API adapter (§10).
  *
  * @packageDocumentation
  */

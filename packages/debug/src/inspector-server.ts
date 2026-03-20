@@ -1,5 +1,5 @@
 /**
- * Local HTTP + WebSocket inspector server (§13.2 — Phase 10.3).
+ * Local HTTP + WebSocket inspector server (§13.2).
  *
  * @packageDocumentation
  */

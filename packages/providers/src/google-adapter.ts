@@ -1,5 +1,5 @@
 /**
- * Google Gemini `generateContent` payload adapter (Phase 6.5, §10).
+ * Google Gemini `generateContent` payload adapter (§10).
  *
  * Shapes align with the JS client (`@google/generative-ai`): camelCase fields.
  *

@@ -1,5 +1,5 @@
 /**
- * Factory for validated {@link ContextConfig} with presets, model registry inference (§6.1, §7.3 — Phase 5.3).
+ * Factory for validated {@link ContextConfig} with presets, model registry inference (§6.1, §7.3).
  *
  * @packageDocumentation
  */

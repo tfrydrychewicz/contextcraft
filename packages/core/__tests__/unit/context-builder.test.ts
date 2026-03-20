@@ -7,7 +7,7 @@ import {
   type ContextEvent,
 } from '../../src/index.js';
 
-describe('ContextBuilder (Phase 5.2 — §6.5)', () => {
+describe('ContextBuilder (§6.5)', () => {
   it('throws if .build() without .model()', async () => {
     const b = new ContextBuilder().preset('chat').user('hi');
     await expect(b.build()).rejects.toThrow(InvalidConfigError);

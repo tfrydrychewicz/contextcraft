@@ -11,7 +11,7 @@ import {
 } from '../../src/index.js';
 import type { OverflowContext } from '../../src/types/config.js';
 
-describe('errorStrategy / errorOverflow (§5.2 — Phase 4.5)', () => {
+describe('errorStrategy / errorOverflow (§5.2)', () => {
   it('returns items unchanged when within budget', async () => {
     const item = createContentItem({
       slot: 'e',

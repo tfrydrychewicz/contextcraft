@@ -1,5 +1,5 @@
 /**
- * Registry of {@link SlotConfig} entries (§20 — Phase 3.2).
+ * Registry of {@link SlotConfig} entries (§20).
  *
  * @packageDocumentation
  */

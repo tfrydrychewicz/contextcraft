@@ -1,5 +1,5 @@
 /**
- * Types for map-reduce summarization (design §8.1 / Phase 8.4).
+ * Types for map-reduce summarization (design §8.1).
  *
  * @packageDocumentation
  */

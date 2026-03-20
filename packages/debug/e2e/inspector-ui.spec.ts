@@ -1,5 +1,5 @@
 /**
- * E2E: Preact inspector UI (Phase 10.4).
+ * E2E: Preact inspector UI.
  *
  * @packageDocumentation
  */

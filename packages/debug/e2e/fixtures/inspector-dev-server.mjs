@@ -1,5 +1,5 @@
 /**
- * Minimal Context + attachInspector for Playwright (Phase 10.4).
+ * Minimal Context + attachInspector for Playwright E2E.
  *
  * @packageDocumentation
  */

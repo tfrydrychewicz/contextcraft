@@ -1,5 +1,5 @@
 /**
- * Wires semantic (embedding) selection (§8.2 / Phase 8.5) to {@link OverflowStrategyFn}.
+ * Wires semantic (embedding) selection (§8.2) to {@link OverflowStrategyFn}.
  * Implementation lives in `@contextcraft/compression`.
  *
  * @packageDocumentation

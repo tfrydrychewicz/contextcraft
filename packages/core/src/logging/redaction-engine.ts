@@ -1,5 +1,5 @@
 /**
- * Configurable PII redaction for logs and observability events (§19.2 — Phase 10.2 / 13.3).
+ * Configurable PII redaction for logs and observability events (§19.2).
  *
  * @packageDocumentation
  */
@@ -68,7 +68,7 @@ export class RedactionEngine {
 
 export type ObservabilityRedactionConfig = {
   /**
-   * When omitted, PII redaction is **on** for `onEvent` and `logger` output (§19.2 — Phase 13.3).
+   * When omitted, PII redaction is **on** for `onEvent` and `logger` output (§19.2).
    * Set to `false` to disable. {@link LogLevelConst.TRACE} still disables redaction for full observability.
    */
   readonly redaction?: true | false | RedactionOptions | undefined;

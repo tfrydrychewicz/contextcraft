@@ -1,5 +1,5 @@
 /**
- * Adapts {@link Logger} to {@link OverflowStrategyLogger} for {@link OverflowEngine} (§13.3 — Phase 10.1).
+ * Adapts {@link Logger} to {@link OverflowStrategyLogger} for {@link OverflowEngine} (§13.3).
  *
  * @packageDocumentation
  */

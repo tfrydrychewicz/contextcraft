@@ -1,5 +1,5 @@
 /**
- * SHA-256 checksum for {@link SerializedSnapshot} (§12.1 — Phase 5.5).
+ * SHA-256 checksum for {@link SerializedSnapshot} (§12.1).
  *
  * @packageDocumentation
  */

@@ -22,7 +22,7 @@ function meta(partial: Partial<SnapshotMeta> = {}): SnapshotMeta {
   };
 }
 
-describe('ContextSnapshot Phase 5.5', () => {
+describe('ContextSnapshot (snapshot core)', () => {
   it('serialize + deserialize round-trip with SHA-256 checksum', () => {
     const messages: CompiledMessage[] = [
       { role: 'system', content: 'sys' },
@@ -104,7 +104,7 @@ describe('ContextSnapshot Phase 5.5', () => {
   });
 });
 
-describe('Phase 9.1 — snapshot serialization (§12.1)', () => {
+describe('snapshot serialization (§12.1)', () => {
   it('serialize → JSON.stringify/parse → deserialize round-trip (JSON-safe wire)', () => {
     const messages: CompiledMessage[] = [
       { role: 'system', content: 'sys' },

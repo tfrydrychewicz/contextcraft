@@ -1,5 +1,5 @@
 /**
- * Compression strategy contracts (§8 / Phase 8.1).
+ * Compression strategy contracts (§8).
  *
  * @packageDocumentation
  */

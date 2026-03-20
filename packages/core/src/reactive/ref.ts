@@ -1,5 +1,5 @@
 /**
- * Minimal ref / computed primitives — Vue 3–style `.value` + subscribe (§14.2 — Phase 12.2).
+ * Minimal ref / computed primitives — Vue 3–style `.value` + subscribe (§14.2).
  *
  * @packageDocumentation
  */

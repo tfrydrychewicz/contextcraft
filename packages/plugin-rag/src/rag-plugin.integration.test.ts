@@ -1,5 +1,5 @@
 /**
- * Phase 11.1 — RAG plugin integration (simulated pipeline).
+ * RAG plugin integration (simulated pipeline).
  *
  * @packageDocumentation
  */

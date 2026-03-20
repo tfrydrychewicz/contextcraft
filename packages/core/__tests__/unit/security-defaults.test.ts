@@ -1,5 +1,5 @@
 /**
- * Phase 13.1 — security defaults (§19.1).
+ * security defaults (§19.1).
  *
  * @packageDocumentation
  */
@@ -12,7 +12,7 @@ import {
   slotItemsNearLimitThreshold,
 } from '../../src/config/security-defaults.js';
 
-describe('security-defaults (Phase 13.1 — §19.1)', () => {
+describe('security-defaults (§19.1)', () => {
   it('DEFAULT_SLOT_MAX_ITEMS is 10_000', () => {
     expect(DEFAULT_SLOT_MAX_ITEMS).toBe(10_000);
   });

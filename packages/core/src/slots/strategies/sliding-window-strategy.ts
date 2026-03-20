@@ -1,5 +1,5 @@
 /**
- * Sliding-window overflow strategy (§5.2 — Phase 4.4).
+ * Sliding-window overflow strategy (§5.2).
  *
  * @packageDocumentation
  */

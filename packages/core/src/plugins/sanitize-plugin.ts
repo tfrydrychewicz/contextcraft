@@ -1,5 +1,5 @@
 /**
- * Stub sanitize plugin — strips common prompt-injection phrases from compiled messages (§19.1 — Phase 13.1).
+ * Stub sanitize plugin — strips common prompt-injection phrases from compiled messages (§19.1).
  *
  * Runs at {@link ContextPlugin.beforeSnapshot} so outbound snapshot / adapter payloads are scrubbed.
  * Stored {@link ContentItem} values are unchanged; extend with custom patterns for your threat model.

@@ -14,7 +14,7 @@ import type { SlotConfig } from '../../src/types/config.js';
 
 const LARGE_BUDGET = 100_000;
 
-describe('presets (§7.3 — Phase 3.5)', () => {
+describe('presets (§7.3)', () => {
   describe('resolveContextSlots', () => {
     it('defaults to chat layout when preset and slots are omitted', () => {
       expect(resolveContextSlots({})).toEqual(CONTEXT_PRESETS.chat);

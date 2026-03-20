@@ -10,7 +10,7 @@ import {
 } from '../../src/index.js';
 import type { OverflowContext } from '../../src/types/config.js';
 
-describe('truncateLatestStrategy / truncateLatest (§5.2 — Phase 4.3)', () => {
+describe('truncateLatestStrategy / truncateLatest (§5.2)', () => {
   it('removes newest non-pinned items first (LIFO)', () => {
     const a = createContentItem({
       slot: 's',

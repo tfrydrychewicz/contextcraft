@@ -1,5 +1,5 @@
 /**
- * Default prompts for map-reduce summarization (§8.1 / Phase 8.4).
+ * Default prompts for map-reduce summarization (§8.1).
  *
  * @packageDocumentation
  */

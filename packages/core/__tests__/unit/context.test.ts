@@ -10,7 +10,7 @@ import {
   type ParsedContextConfig,
 } from '../../src/index.js';
 
-describe('Context (Phase 5.1 — §6.1, §6.3)', () => {
+describe('Context (§6.1, §6.3)', () => {
   it('throws when slots record is empty', () => {
     expect(
       () =>

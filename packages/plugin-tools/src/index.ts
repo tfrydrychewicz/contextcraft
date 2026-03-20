@@ -1,5 +1,5 @@
 /**
- * @contextcraft/plugin-tools — Tool / function-call slot helpers (Phase 11.3).
+ * @contextcraft/plugin-tools — Tool / function-call slot helpers.
  *
  * @packageDocumentation
  */

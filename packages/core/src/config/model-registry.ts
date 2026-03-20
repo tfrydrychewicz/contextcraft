@@ -1,5 +1,5 @@
 /**
- * Built-in model → provider / context window / tokenizer hints (§10.2 — Phase 5.3 subset).
+ * Built-in model → provider / context window / tokenizer hints (§10.2 subset).
  *
  * Context sizes follow vendor documentation; re-verify at release time (provider limits change).
  *

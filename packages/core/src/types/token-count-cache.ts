@@ -1,5 +1,5 @@
 /**
- * String token estimation for plugins and compression (Phase 8.1).
+ * String token estimation for plugins and compression.
  *
  * @packageDocumentation
  */

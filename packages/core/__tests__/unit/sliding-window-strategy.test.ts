@@ -12,7 +12,7 @@ import {
 } from '../../src/index.js';
 import type { OverflowContext, SlotConfig } from '../../src/types/config.js';
 
-describe('slidingWindowStrategy / slidingWindow (§5.2 — Phase 4.4)', () => {
+describe('slidingWindowStrategy / slidingWindow (§5.2)', () => {
   it('keeps last N non-pinned items by list order', () => {
     const items = [1, 2, 3, 4, 5].map((n) =>
       createContentItem({

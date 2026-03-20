@@ -15,7 +15,7 @@ function countSum(items: readonly ContentItem[]): number {
   return items.reduce((s, i) => s + (i.tokens ?? 0), 0);
 }
 
-describe('custom overflow strategy (§8.4 — Phase 4.6 integration)', () => {
+describe('custom overflow strategy (§8.4 integration)', () => {
   it('defineOverflowStrategy receives slotName, slotConfig, tokenCounter, logger', async () => {
     const log = vi.fn();
     const logger = {

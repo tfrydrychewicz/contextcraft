@@ -1,5 +1,5 @@
 /**
- * Build pipeline: plugins → budget → token count → overflow → compile → snapshot (§5.3 — Phase 5.4).
+ * Build pipeline: plugins → budget → token count → overflow → compile → snapshot (§5.3).
  *
  * @packageDocumentation
  */
@@ -75,7 +75,7 @@ function assertAuthoritativeTokenPolicy(config: ParsedContextConfig): void {
   ) {
     throw new InvalidConfigError(
       'requireAuthoritativeTokenCounts is true but tokenAccountant is missing — supply an authoritative tokenAccountant for billing-sensitive paths (§19.1)',
-      { context: { phase: '13.1' } },
+      { context: { area: 'token-policy' } },
     );
   }
 }
@@ -199,7 +199,7 @@ export type ContextOrchestratorBuildInput = {
    */
   readonly pluginManager?: PluginManager;
   /**
-   * Correlates log lines for one {@link ContextOrchestrator.build} run (§13.3 — Phase 10.1).
+   * Correlates log lines for one {@link ContextOrchestrator.build} run (§13.3).
    * Defaults to a UUID from {@link newBuildOperationId} when omitted.
    */
   readonly operationId?: string;
@@ -416,7 +416,7 @@ export class ContextOrchestrator {
     const baseSlots = config.slots as Record<string, SlotConfig>;
     if (config.slots === undefined || Object.keys(config.slots).length === 0) {
       throw new InvalidConfigError('ContextOrchestrator.build: config.slots is required', {
-        context: { phase: '5.2' },
+        context: { area: 'context-config' },
       });
     }
 
@@ -660,7 +660,7 @@ export class ContextOrchestrator {
     const baseSlots = config.slots as Record<string, SlotConfig>;
     if (config.slots === undefined || Object.keys(config.slots).length === 0) {
       throw new InvalidConfigError('ContextOrchestrator.buildStreaming: config.slots is required', {
-        context: { phase: '5.2' },
+        context: { area: 'context-config' },
       });
     }
 
@@ -708,7 +708,7 @@ export class ContextOrchestrator {
     const orderedNames = orderSlotsForCompile(slotsInitial).map((e) => e.name);
     if (orderedNames.length === 0) {
       throw new InvalidConfigError('ContextOrchestrator.buildStreaming: no compile-order slots', {
-        context: { phase: '14.1' },
+        context: { area: 'build-stream' },
       });
     }
 
@@ -908,7 +908,7 @@ export class ContextOrchestrator {
     }
 
     throw new InvalidConfigError('ContextOrchestrator.buildStreaming: internal error (no return)', {
-      context: { phase: '14.1' },
+      context: { area: 'build-stream' },
     });
   }
 }

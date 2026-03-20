@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Phase 13.2 — supply-chain: ensure `contextcraft` (packages/core) runtime `dependencies`
+ * Supply-chain check: ensure `contextcraft` (packages/core) runtime `dependencies`
  * match the audited allowlist (§19.1). Update this script when intentionally adding a dep.
  *
  * @packageDocumentation

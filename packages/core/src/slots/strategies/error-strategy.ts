@@ -1,5 +1,5 @@
 /**
- * Error overflow strategy (§5.2 — Phase 4.5).
+ * Error overflow strategy (§5.2).
  *
  * @packageDocumentation
  */

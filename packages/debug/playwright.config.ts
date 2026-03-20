@@ -1,5 +1,5 @@
 /**
- * Playwright config for @contextcraft/debug inspector UI (Phase 10.4).
+ * Playwright config for @contextcraft/debug inspector UI.
  *
  * @packageDocumentation
  */

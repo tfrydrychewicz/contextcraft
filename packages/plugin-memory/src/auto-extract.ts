@@ -1,5 +1,5 @@
 /**
- * Heuristic fact extraction from compiled snapshot messages (Phase 11.2).
+ * Heuristic fact extraction from compiled snapshot messages.
  *
  * @packageDocumentation
  */

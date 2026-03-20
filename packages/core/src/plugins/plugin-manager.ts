@@ -1,5 +1,5 @@
 /**
- * {@link PluginManager} — plugin lifecycle, hooks, and strategy registration (§11.1 / Phase 7.2).
+ * {@link PluginManager} — plugin lifecycle, hooks, and strategy registration (§11.1).
  *
  * @packageDocumentation
  */
@@ -71,7 +71,7 @@ export type PluginManagerOptions = {
 
   /**
    * Scoped logger factory; defaults to no-op loggers.
-   * Use for `[contextcraft:pluginName]` style output (see Phase 7.3).
+   * Use for `[contextcraft:pluginName]` style output (see §13.3 logging).
    */
   readonly createLogger?: (pluginName: string) => PluginLogger;
 
@@ -82,7 +82,7 @@ export type PluginManagerOptions = {
   readonly compressionFallbackLogger?: Logger;
 
   /**
-   * Receives {@link ContextPlugin.install} failures before rethrow (§13.3 — Phase 10.1).
+   * Receives {@link ContextPlugin.install} failures before rethrow (§13.3).
    */
   readonly logger?: Logger;
 };

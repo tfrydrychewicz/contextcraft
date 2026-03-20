@@ -1,5 +1,5 @@
 /**
- * Drag budget multipliers to preview utilization (Phase 10.4).
+ * Drag budget multipliers to preview utilization.
  *
  * @packageDocumentation
  */

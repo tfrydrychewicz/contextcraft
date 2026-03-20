@@ -39,7 +39,7 @@ function slot(
   };
 }
 
-describe('ContextSnapshot.diff (§12.1 — Phase 9.4)', () => {
+describe('ContextSnapshot.diff (§12.1)', () => {
   it('reports added messages when other extends this with trailing messages', () => {
     const a = ContextSnapshot.create({
       messages: [{ role: 'user', content: 'a' }],

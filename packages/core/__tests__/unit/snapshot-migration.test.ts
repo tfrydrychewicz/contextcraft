@@ -30,7 +30,7 @@ afterEach(() => {
   __resetSnapshotMigrationsForTests();
 });
 
-describe('Phase 9.2 — snapshot migration (§12.1)', () => {
+describe('snapshot migration (§12.1)', () => {
   it('migrates synthetic v0.9 (slotStats) to ContextSnapshot v1.0', () => {
     const messages: CompiledMessage[] = [{ role: 'user', content: 'legacy' }];
     const legacy = {

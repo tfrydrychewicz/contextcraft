@@ -1,5 +1,5 @@
 /**
- * Factory for user-defined overflow strategies (§8.4 — Phase 4.6).
+ * Factory for user-defined overflow strategies (§8.4).
  *
  * @packageDocumentation
  */
@@ -66,7 +66,7 @@ export function defineOverflowStrategy(
 /**
  * Alias for {@link defineOverflowStrategy} (implementation plan §4.6).
  *
- * **Not** the same as {@link CompressionStrategy} / `registerCompressor` (Phase 8.1):
+ * **Not** the same as {@link CompressionStrategy} / `registerCompressor`:
  * this factory only produces {@link OverflowStrategyFn} values for `SlotConfig.overflow`.
  */
 export const defineCompressionStrategy = defineOverflowStrategy;

@@ -1,11 +1,11 @@
 /**
- * Log / telemetry string redaction (§19.2 / Phase 7.3).
+ * Log / telemetry string redaction (§19.2).
  *
  * @packageDocumentation
  */
 
 /**
- * Default patterns: US SSN-style, email, common card number groupings (design §19.2 / Phase 10.2).
+ * Default patterns: US SSN-style, email, common card number groupings (design §19.2).
  * Does not replace Luhn validation — heuristic redaction for logs/events only.
  */
 export const DEFAULT_REDACTION_PATTERNS: readonly RegExp[] = [

@@ -1,5 +1,5 @@
 /**
- * Contextcraft debug inspector shell (Phase 10.4).
+ * Contextcraft debug inspector shell.
  *
  * @packageDocumentation
  */

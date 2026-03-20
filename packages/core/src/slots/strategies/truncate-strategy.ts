@@ -1,5 +1,5 @@
 /**
- * FIFO truncate overflow strategy (§5.2 — Phase 4.2).
+ * FIFO truncate overflow strategy (§5.2).
  *
  * @packageDocumentation
  */

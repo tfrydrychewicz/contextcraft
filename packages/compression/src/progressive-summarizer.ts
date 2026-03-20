@@ -1,5 +1,5 @@
 /**
- * Progressive summarization (§8.1 / Phase 8.3).
+ * Progressive summarization (§8.1).
  *
  * @packageDocumentation
  */

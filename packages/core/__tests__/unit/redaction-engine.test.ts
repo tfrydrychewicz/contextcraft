@@ -34,7 +34,7 @@ describe('RedactionEngine', () => {
 });
 
 describe('shouldRedactObservability', () => {
-  it('is true by default (redaction omitted) — Phase 13.3', () => {
+  it('is true by default (redaction omitted)', () => {
     expect(shouldRedactObservability({})).toBe(true);
   });
 
@@ -124,7 +124,7 @@ describe('createContextEventRedactor', () => {
   });
 });
 
-describe('redactContextEvent — all ContextEvent shapes (Phase 13.3)', () => {
+describe('redactContextEvent — all ContextEvent shapes (§13.3)', () => {
   const engine = RedactionEngine.defaultEngine();
   const secret = 'leak@evil.com';
 

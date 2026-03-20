@@ -1,5 +1,5 @@
 /**
- * Phase 4.8 — Overflow engine integration tests (§17.2 escalation / protection).
+ * Overflow engine integration tests (§17.2 escalation / protection).
  */
 
 import { describe, expect, it } from 'vitest';
@@ -34,7 +34,7 @@ function countSum(items: readonly ContentItem[]): number {
   return items.reduce((s, i) => s + (i.tokens ?? 0), 0);
 }
 
-describe('OverflowEngine integration (Phase 4.8)', () => {
+describe('OverflowEngine integration (§4.8)', () => {
   it('§17.2: escalation evicts lowest-priority (lowest numeric priority) slot first', async () => {
     const escalationSlots: string[] = [];
     const onEvent = (e: ContextEvent): void => {

@@ -1,5 +1,5 @@
 /**
- * Phase 10.1 — Structured logging across the build pipeline (§13.3).
+ * Structured logging across the build pipeline (§13.3).
  *
  * @packageDocumentation
  */
@@ -53,7 +53,7 @@ function captureLogger(): { readonly log: Logger; readonly calls: string[] } {
   return { log, calls };
 }
 
-describe('Logging pipeline integration (Phase 10.1 — §13.3)', () => {
+describe('Logging pipeline integration (§13.3)', () => {
   it('emits contextual debug lines with operationId through a full build', async () => {
     const { log, calls } = captureLogger();
     const parsed = validateContextConfig({

@@ -13,7 +13,7 @@ import {
   toTokenCount,
 } from '../../src/index.js';
 
-describe('LosslessCompressor (Phase 8.2)', () => {
+describe('LosslessCompressor (§8.2)', () => {
   it('compressText removes filler, abbreviates, and collapses whitespace', () => {
     const c = new LosslessCompressor();
     const out = c.compressText(

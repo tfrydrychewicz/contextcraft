@@ -1,5 +1,5 @@
 /**
- * Tools slot plugin (§11.2 design / Phase 11.3).
+ * Tools slot plugin (§11.2 design).
  *
  * @packageDocumentation
  */

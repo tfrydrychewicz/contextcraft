@@ -1,5 +1,5 @@
 /**
- * Phase 10.2 — Redaction on observability paths (§19.2).
+ * Redaction on observability paths (§19.2).
  *
  * @packageDocumentation
  */
@@ -27,7 +27,7 @@ const SLOTS = {
   },
 };
 
-describe('Redaction on events + logs (Phase 10.2 / 13.3)', () => {
+describe('Redaction on events + logs (§19.2)', () => {
   it('redacts onEvent payloads when redaction: true and logLevel is not TRACE', async () => {
     const onEvent = vi.fn();
     const parsed = validateContextConfig({

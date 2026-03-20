@@ -165,7 +165,7 @@ describe('contextConfigSchema — cross-slot rules', () => {
 });
 
 describe('validateContextConfig / safeParseContextConfig', () => {
-  it('accepts redaction: false (Phase 13.3)', () => {
+  it('accepts redaction: false (§13.3)', () => {
     const r = contextConfigSchema.safeParse({
       model: 'gpt-4o',
       redaction: false,

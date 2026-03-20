@@ -2,7 +2,7 @@
  * Test utility factories for contextcraft tests.
  *
  * These helpers produce objects matching the expected shapes for slot resolution,
- * overflow engine, and integration tests. Types will be refined in Phase 1.
+ * overflow engine, and integration tests.
  */
 
 /** Resolved slot shape used in overflow/budget tests */

@@ -94,7 +94,7 @@ export interface OverflowContext {
   readonly slot: string;
   /**
    * Same as {@link slot}. Set by {@link OverflowEngine} for ergonomic destructuring
-   * (§8.4 — Phase 4.6).
+   * (§8.4).
    */
   readonly slotName?: string;
   /**
@@ -216,7 +216,7 @@ export interface SlotConfig {
 
   /**
    * Maximum number of content items (independent of token budget).
-   * When omitted, the runtime default is 10_000 (see `DEFAULT_SLOT_MAX_ITEMS`, §19.1 — Phase 13.1).
+   * When omitted, the runtime default is 10_000 (see `DEFAULT_SLOT_MAX_ITEMS`, §19.1).
    */
   maxItems?: number;
 
@@ -290,12 +290,12 @@ export interface ContextConfig {
 
   /**
    * When `true`, `Context.build` / `buildStream` require {@link tokenAccountant} so token totals never
-   * fall back to cache/char estimates — use for billing-sensitive paths (§19.1 — Phase 13.1).
+   * fall back to cache/char estimates — use for billing-sensitive paths (§19.1).
    */
   requireAuthoritativeTokenCounts?: boolean;
 
   /**
-   * Structured logger for the build pipeline and overflow strategies (§13.3 — Phase 10.1).
+   * Structured logger for the build pipeline and overflow strategies (§13.3).
    * Combined with {@link logLevel} via {@link createLeveledLogger}.
    */
   logger?: Logger;
@@ -308,7 +308,7 @@ export interface ContextConfig {
 
   /**
    * PII redaction for {@link onEvent} payloads and {@link logger} output (not stored context).
-   * **Default:** redaction is on when omitted (§19.2 — Phase 13.3). Set to `false` to disable.
+   * **Default:** redaction is on when omitted (§19.2). Set to `false` to disable.
    * {@link LogLevel.TRACE} disables redaction for full observability (§19.2).
    */
   redaction?: true | false | RedactionOptions;

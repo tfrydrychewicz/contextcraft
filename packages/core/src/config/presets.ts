@@ -1,5 +1,5 @@
 /**
- * Default slot layouts (§7.3 — Phase 3.5).
+ * Default slot layouts (§7.3).
  *
  * @packageDocumentation
  */

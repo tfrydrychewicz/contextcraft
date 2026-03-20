@@ -1,5 +1,5 @@
 /**
- * Long-term memory plugin (§11.2 design / Phase 11.2).
+ * Long-term memory plugin (§11.2 design).
  *
  * @packageDocumentation
  */

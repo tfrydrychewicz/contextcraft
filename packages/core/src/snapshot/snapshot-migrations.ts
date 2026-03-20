@@ -1,5 +1,5 @@
 /**
- * Snapshot schema migrations (§12.1 — Phase 9.2).
+ * Snapshot schema migrations (§12.1).
  *
  * @packageDocumentation
  */

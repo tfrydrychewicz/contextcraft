@@ -1,5 +1,5 @@
 /**
- * Optional tokenizer peer dependency resolution (Phase 5.3).
+ * Optional tokenizer peer dependency resolution.
  *
  * @packageDocumentation
  */

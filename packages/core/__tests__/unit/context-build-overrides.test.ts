@@ -9,7 +9,7 @@ import {
   type SlotConfig,
 } from '../../src/index.js';
 
-describe('Context.build overrides (Phase 5.6 — §6.4)', () => {
+describe('Context.build overrides (§6.4)', () => {
   it('throws when Context was constructed without fromParsedConfig', async () => {
     const ctx = new Context({ slots: { ...CHAT_DEFAULTS } });
     await expect(ctx.build()).rejects.toThrow(InvalidConfigError);

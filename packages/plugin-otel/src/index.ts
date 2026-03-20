@@ -1,5 +1,5 @@
 /**
- * @contextcraft/plugin-otel — OpenTelemetry for contextcraft (§13.4 / Phase 10.5).
+ * @contextcraft/plugin-otel — OpenTelemetry for contextcraft (§13.4).
  *
  * @packageDocumentation
  */

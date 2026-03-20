@@ -1,5 +1,5 @@
 /**
- * Recursive {@link Object.freeze} for snapshot immutability (ADR-002 — Phase 5.5).
+ * Recursive {@link Object.freeze} for snapshot immutability (ADR-002).
  *
  * @packageDocumentation
  */

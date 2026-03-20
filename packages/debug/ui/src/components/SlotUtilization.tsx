@@ -1,5 +1,5 @@
 /**
- * Per-slot token usage vs budget (Phase 10.4).
+ * Per-slot token usage vs budget.
  *
  * @packageDocumentation
  */

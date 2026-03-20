@@ -1,5 +1,5 @@
 /**
- * Fluent {@link ContextBuilder} for model config + slots + messages (§6.5 — Phase 5.2).
+ * Fluent {@link ContextBuilder} for model config + slots + messages (§6.5).
  *
  * @packageDocumentation
  */
@@ -95,7 +95,7 @@ export class ContextBuilder {
   }
 
   /**
-   * Structured logger for the build pipeline (§13.3 — Phase 10.1).
+   * Structured logger for the build pipeline (§13.3).
    * Use with {@link logLevel}; merged into validated config.
    */
   logger(instance: Logger): this {
@@ -110,7 +110,7 @@ export class ContextBuilder {
   }
 
   /**
-   * PII redaction for {@link onEvent} and {@link logger} (§19.2 — Phase 13.3).
+   * PII redaction for {@link onEvent} and {@link logger} (§19.2).
    * Omit this call to use the default (redaction on). Pass `false` to disable.
    */
   redaction(options: true | false | RedactionOptions): this {
@@ -168,7 +168,7 @@ export class ContextBuilder {
   private toContextConfig(): ContextConfig {
     if (this._model === undefined || String(this._model).trim() === '') {
       throw new InvalidConfigError('Call .model(id) before .build()', {
-        context: { phase: '5.2' },
+        context: { area: 'context-config' },
       });
     }
 

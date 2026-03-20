@@ -1,6 +1,6 @@
 /**
- * {@link ContextSnapshot} class — immutability, SHA-256 serialize/deserialize (§12.1 / Phase 9.1),
- * {@link ContextSnapshot.migrate} (Phase 9.2), {@link ContextSnapshot.format}, and {@link ContextSnapshot.diff} (§5.5, Phase 9.4).
+ * {@link ContextSnapshot} class — immutability, SHA-256 serialize/deserialize (§12.1),
+ * {@link ContextSnapshot.migrate}, {@link ContextSnapshot.format}, and {@link ContextSnapshot.diff} (§5.5, §12.1).
  *
  * @packageDocumentation
  */
@@ -305,7 +305,7 @@ export class ContextSnapshot {
   }
 
   /**
-   * Structural diff vs `other` (§12.1 — Phase 9.4): positional message changes plus
+   * Structural diff vs `other` (§12.1): positional message changes plus
    * {@link SnapshotDiff.slotsModified} for {@link SlotMeta} drift on shared slot names.
    */
   diff(other: ContextSnapshot): SnapshotDiff {

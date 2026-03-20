@@ -22,7 +22,7 @@ function countChars(items: readonly ProgressiveItem[]): number {
   return s;
 }
 
-describe('runProgressiveSummarize (§8.1 / Phase 8.3)', () => {
+describe('runProgressiveSummarize (§8.1)', () => {
   it('returns sorted input when already under budget', async () => {
     const items = [mk('b', 2, 'bb'), mk('a', 1, 'aa')];
     const summarizeText = vi.fn(async () => 'nope');

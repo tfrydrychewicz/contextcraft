@@ -1,5 +1,5 @@
 /**
- * Semantic compression: embed anchor + items, cosine similarity, greedy selection (§8.2 / Phase 8.5).
+ * Semantic compression: embed anchor + items, cosine similarity, greedy selection (§8.2).
  *
  * @packageDocumentation
  */

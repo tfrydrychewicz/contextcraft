@@ -1,5 +1,5 @@
 /**
- * Clone {@link CompiledMessage} for snapshot storage (Phase 5.5).
+ * Clone {@link CompiledMessage} for snapshot storage.
  *
  * @packageDocumentation
  */

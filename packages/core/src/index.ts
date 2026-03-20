@@ -49,7 +49,7 @@ export type {
   CompiledToolUse,
 } from './types/content.js';
 
-// Content store (§20 — Phase 3.1)
+// Content store (§20)
 export {
   ContentStore,
   createContentItem,
@@ -59,11 +59,11 @@ export type {
   CreateContentItemParams,
 } from './content/content-store.js';
 
-// Slot manager (§20 — Phase 3.2)
+// Slot manager (§20)
 export { SlotManager } from './slots/slot-manager.js';
 export type { SlotManagerOptions } from './slots/slot-manager.js';
 
-// Budget allocator (§7.1 — Phase 3.3)
+// Budget allocator (§7.1)
 export {
   BudgetAllocator,
   allocateFlexPool,
@@ -71,7 +71,7 @@ export {
 } from './slots/budget-allocator.js';
 export type { BudgetAllocatorOptions } from './slots/budget-allocator.js';
 
-// Overflow engine (§7.2 — Phase 4.1)
+// Overflow engine (§7.2)
 export { SlotOverflow } from './slots/slot-overflow.js';
 export type { SlotOverflowPreset } from './slots/slot-overflow.js';
 export {
@@ -85,7 +85,7 @@ export type {
   OverflowResolveRunOptions,
 } from './slots/overflow-engine.js';
 
-// Overflow strategies (§5.2 — Phase 4.2–4.6)
+// Overflow strategies (§5.2)
 export {
   defineCompressionStrategy,
   defineOverflowStrategy,
@@ -124,7 +124,7 @@ export type {
 } from './slots/strategies/fallback-chain-strategy.js';
 export type { TokenAccountant } from './types/token-accountant.js';
 
-// Compression (§8 — Phase 8.1)
+// Compression (§8)
 export type { CompressionContext, CompressionStrategy } from './types/compression.js';
 export type { TokenCountCache } from './types/token-count-cache.js';
 export {
@@ -178,7 +178,7 @@ export type {
   WarningEvent,
 } from './types/events.js';
 
-// Type-safe emitter (§13.1 — Phase 7.1)
+// Type-safe emitter (§13.1)
 export { TypedEventEmitter } from './events/emitter.js';
 export type { EventWithTypeField } from './events/emitter.js';
 
@@ -187,7 +187,7 @@ export type ContextEventEmitter = import('./events/emitter.js').TypedEventEmitte
   import('./types/events.js').ContextEvent
 >;
 
-// Logging (§13.3 — Phase 7.3)
+// Logging (§13.3)
 export { LogLevel } from './logging/logger.js';
 export {
   createConsoleLogger,
@@ -264,7 +264,7 @@ export type {
   ContextPlugin,
 } from './types/plugin.js';
 
-// Plugin manager (§11.1 — Phase 7.2)
+// Plugin manager (§11.1)
 export { PluginManager } from './plugins/plugin-manager.js';
 export type { PluginManagerHook, PluginManagerOptions } from './plugins/plugin-manager.js';
 export {
@@ -332,7 +332,7 @@ export type {
   ParsedSlotBudget,
 } from './config/validator.js';
 
-// Presets & createContext (§7.3 — Phase 3.5)
+// Presets & createContext (§7.3)
 export {
   CHAT_DEFAULTS,
   RAG_DEFAULTS,
@@ -359,7 +359,7 @@ export type {
   TokenOverheadProviderId,
 } from './config/token-overhead.js';
 
-// Security defaults (§19.1 — Phase 13.1)
+// Security defaults (§19.1)
 export {
   DEFAULT_SLOT_MAX_ITEMS,
   SLOT_ITEMS_WARN_THRESHOLD_RATIO,
@@ -381,7 +381,7 @@ export type {
   CreateContextResult,
 } from './context/create-context.js';
 
-// Context runtime (§6.1, §6.3 — Phase 5.1)
+// Context runtime (§6.1, §6.3)
 export {
   Context,
   DEFAULT_HISTORY_SLOT,
@@ -403,7 +403,7 @@ export type {
 } from './context/build-overrides.js';
 export { mergeParsedConfigForBuild } from './context/build-overrides.js';
 
-// Context builder & orchestrator (§6.5, §5.3 — Phase 5.2)
+// Context builder & orchestrator (§6.5, §5.3)
 export {
   ContextBuilder,
   contextBuilder,

@@ -1,5 +1,5 @@
 /**
- * Token counting for overflow strategies and the build pipeline (Phase 4.2+).
+ * Token counting for overflow strategies and the build pipeline.
  *
  * @packageDocumentation
  */

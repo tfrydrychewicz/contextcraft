@@ -7,7 +7,7 @@ import {
   type ContextCheckpoint,
 } from '../../src/index.js';
 
-describe('checkpoint / restore (§12.2 — Phase 9.3)', () => {
+describe('checkpoint / restore (§12.2)', () => {
   it('checkpoint → modify → restore yields original slot contents', () => {
     const { config } = createContext({
       model: 'gpt-4o',

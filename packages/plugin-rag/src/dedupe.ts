@@ -1,5 +1,5 @@
 /**
- * Near-duplicate detection for RAG chunks (§11.1 — Phase 11.1).
+ * Near-duplicate detection for RAG chunks (§11.1).
  *
  * @packageDocumentation
  */

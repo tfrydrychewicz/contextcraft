@@ -1,5 +1,5 @@
 /**
- * Fallback overflow chain: summarize → compress → truncate → error (§15.2 — Phase 4.7).
+ * Fallback overflow chain: summarize → compress → truncate → error (§15.2).
  *
  * @packageDocumentation
  */

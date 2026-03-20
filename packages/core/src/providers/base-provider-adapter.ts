@@ -1,5 +1,5 @@
 /**
- * Abstract base for provider adapters (§10.1 — Phase 6.1).
+ * Abstract base for provider adapters (§10.1).
  *
  * @packageDocumentation
  */

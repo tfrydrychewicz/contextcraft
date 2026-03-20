@@ -1,5 +1,5 @@
 /**
- * Memory store types (Phase 11.2).
+ * Memory store types.
  *
  * @packageDocumentation
  */

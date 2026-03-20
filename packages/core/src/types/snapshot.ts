@@ -133,7 +133,7 @@ export interface SnapshotMeta {
 /**
  * A slot whose {@link SlotMeta} differs between two snapshots (same slot name in both).
  *
- * @see {@link ContextSnapshot.diff} (Phase 9.4 / §12.1).
+ * @see {@link ContextSnapshot.diff}.
  */
 export interface SnapshotSlotMetaDiff {
   readonly name: string;
@@ -142,7 +142,7 @@ export interface SnapshotSlotMetaDiff {
 }
 
 /**
- * Diff result between two snapshots (§12.1 — Phase 9.4).
+ * Diff result between two snapshots (§12.1).
  *
  * **Message semantics** for `this.diff(other)` (treat `this` as baseline, `other` as comparison):
  * - **`added`** — trailing messages in `other` beyond `this.messages.length` (append-only extension).
@@ -180,7 +180,7 @@ export type SerializedSlot = SlotMeta;
 export type SerializedMessage = CompiledMessage;
 
 /**
- * Serializable snapshot format for persistence (§12.1 / Phase 9.1).
+ * Serializable snapshot format for persistence (§12.1).
  * Checksum is SHA-256 (hex) of UTF-8 JSON payload built by {@link ContextSnapshot.serialize}
  * over `version`, `id`, `model`, `slots`, `messages`, and `meta` (the `checksum` field is excluded).
  */
@@ -211,4 +211,4 @@ export interface SerializedSnapshot {
 // Context Snapshot
 // ==========================================
 
-/** See {@link ContextSnapshot} class in `snapshot/context-snapshot.ts` (Phase 5.5). */
+/** See {@link ContextSnapshot} class in `snapshot/context-snapshot.ts`. */

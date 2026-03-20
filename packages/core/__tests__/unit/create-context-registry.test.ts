@@ -11,7 +11,7 @@ import {
 } from '../../src/index.js';
 import type { ContextPlugin } from '../../src/types/plugin.js';
 
-describe('createContext Phase 5.3 (registry, peers, plugins)', () => {
+describe('createContext (model registry, peers, plugins)', () => {
   afterEach(() => {
     clearRegisteredModels();
   });
@@ -103,7 +103,6 @@ describe('createContext Phase 5.3 (registry, peers, plugins)', () => {
     // Parsed config may clone plugin objects; compare shape + shared handler.
     expect(plugins[0]).toStrictEqual(plugin);
   });
-
 });
 
 describe('inferProviderFromModelId', () => {

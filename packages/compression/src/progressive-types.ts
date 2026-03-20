@@ -1,5 +1,5 @@
 /**
- * Types for progressive summarization (design §8.1 / Phase 8.3).
+ * Types for progressive summarization (design §8.1).
  *
  * @packageDocumentation
  */

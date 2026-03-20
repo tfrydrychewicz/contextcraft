@@ -1,5 +1,5 @@
 /**
- * Phase 5.7 — End-to-end pipeline checks (§17.3).
+ * End-to-end pipeline checks (§17.3).
  *
  * @packageDocumentation
  */
@@ -74,7 +74,7 @@ function messagesFingerprint(snapshot: { messages: readonly { role: string; cont
   return snapshot.messages.map((m) => JSON.stringify({ role: m.role, content: m.content }));
 }
 
-describe('Pipeline integration (Phase 5.7 — §17.3)', () => {
+describe('Pipeline integration (§17.3)', () => {
   it('conversation over tight budget: truncate yields valid snapshot + checksum', async () => {
     const parsed = validateContextConfig({
       model: 'gpt-4o-mini',

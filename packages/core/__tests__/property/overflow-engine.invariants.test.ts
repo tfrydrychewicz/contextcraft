@@ -1,5 +1,5 @@
 /**
- * Phase 4.8 — property: after overflow + escalation, total tokens ≤ totalBudget
+ * property: after overflow + escalation, total tokens ≤ totalBudget
  * when escalation is not exhausted (§17.2).
  */
 
@@ -20,7 +20,7 @@ function countSum(items: readonly ContentItem[]): number {
   return items.reduce((s, i) => s + (i.tokens ?? 0), 0);
 }
 
-describe('OverflowEngine invariants (Phase 4.8 property)', () => {
+describe('OverflowEngine invariants (property test)', () => {
   it('after resolve with totalBudget, total ≤ budget unless escalation exhausted or max rounds', async () => {
     await fc.assert(
       fc.asyncProperty(

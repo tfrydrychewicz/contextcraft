@@ -1,5 +1,5 @@
 /**
- * OpenAI Chat Completions adapter (Phase 6.3, §10).
+ * OpenAI Chat Completions adapter (§10).
  *
  * @packageDocumentation
  */

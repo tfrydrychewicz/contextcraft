@@ -1,5 +1,5 @@
 /**
- * @contextcraft/plugin-memory — Long-term memory (Phase 11.2).
+ * @contextcraft/plugin-memory — Long-term memory.
  *
  * @packageDocumentation
  */

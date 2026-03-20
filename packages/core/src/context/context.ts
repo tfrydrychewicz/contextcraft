@@ -1,6 +1,6 @@
 /**
- * Mutable runtime context container — slots, content, and events (§6.1, §6.3 — Phase 5.1);
- * checkpoint / restore (§12.2 — Phase 9.3).
+ * Mutable runtime context container — slots, content, and events (§6.1, §6.3);
+ * checkpoint / restore (§12.2).
  *
  * @packageDocumentation
  */
@@ -121,7 +121,7 @@ export class Context {
 
   /**
    * Optional subscribers (e.g. `@contextcraft/debug` inspector) receive the same redacted
-   * {@link ContextEvent} stream as `onEvent` (§13.2 — Phase 10.3).
+   * {@link ContextEvent} stream as `onEvent` (§13.2).
    */
   private readonly inspectorEventListeners = new Set<(event: ContextEvent) => void>();
 
@@ -129,7 +129,7 @@ export class Context {
     const keys = Object.keys(init.slots);
     if (keys.length === 0) {
       throw new InvalidConfigError('Context requires at least one slot in `slots`', {
-        context: { phase: '5.1' },
+        context: { area: 'context-runtime' },
       });
     }
     const slots = init.slots as Record<string, SlotConfig>;
@@ -172,7 +172,7 @@ export class Context {
     if (slots === undefined || Object.keys(slots).length === 0) {
       throw new InvalidConfigError(
         '`ParsedContextConfig.slots` must be a non-empty record for Context',
-        { context: { phase: '5.1' } },
+        { context: { area: 'context-runtime' } },
       );
     }
     return new Context({
@@ -195,7 +195,7 @@ export class Context {
     if (this.parsedConfig === undefined) {
       throw new InvalidConfigError(
         'Context.build() requires Context.fromParsedConfig() so model, maxTokens, and full config are available',
-        { context: { phase: '5.6' } },
+        { context: { area: 'context-build' } },
       );
     }
 
@@ -232,7 +232,7 @@ export class Context {
     if (this.parsedConfig === undefined) {
       throw new InvalidConfigError(
         'Context.buildStream() requires Context.fromParsedConfig() so model, maxTokens, and full config are available',
-        { context: { phase: '5.6' } },
+        { context: { area: 'context-build' } },
       );
     }
 
@@ -470,7 +470,7 @@ export class Context {
   /**
    * Captures a lightweight checkpoint: **`changedSincePrevious`** lists only slots whose items changed
    * since the last `checkpoint()` (or since construction). **`slots`** holds a full deep copy of every
-   * registered slot for use with {@link Context.restore} (§12.2 — Phase 9.3).
+   * registered slot for use with {@link Context.restore} (§12.2).
    */
   checkpoint(): ContextCheckpoint {
     const slots: Record<string, ContentItem[]> = {};
@@ -507,7 +507,7 @@ export class Context {
     if (checkpoint.version !== '1.0') {
       throw new InvalidConfigError(
         `Context.restore: unsupported checkpoint version "${String(checkpoint.version)}"`,
-        { context: { phase: '9.3', version: checkpoint.version } },
+        { context: { area: 'checkpoint', version: checkpoint.version } },
       );
     }
 
@@ -516,7 +516,7 @@ export class Context {
       const raw = checkpoint.slots[slot];
       if (raw === undefined) {
         throw new InvalidConfigError(`Context.restore: checkpoint missing slot "${slot}"`, {
-          context: { phase: '9.3', slot },
+          context: { area: 'checkpoint', slot },
         });
       }
       snapshot[slot] = cloneItemsForCheckpoint(raw);

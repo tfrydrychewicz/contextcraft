@@ -1,5 +1,5 @@
 /**
- * Plain-text rendering of compiled messages for {@link ContextSnapshot.format}('text') (§6.4 / Phase 6.8).
+ * Plain-text rendering of compiled messages for {@link ContextSnapshot.format}('text') (§6.4).
  *
  * @packageDocumentation
  */

@@ -1,5 +1,5 @@
 /**
- * Non-mutating build overrides for {@link Context.build} (§5.6 — Phase 5.6).
+ * Non-mutating build overrides for {@link Context.build} (§5.6).
  *
  * @packageDocumentation
  */
@@ -37,10 +37,10 @@ export type ContextBuildParams = {
   readonly providerAdapters?: Partial<Record<ProviderId, ProviderAdapter>>;
   readonly previousSnapshot?: ContextSnapshot;
   readonly structuralSharing?: boolean;
-  /** When set, overrides `config.plugins` for the build pipeline (Phase 7.2). */
+  /** When set, overrides `config.plugins` for the build pipeline. */
   readonly pluginManager?: PluginManager;
   /**
-   * Stable id for this build in logs (§13.3 — Phase 10.1). Useful in tests; otherwise a UUID is generated.
+   * Stable id for this build in logs (§13.3). Useful in tests; otherwise a UUID is generated.
    */
   readonly operationId?: string;
 };

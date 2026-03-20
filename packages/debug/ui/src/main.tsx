@@ -1,5 +1,5 @@
 /**
- * Inspector UI entry (Phase 10.4).
+ * Inspector UI entry.
  *
  * @packageDocumentation
  */

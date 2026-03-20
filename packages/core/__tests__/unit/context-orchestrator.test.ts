@@ -22,7 +22,7 @@ function chatConfig(
   });
 }
 
-describe('ContextOrchestrator Phase 5.4 (pipeline & plugins)', () => {
+describe('ContextOrchestrator (pipeline & plugins)', () => {
   it('Step 1–3: beforeBudgetResolve mutates slot budgets; afterBudgetResolve runs', async () => {
     const afterBudget = vi.fn();
     const plugin: ContextPlugin = {

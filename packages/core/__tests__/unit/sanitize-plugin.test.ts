@@ -1,5 +1,5 @@
 /**
- * Phase 13.1 — sanitize plugin stub (§19.1).
+ * sanitize plugin stub (§19.1).
  *
  * @packageDocumentation
  */
@@ -9,7 +9,7 @@ import { describe, expect, it } from 'vitest';
 import { sanitizePlugin } from '../../src/plugins/sanitize-plugin.js';
 import type { CompiledMessage } from '../../src/types/content.js';
 
-describe('sanitizePlugin (Phase 13.1 — §19.1)', () => {
+describe('sanitizePlugin (§19.1)', () => {
   it('strips default injection phrases from string content', async () => {
     const p = sanitizePlugin();
     const messages: CompiledMessage[] = [

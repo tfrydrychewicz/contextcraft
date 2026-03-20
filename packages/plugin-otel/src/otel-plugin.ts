@@ -1,5 +1,5 @@
 /**
- * OpenTelemetry plugin for contextcraft (§13.4 / Phase 10.5).
+ * OpenTelemetry plugin for contextcraft (§13.4).
  *
  * @packageDocumentation
  */

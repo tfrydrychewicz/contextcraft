@@ -1,5 +1,5 @@
 /**
- * Security-related defaults (§19.1 — Phase 13.1).
+ * Security-related defaults (§19.1).
  *
  * @packageDocumentation
  */

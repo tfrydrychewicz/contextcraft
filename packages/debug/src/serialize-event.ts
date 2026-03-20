@@ -1,5 +1,5 @@
 /**
- * JSON-safe shapes for inspector HTTP/WebSocket (Phase 10.3).
+ * JSON-safe shapes for inspector HTTP/WebSocket.
  *
  * @packageDocumentation
  */

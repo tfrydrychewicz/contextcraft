@@ -1,5 +1,5 @@
 /**
- * Truncate oversized tool result payloads (Phase 11.3).
+ * Truncate oversized tool result payloads.
  *
  * @packageDocumentation
  */

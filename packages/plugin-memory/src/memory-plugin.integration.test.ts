@@ -1,5 +1,5 @@
 /**
- * Phase 11.2 — memory plugin integration (in-memory store).
+ * memory plugin integration (in-memory store).
  *
  * @packageDocumentation
  */

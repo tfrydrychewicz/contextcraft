@@ -1,5 +1,5 @@
 /**
- * Phase 10.5 — OTel plugin integration (§13.4) without loading OTel ESM under Vitest.
+ * OTel plugin integration (§13.4) without loading OTel ESM under Vitest.
  *
  * @packageDocumentation
  */

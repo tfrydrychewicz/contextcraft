@@ -1,5 +1,5 @@
 /**
- * @contextcraft/debug — Debug inspector (§13.2 — Phases 10.3–10.4: HTTP/WS server + Preact UI at `/inspector/`).
+ * @contextcraft/debug — Debug inspector (§13.2: HTTP/WS server + Preact UI at `/inspector/`).
  *
  * @packageDocumentation
  */

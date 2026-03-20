@@ -1,5 +1,5 @@
 /**
- * Mistral AI chat adapter (Phase 6.6, §10).
+ * Mistral AI chat adapter (§10).
  *
  * Mistral’s Chat Completions API uses an OpenAI-compatible `messages` shape; we reuse
  * {@link formatOpenAIMessages} and expose Mistral-specific names for clarity.

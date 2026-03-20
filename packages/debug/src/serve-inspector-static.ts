@@ -1,5 +1,5 @@
 /**
- * Serves the Vite-built Preact inspector under `/inspector/*` (Phase 10.4).
+ * Serves the Vite-built Preact inspector under `/inspector/*`.
  *
  * @packageDocumentation
  */

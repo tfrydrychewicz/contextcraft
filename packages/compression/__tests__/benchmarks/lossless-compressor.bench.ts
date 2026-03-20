@@ -11,7 +11,7 @@ const verboseChat = Array.from({ length: 40 }, (_, i) =>
   ].join('\n'),
 ).join('\n\n');
 
-describe('LosslessCompressor benchmark (Phase 8.2)', () => {
+describe('LosslessCompressor benchmark', () => {
   bench('compressText — verbose synthetic chat', () => {
     const c = new LosslessCompressor();
     c.compressText(verboseChat);

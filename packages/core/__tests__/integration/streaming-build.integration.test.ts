@@ -1,5 +1,5 @@
 /**
- * Phase 12.1 — Streaming build (§14.1).
+ * Streaming build (§14.1).
  *
  * @packageDocumentation
  */
@@ -37,7 +37,7 @@ function msgText(m: CompiledMessage): string {
   return typeof m.content === 'string' ? m.content : JSON.stringify(m.content);
 }
 
-describe('Streaming build (Phase 12.1 — §14.1)', () => {
+describe('Streaming build (§14.1)', () => {
   it('emits slot:ready in compile order then complete with same snapshot as build()', async () => {
     const parsed = validateContextConfig({
       model: 'gpt-4o-mini' as ModelId,

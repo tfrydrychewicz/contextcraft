@@ -1,5 +1,5 @@
 /**
- * Phase 12.2 — ref / computed primitives (mock signal system for reactive context).
+ * ref / computed primitives (mock signal system for reactive context).
  *
  * @packageDocumentation
  */
@@ -8,7 +8,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { computedRef, ref } from '../../src/reactive/ref.js';
 
-describe('reactive ref (Phase 12.2)', () => {
+describe('reactive ref (§12.2)', () => {
   it('ref notifies subscribers when value changes', () => {
     const r = ref(1);
     const fn = vi.fn();

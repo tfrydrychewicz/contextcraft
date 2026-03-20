@@ -13,7 +13,7 @@ function countSum(items: readonly { tokens?: number }[]): number {
   return items.reduce((s, i) => s + (i.tokens ?? 0), 0);
 }
 
-describe('fallback-chain overflow (§15.2 — Phase 4.7 integration)', () => {
+describe('fallback-chain overflow (§15.2 integration)', () => {
   it('when summarize throws CompressionFailedError, engine falls back to truncate', async () => {
     const warn = vi.fn();
     const flex: SlotConfig = {

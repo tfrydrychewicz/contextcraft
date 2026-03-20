@@ -33,7 +33,7 @@ function countSum(items: readonly ContentItem[]): number {
   return items.reduce((s, i) => s + (i.tokens ?? 0), 0);
 }
 
-describe('OverflowEngine (§7.2 — Phase 4.1)', () => {
+describe('OverflowEngine (§7.2)', () => {
   it('leaves slots unchanged when under budget', async () => {
     const a = createContentItem({
       slot: 'a',

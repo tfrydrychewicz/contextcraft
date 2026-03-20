@@ -1,5 +1,5 @@
 /**
- * Phase 10.3 — Inspector server (§13.2).
+ * Inspector server (§13.2).
  *
  * @packageDocumentation
  */
@@ -25,7 +25,7 @@ const SLOTS = {
   },
 };
 
-describe('attachInspector (Phase 10.3)', () => {
+describe('attachInspector', () => {
   afterEach(() => {
     vi.unstubAllEnvs();
   });

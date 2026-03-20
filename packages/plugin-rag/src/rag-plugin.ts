@@ -1,5 +1,5 @@
 /**
- * RAG first-party plugin (§11.2 design / Phase 11.1).
+ * RAG first-party plugin (§11.2 design).
  *
  * @packageDocumentation
  */

@@ -1,5 +1,5 @@
 /**
- * Phase 12.2 — reactiveContext (§14.2).
+ * reactiveContext (§14.2).
  *
  * @packageDocumentation
  */
@@ -41,7 +41,7 @@ const baseSlots = {
   },
 };
 
-describe('reactiveContext (Phase 12.2 — §14.2)', () => {
+describe('reactiveContext (§14.2)', () => {
   afterEach(() => {
     vi.useRealTimers();
   });

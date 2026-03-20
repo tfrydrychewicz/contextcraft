@@ -1,5 +1,5 @@
 /**
- * Map-reduce summarization (§8.1 / Phase 8.4).
+ * Map-reduce summarization (§8.1).
  *
  * @packageDocumentation
  */

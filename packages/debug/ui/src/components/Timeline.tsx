@@ -1,5 +1,5 @@
 /**
- * Content / pipeline event timeline (Phase 10.4).
+ * Content / pipeline event timeline.
  *
  * @packageDocumentation
  */

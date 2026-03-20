@@ -1,5 +1,5 @@
 /**
- * Checkpoint / restore types for {@link Context.checkpoint} and {@link Context.restore} (§12.2 — Phase 9.3).
+ * Checkpoint / restore types for {@link Context.checkpoint} and {@link Context.restore} (§12.2).
  *
  * @packageDocumentation
  */

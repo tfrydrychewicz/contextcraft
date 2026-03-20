@@ -1,5 +1,5 @@
 /**
- * Build {@link CompressionContext} from {@link OverflowContext} (Phase 8.1).
+ * Build {@link CompressionContext} from {@link OverflowContext}.
  *
  * @packageDocumentation
  */

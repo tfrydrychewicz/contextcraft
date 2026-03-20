@@ -7,7 +7,7 @@ import {
 } from '../../src/index.js';
 
 describe('TOKEN_OVERHEAD registry (§2.4 / §9.4)', () => {
-  it('matches Phase 2.4 OpenAI constants', () => {
+  it('matches OpenAI constants', () => {
     expect(TOKEN_OVERHEAD.openai).toEqual({
       perMessage: 4,
       perConversation: 2,

@@ -1,5 +1,5 @@
 /**
- * Named overflow strategy presets for `SlotConfig.overflow` (design §5.2, §6.2 — Phase 8.6).
+ * Named overflow strategy presets for `SlotConfig.overflow` (design §5.2, §6.2).
  *
  * @packageDocumentation
  */

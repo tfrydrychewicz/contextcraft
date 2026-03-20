@@ -1,5 +1,5 @@
 /**
- * Subpath `contextcraft/reactive` — signals and {@link reactiveContext} (§14.2 — Phase 12.2).
+ * Subpath `contextcraft/reactive` — signals and {@link reactiveContext} (§14.2).
  *
  * @packageDocumentation
  */

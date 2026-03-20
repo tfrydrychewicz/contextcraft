@@ -1,5 +1,5 @@
 /**
- * Type-safe synchronous event emitter with discriminated-union dispatch (§13.1 / Phase 7.1).
+ * Type-safe synchronous event emitter with discriminated-union dispatch (§13.1).
  *
  * @packageDocumentation
  */

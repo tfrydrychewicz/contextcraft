@@ -1,5 +1,5 @@
 /**
- * Phase 11.3 — tools plugin integration.
+ * tools plugin integration.
  *
  * @packageDocumentation
  */

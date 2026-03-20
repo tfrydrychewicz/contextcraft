@@ -39,7 +39,7 @@ export interface ResolvedSlot {
 export type { CompressionStrategy } from './compression.js';
 export type { TokenCountCache } from './token-count-cache.js';
 
-/** Plugin-facing logger — same shape as {@link Logger} (§13.3 / Phase 7.3). */
+/** Plugin-facing logger — same shape as {@link Logger} (§13.3). */
 export type PluginLogger = Logger;
 
 // ==========================================
@@ -65,7 +65,7 @@ export interface PluginContext {
 }
 
 // ==========================================
-// Overflow hook environment (Phase 11.2)
+// Overflow hook environment
 // ==========================================
 
 /**

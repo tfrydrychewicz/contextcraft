@@ -1,5 +1,5 @@
 /**
- * Wires built-in summarization (§8.1 — progressive Phase 8.3, map-reduce Phase 8.4) to {@link OverflowStrategyFn}.
+ * Wires built-in summarization (§8.1 — progressive zones, map-reduce) to {@link OverflowStrategyFn}.
  * Implementation lives in `@contextcraft/compression`.
  *
  * @packageDocumentation

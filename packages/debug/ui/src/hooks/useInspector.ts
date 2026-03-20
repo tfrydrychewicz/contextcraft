@@ -1,5 +1,5 @@
 /**
- * Poll REST + WebSocket-triggered refresh for inspector state (Phase 10.4).
+ * Poll REST + WebSocket-triggered refresh for inspector state.
  *
  * @packageDocumentation
  */

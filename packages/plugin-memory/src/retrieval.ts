@@ -1,5 +1,5 @@
 /**
- * Hybrid recency + lexical relevance ranking (Phase 11.2).
+ * Hybrid recency + lexical relevance ranking.
  *
  * @packageDocumentation
  */

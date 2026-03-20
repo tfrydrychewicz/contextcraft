@@ -1,5 +1,5 @@
 /**
- * LIFO truncate-latest overflow strategy (§5.2 — Phase 4.3).
+ * LIFO truncate-latest overflow strategy (§5.2).
  *
  * @packageDocumentation
  */

@@ -11,7 +11,7 @@ import {
 } from '../../src/index.js';
 import type { OverflowContext } from '../../src/types/config.js';
 
-describe('createFallbackChainStrategy (§15.2 — Phase 4.7)', () => {
+describe('createFallbackChainStrategy (§15.2)', () => {
   it('on CompressionFailedError from summarize, logs and falls through to truncate', async () => {
     const warn = vi.fn();
     const ctx: OverflowContext = {

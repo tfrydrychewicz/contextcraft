@@ -20,6 +20,7 @@
     "test:property": "vitest run property",
     "test:bench": "vitest bench",
     "test:bench:baseline": "vitest bench --outputJson benchmarks/baseline.json",
+    "bench:latency-report": "vitest run --config packages/core/vitest.benchmark-report.config.ts",
     "lint": "eslint .",
     "audit": "pnpm audit --audit-level=high",
     "verify:core-runtime-deps": "node scripts/verify-core-runtime-deps.mjs",

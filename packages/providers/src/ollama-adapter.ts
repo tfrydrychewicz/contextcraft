@@ -1,5 +1,5 @@
 /**
- * Ollama `/api/chat` message adapter (Phase 6.7, §10).
+ * Ollama `/api/chat` message adapter (§10).
  *
  * @see https://github.com/ollama/ollama/blob/main/docs/api.md
  *

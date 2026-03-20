@@ -1,5 +1,5 @@
 /**
- * Map {@link MODEL_REGISTRY} entries and defaults to {@link ModelCapabilities} (Phase 6.1).
+ * Map {@link MODEL_REGISTRY} entries and defaults to {@link ModelCapabilities}.
  *
  * @packageDocumentation
  */

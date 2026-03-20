@@ -10,7 +10,7 @@ import {
 } from '../../src/index.js';
 import type { OverflowContext } from '../../src/types/config.js';
 
-describe('truncateStrategy / truncateFifo (§5.2 — Phase 4.2)', () => {
+describe('truncateStrategy / truncateFifo (§5.2)', () => {
   it('removes oldest non-pinned items until within budget (basic FIFO)', () => {
     const a = createContentItem({
       slot: 's',

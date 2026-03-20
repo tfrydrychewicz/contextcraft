@@ -1,5 +1,5 @@
 /**
- * Resolves per-slot token budgets from {@link SlotConfig} (§7.1 — Phase 3.3).
+ * Resolves per-slot token budgets from {@link SlotConfig} (§7.1).
  *
  * @packageDocumentation
  */
@@ -13,7 +13,7 @@ import type { ResolvedSlot } from '../types/plugin.js';
 export type BudgetAllocatorOptions = {
   /** Fired once per slot after budgets are computed (§3.3). */
   onEvent?: (event: SlotBudgetResolvedEvent) => void;
-  /** When set, validation failures are also logged before throw (§13.3 — Phase 10.1). */
+  /** When set, validation failures are also logged before throw (§13.3). */
   logger?: Logger;
 };
 

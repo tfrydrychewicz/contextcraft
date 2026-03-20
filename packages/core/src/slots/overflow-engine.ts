@@ -1,5 +1,5 @@
 /**
- * Per-slot overflow resolution (§7.2 — Phase 4.1).
+ * Per-slot overflow resolution (§7.2).
  *
  * @packageDocumentation
  */
@@ -59,12 +59,12 @@ export type OverflowEngineOptions = {
 
   /**
    * Included on {@link OverflowContext} as `logger` for custom / factory-built strategies
-   * (§8.4 — Phase 4.6).
+   * (§8.4).
    */
   strategyLogger?: OverflowStrategyLogger;
 
   /**
-   * Per-slot logger for {@link OverflowContext.logger} (§13.3 — Phase 10.1).
+   * Per-slot logger for {@link OverflowContext.logger} (§13.3).
    * When set, takes precedence over {@link strategyLogger}.
    */
   strategyLoggerFactory?: (slot: string) => OverflowStrategyLogger;
@@ -140,7 +140,7 @@ function toResolvedOutput(s: WorkingSlot): ResolvedSlot {
 
 function strategyNotImplemented(name: NamedOverflowStrategy): never {
   throw new InvalidConfigError(
-    `Overflow strategy "${name}" is not implemented yet (see Phase 4.2–4.6)`,
+    `Overflow strategy "${name}" is not implemented yet (see §5.2 overflow strategies)`,
     { context: { strategy: name } },
   );
 }
@@ -158,7 +158,7 @@ function isNamedStrategy(s: string): s is NamedOverflowStrategy {
   );
 }
 
-/** Strategies that transform content for token reduction (§13.1 / Phase 8.7 — compression events). */
+/** Strategies that transform content for token reduction (§13.1 — compression events). */
 function isCompressionLikeOverflowLabel(label: string): boolean {
   return label === 'compress' || label === 'summarize' || label === 'semantic';
 }

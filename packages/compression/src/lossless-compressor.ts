@@ -1,5 +1,5 @@
 /**
- * Lossless-ish text compression (§8.3 / Phase 8.2) — filler removal, whitespace,
+ * Lossless-ish text compression (§8.3) — filler removal, whitespace,
  * abbreviations, pleasantries, and near-duplicate consecutive messages.
  *
  * Lives in `@contextcraft/compression` per design (packages/compression).

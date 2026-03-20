@@ -1,5 +1,5 @@
 /**
- * Token budget allocation waterfall (Phase 10.4).
+ * Token budget allocation waterfall.
  *
  * @packageDocumentation
  */

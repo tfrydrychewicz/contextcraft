@@ -1,5 +1,5 @@
 /**
- * Side-by-side snapshot / slot meta diff (Phase 10.4).
+ * Side-by-side snapshot / slot meta diff.
  *
  * @packageDocumentation
  */

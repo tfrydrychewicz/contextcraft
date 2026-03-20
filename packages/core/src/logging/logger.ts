@@ -1,5 +1,5 @@
 /**
- * Structured logging: levels, console sink, scoping, redaction (§13.3 / Phase 7.3).
+ * Structured logging: levels, console sink, scoping, redaction (§13.3).
  *
  * @packageDocumentation
  */
@@ -26,7 +26,7 @@ export enum LogLevel {
   WARN = 1,
   INFO = 2,
   DEBUG = 3,
-  /** Most verbose; at this level, redaction is disabled for logs/events when it would otherwise apply (§19.2 — Phase 13.3). */
+  /** Most verbose; at this level, redaction is disabled for logs/events when it would otherwise apply (§19.2). */
   TRACE = 4,
 }
 
@@ -150,7 +150,7 @@ export function createScopedLogger(delegate: Logger, scope: string): Logger {
 }
 
 /**
- * Fields prepended to each message as `[op=… slot=…]` for pipeline / overflow tracing (§13.3 — Phase 10.1).
+ * Fields prepended to each message as `[op=… slot=…]` for pipeline / overflow tracing (§13.3).
  * Omitted keys are not shown.
  */
 export type LogContextFields = {

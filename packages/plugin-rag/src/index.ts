@@ -1,5 +1,5 @@
 /**
- * @contextcraft/plugin-rag — RAG integration (Phase 11.1).
+ * @contextcraft/plugin-rag — RAG integration.
  *
  * @packageDocumentation
  */
