@@ -305,6 +305,40 @@ export function compileMessagesForSnapshot(
   return out;
 }
 
+/** §14.1 — compiled messages for a single slot from a resolved overflow result. */
+export function compileSlotMessages(
+  resolvedSlots: readonly ResolvedSlot[],
+  slotName: string,
+): CompiledMessage[] {
+  const rs = resolvedSlots.find((s) => s.name === slotName);
+  const items = rs?.content ?? [];
+  const out: CompiledMessage[] = [];
+  for (const item of items) {
+    out.push(compileContentItem(item));
+  }
+  return out;
+}
+
+function cloneResolvedSlotItems(
+  items: readonly ContentItem[],
+): ContentItem[] {
+  return items.map((i) => ({ ...i }));
+}
+
+function applyFrozenSlotContent(
+  after: readonly ResolvedSlot[],
+  frozen: ReadonlyMap<string, readonly ContentItem[]>,
+): ResolvedSlot[] {
+  return after.map((rs) =>
+    frozen.has(rs.name)
+      ? {
+          ...rs,
+          content: cloneResolvedSlotItems(frozen.get(rs.name)!),
+        }
+      : { ...rs, content: cloneResolvedSlotItems(rs.content) },
+  );
+}
+
 function buildSlotMetaMap(params: {
   readonly resolvedAfterOverflow: readonly ResolvedSlot[];
   readonly evictionsBySlot: ReadonlyMap<string, number>;
@@ -561,5 +595,301 @@ export class ContextOrchestrator {
     );
 
     return { snapshot, context };
+  }
+
+  /**
+   * §14.1 streaming build: runs the same budget/overflow pipeline in stages so callers can observe
+   * each slot before the full snapshot exists. Between stages, `yieldBetweenSlots` runs (macrotask)
+   * so late {@link Context.push} calls can land in slots that have not been emitted yet; slots already
+   * emitted are held fixed (“frozen”) while later slots are re-resolved.
+   */
+  static async buildStreaming(
+    input: ContextOrchestratorBuildInput,
+    callbacks: {
+      readonly onSlotReady: (
+        slot: string,
+        messages: CompiledMessage[],
+      ) => void | Promise<void>;
+      readonly yieldBetweenSlots?: () => void | Promise<void>;
+    },
+  ): Promise<ContextOrchestratorBuildResult> {
+    const t0 = Date.now();
+    const {
+      config,
+      context,
+      providerAdapters,
+      previousSnapshot,
+      structuralSharing,
+      operationId: operationIdInput,
+    } = input;
+    const operationId = operationIdInput ?? newBuildOperationId();
+    const userLogger = config.logger;
+    const hasUserLogger = userLogger !== undefined;
+    let baseLogger: import('../logging/logger.js').Logger = hasUserLogger
+      ? createLeveledLogger(userLogger, config.logLevel ?? LogLevel.INFO)
+      : noopLogger;
+    if (hasUserLogger && shouldRedactObservability(config)) {
+      const r: RedactionOptions | true =
+        config.redaction === true ? true : (config.redaction as RedactionOptions);
+      baseLogger = createRedactingLogger({ delegate: baseLogger, redaction: r });
+    }
+    const pipelineLog = hasUserLogger
+      ? createContextualLogger(baseLogger, { operationId })
+      : noopLogger;
+
+    const eventRedactor = createContextEventRedactor(config);
+
+    const baseSlots = config.slots as Record<string, SlotConfig>;
+    if (config.slots === undefined || Object.keys(config.slots).length === 0) {
+      throw new InvalidConfigError('ContextOrchestrator.buildStreaming: config.slots is required', {
+        context: { phase: '5.2' },
+      });
+    }
+
+    const pluginManager = input.pluginManager;
+    const plugins = pluginManager?.getPlugins() ?? resolvePlugins(config);
+    const countTokens = resolveCountTokens(config);
+
+    const deliverPipelineEvent = (ev: ContextEvent): void => {
+      const payload = eventRedactor !== undefined ? eventRedactor(ev) : ev;
+      context.dispatchInspectorEvent(payload);
+      const fn = config.onEvent as ((e: ContextEvent) => void) | undefined;
+      fn?.(payload);
+      if (pluginManager !== undefined) {
+        void pluginManager.runHook('onEvent', payload);
+      } else {
+        for (const p of plugins) {
+          if (p.onEvent !== undefined) {
+            try {
+              p.onEvent(payload);
+            } catch {
+              /* isolate plugin onEvent failures (§11.1) */
+            }
+          }
+        }
+      }
+    };
+
+    const maxTokens = config.maxTokens ?? DEFAULT_MAX_TOKENS;
+    const reserve = config.reserveForResponse ?? 0;
+    const totalBudget = Math.max(0, maxTokens - reserve);
+
+    deliverPipelineEvent({ type: 'build:start', totalBudget });
+    pipelineLog.debug(`buildStream: pipeline started (totalBudget=${totalBudget})`);
+
+    const frozen = new Map<string, ContentItem[]>();
+    let lastPreOverflowBySlot = new Map<string, readonly ContentItem[]>();
+
+    const namedStrategies = pluginManager?.getNamedOverflowStrategiesForEngine();
+
+    const slotsInitial =
+      pluginManager !== undefined
+        ? await pluginManager.runHook('beforeBudgetResolve', baseSlots)
+        : await applyBeforeBudgetResolvePlugins(baseSlots, plugins);
+    const orderedNames = orderSlotsForCompile(slotsInitial).map((e) => e.name);
+    if (orderedNames.length === 0) {
+      throw new InvalidConfigError('ContextOrchestrator.buildStreaming: no compile-order slots', {
+        context: { phase: '14.1' },
+      });
+    }
+
+    for (let k = 0; k < orderedNames.length; k++) {
+      if (callbacks.yieldBetweenSlots !== undefined) {
+        await Promise.resolve(callbacks.yieldBetweenSlots());
+      }
+
+      const slots =
+        pluginManager !== undefined
+          ? await pluginManager.runHook('beforeBudgetResolve', baseSlots)
+          : await applyBeforeBudgetResolvePlugins(baseSlots, plugins);
+
+      const lastPass = k === orderedNames.length - 1;
+
+      const evictionsBySlot = new Map<string, number>();
+      const overflowSlots = new Set<string>();
+      const warnings: ContextWarning[] = [];
+      const evictionsMeta: EvictionEvent[] = [];
+
+      const forward = (e: ContextEvent): void => {
+        if (!lastPass) {
+          return;
+        }
+        deliverPipelineEvent(e);
+        if (e.type === 'warning') {
+          pipelineLog.warn(e.warning.message, e.warning);
+        }
+        if (e.type === 'content:evicted') {
+          evictionsBySlot.set(e.slot, (evictionsBySlot.get(e.slot) ?? 0) + 1);
+          evictionsMeta.push({
+            slot: e.slot,
+            item: e.item,
+            reason: e.reason,
+          });
+        } else if (e.type === 'slot:overflow') {
+          overflowSlots.add(e.slot);
+        } else if (e.type === 'warning') {
+          warnings.push(e.warning);
+        }
+      };
+
+      const allocator = new BudgetAllocator({
+        onEvent: (e) => forward(e),
+        ...(hasUserLogger ? { logger: pipelineLog } : {}),
+      });
+      const budgetResolved = allocator.resolve(slots, totalBudget);
+      pipelineLog.debug(`buildStream: slot budgets resolved (pass ${String(k)})`);
+
+      if (pluginManager !== undefined) {
+        await pluginManager.runHook('afterBudgetResolve', budgetResolved);
+      } else {
+        await runAfterBudgetResolve(plugins, budgetResolved);
+      }
+
+      const engine = new OverflowEngine({
+        countTokens,
+        onEvent: (e) => forward(e),
+        ...(namedStrategies !== undefined && Object.keys(namedStrategies).length > 0
+          ? { namedStrategies }
+          : {}),
+        ...(hasUserLogger
+          ? {
+              strategyLoggerFactory: (slot) =>
+                overflowStrategyLoggerFromLogger(
+                  createContextualLogger(pipelineLog, { slot }),
+                ),
+            }
+          : {}),
+      });
+
+      const overflowInputs = await Promise.all(
+        budgetResolved.map(async (rs) => {
+          if (frozen.has(rs.name)) {
+            return {
+              name: rs.name,
+              priority: rs.priority,
+              budgetTokens: rs.budgetTokens,
+              config: slots[rs.name]!,
+              content: cloneResolvedSlotItems(frozen.get(rs.name)!),
+            };
+          }
+          const live =
+            pluginManager !== undefined
+              ? await pluginManager.runHook(
+                  'beforeOverflow',
+                  rs.name,
+                  context.getItems(rs.name),
+                  context,
+                )
+              : await applyBeforeOverflowForSlot(
+                  plugins,
+                  rs.name,
+                  context.getItems(rs.name),
+                  context,
+                );
+          return {
+            name: rs.name,
+            priority: rs.priority,
+            budgetTokens: rs.budgetTokens,
+            config: slots[rs.name]!,
+            content: live,
+          };
+        }),
+      );
+
+      if (lastPass) {
+        lastPreOverflowBySlot = new Map(
+          overflowInputs.map((s) => [s.name, s.content] as const),
+        );
+      }
+
+      pipelineLog.debug(`buildStream: overflow resolution (pass ${String(k)})`);
+      const afterOverflowRaw = await engine.resolve(overflowInputs, {
+        totalBudget,
+      });
+      const corrected = applyFrozenSlotContent(afterOverflowRaw, frozen);
+
+      const slotName = orderedNames[k]!;
+
+      await Promise.resolve(callbacks.onSlotReady(slotName, compileSlotMessages(corrected, slotName)));
+
+      const rs = corrected.find((s) => s.name === slotName);
+      if (rs !== undefined) {
+        frozen.set(slotName, cloneResolvedSlotItems(rs.content));
+      }
+
+      if (lastPass) {
+        if (pluginManager !== undefined) {
+          await pluginManager.runHook('afterOverflow', lastPreOverflowBySlot, corrected);
+        } else {
+          await runAfterOverflowPlugins(plugins, lastPreOverflowBySlot, corrected);
+        }
+
+        let messages = compileMessagesForSnapshot(slots, corrected);
+        messages =
+          pluginManager !== undefined
+            ? await pluginManager.runHook('beforeSnapshot', messages)
+            : await applyBeforeSnapshotPlugins(plugins, messages);
+
+        const slotMeta = buildSlotMetaMap({
+          resolvedAfterOverflow: corrected,
+          evictionsBySlot,
+          overflowSlots,
+          countTokens,
+        });
+
+        let totalUsed = 0;
+        let waste = 0;
+        for (const rs2 of corrected) {
+          const u = countTokens(rs2.content);
+          totalUsed += u;
+          waste += Math.max(0, rs2.budgetTokens - u);
+        }
+
+        const buildTimeMs = Date.now() - t0;
+        const builtAt = Date.now();
+
+        const snapshotMeta: SnapshotMeta = {
+          totalTokens: toTokenCount(totalUsed),
+          totalBudget: toTokenCount(totalBudget),
+          utilization: totalBudget > 0 ? totalUsed / totalBudget : 0,
+          waste: toTokenCount(waste),
+          slots: Object.freeze(slotMeta),
+          compressions: Object.freeze([]),
+          evictions: Object.freeze(evictionsMeta),
+          warnings: Object.freeze(warnings),
+          buildTimeMs,
+          builtAt,
+        };
+
+        const snapshot = ContextSnapshot.create({
+          messages,
+          meta: snapshotMeta,
+          model: config.model,
+          immutable: config.immutableSnapshots !== false,
+          ...(providerAdapters !== undefined ? { providerAdapters } : {}),
+          ...(previousSnapshot !== undefined ? { previousSnapshot } : {}),
+          ...(structuralSharing !== undefined ? { structuralSharing } : {}),
+        });
+
+        if (pluginManager !== undefined) {
+          await pluginManager.runHook('afterSnapshot', snapshot);
+        } else {
+          await runAfterSnapshotPlugins(plugins, snapshot);
+        }
+
+        context.clearEphemeral();
+
+        deliverPipelineEvent({ type: 'build:complete', snapshot });
+        pipelineLog.debug(
+          `buildStream: complete (messages=${snapshot.messages.length}, buildTimeMs=${snapshot.meta.buildTimeMs})`,
+        );
+
+        return { snapshot, context };
+      }
+    }
+
+    throw new InvalidConfigError('ContextOrchestrator.buildStreaming: internal error (no return)', {
+      context: { phase: '14.1' },
+    });
   }
 }

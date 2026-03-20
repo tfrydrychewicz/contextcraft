@@ -23,6 +23,10 @@ import {
   type ContextBuildParams,
 } from './build-overrides.js';
 import {
+  ContextBuildStream,
+  defaultStreamYield,
+} from './context-build-stream.js';
+import {
   type ContextCheckpoint,
   cloneItemsForCheckpoint,
   slotItemsSignature,
@@ -199,6 +203,62 @@ export class Context {
         : {}),
       ...(params?.operationId !== undefined ? { operationId: params.operationId } : {}),
     });
+  }
+
+  /**
+   * §14.1 streaming build: emits `slot:ready` per compile-order slot, then `complete` with the same
+   * {@link ContextOrchestratorBuildResult} as {@link Context.build}. Starts on a microtask so listeners
+   * can attach synchronously after this call.
+   *
+   * Between slots, a macrotask runs ({@link defaultStreamYield}) so late {@link Context.push} calls
+   * can target slots not yet emitted.
+   */
+  buildStream(params?: ContextBuildParams): ContextBuildStream {
+    if (this.parsedConfig === undefined) {
+      throw new InvalidConfigError(
+        'Context.buildStream() requires Context.fromParsedConfig() so model, maxTokens, and full config are available',
+        { context: { phase: '5.6' } },
+      );
+    }
+
+    const stream = new ContextBuildStream();
+    const effective = mergeParsedConfigForBuild(this.parsedConfig, params?.overrides);
+
+    queueMicrotask(() => {
+      void ContextOrchestrator.buildStreaming(
+        {
+          config: effective,
+          context: this,
+          ...(params?.providerAdapters !== undefined
+            ? { providerAdapters: params.providerAdapters }
+            : {}),
+          ...(params?.previousSnapshot !== undefined
+            ? { previousSnapshot: params.previousSnapshot }
+            : {}),
+          ...(params?.structuralSharing !== undefined
+            ? { structuralSharing: params.structuralSharing }
+            : {}),
+          ...(params?.pluginManager !== undefined
+            ? { pluginManager: params.pluginManager }
+            : {}),
+          ...(params?.operationId !== undefined ? { operationId: params.operationId } : {}),
+        },
+        {
+          onSlotReady: (slot, messages) => {
+            stream.emit({ type: 'slot:ready', slot, messages });
+          },
+          yieldBetweenSlots: defaultStreamYield,
+        },
+      )
+        .then((result) => {
+          stream.resolveFinished(result);
+        })
+        .catch((err: unknown) => {
+          stream.rejectFinished(err);
+        });
+    });
+
+    return stream;
   }
 
   /** Shallow copy of items in `slot` (insertion order). */

@@ -374,6 +374,11 @@ export type {
   ContextInit,
   ContextPushItemInput,
 } from './context/context.js';
+export {
+  ContextBuildStream,
+  defaultStreamYield,
+} from './context/context-build-stream.js';
+export type { BuildStreamEvent } from './context/context-build-stream.js';
 export type { ContextCheckpoint } from './context/context-checkpoint.js';
 export type {
   ContextBuildOverrides,
@@ -389,6 +394,7 @@ export {
 export {
   ContextOrchestrator,
   compileMessagesForSnapshot,
+  compileSlotMessages,
   orderSlotsForCompile,
 } from './context/context-orchestrator.js';
 export type {
