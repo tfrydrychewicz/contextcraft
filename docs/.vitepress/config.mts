@@ -71,6 +71,17 @@ export default defineConfig({
         ],
       },
       {
+        text: 'Advanced Features',
+        items: [
+          { text: 'Streaming build', link: '/guides/streaming-build' },
+          { text: 'Reactive context', link: '/guides/reactive-context' },
+          { text: 'Serialization & checkpoints', link: '/guides/serialization-and-checkpoints' },
+          { text: 'Lossless compression', link: '/guides/lossless-compression-locales' },
+          { text: 'Multimodal content', link: '/guides/multimodal-content' },
+          { text: 'Pinning & ephemeral', link: '/guides/pinning-and-ephemeral' },
+        ],
+      },
+      {
         text: 'Reference',
         items: [
           { text: 'Overview', link: '/reference/' },

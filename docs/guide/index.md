@@ -28,6 +28,15 @@ Use the guide for tutorials and getting started. For deep dives into the core ab
 - [Debug inspector](/guides/debug-inspector) — `@slotmux/debug` browser UI with live slot visualization.
 - [OpenTelemetry](/guides/opentelemetry) — `@slotmux/plugin-otel` spans, metrics, and distributed tracing.
 
+## Advanced Features
+
+- [Streaming build](/guides/streaming-build) — progressive slot delivery with `buildStream()`.
+- [Reactive context](/guides/reactive-context) — auto-rebuild with signal-shaped refs.
+- [Serialization & checkpoints](/guides/serialization-and-checkpoints) — persist snapshots, rollback with checkpoints.
+- [Lossless compression](/guides/lossless-compression-locales) — filler removal, locale packs, fuzzy dedupe.
+- [Multimodal content](/guides/multimodal-content) — images, token costs, provider formatting.
+- [Pinning & ephemeral](/guides/pinning-and-ephemeral) — overflow-resistant and auto-removed content.
+
 ## Concepts
 
 - [Slots](/concepts/slots) — named context partitions with budgets, priorities, and roles.
