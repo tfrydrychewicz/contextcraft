@@ -58,6 +58,12 @@ export type OverflowEngineOptions = {
    * Unspecified names use the engine defaults.
    */
   strategies?: Partial<Record<NamedOverflowStrategy, OverflowStrategyFn>>;
+
+  /**
+   * Extra strategy names (e.g. from {@link PluginManager.getNamedOverflowStrategiesForEngine})
+   * used when {@link SlotConfig.overflow} is a string that is not a built-in name.
+   */
+  namedStrategies?: Record<string, OverflowStrategyFn>;
 };
 
 export type OverflowResolveRunOptions = {
@@ -141,6 +147,8 @@ export class OverflowEngine {
 
   private readonly builtins: Record<NamedOverflowStrategy, OverflowStrategyFn>;
 
+  private readonly namedStrategies: Record<string, OverflowStrategyFn>;
+
   constructor(options: OverflowEngineOptions) {
     this.countTokens = options.countTokens;
     this.onEvent = options.onEvent;
@@ -181,6 +189,7 @@ export class OverflowEngine {
     };
 
     this.builtins = builtins;
+    this.namedStrategies = options.namedStrategies ?? {};
   }
 
   private emit(ev: ContextEvent): void {
@@ -259,13 +268,17 @@ export class OverflowEngine {
       return { label: 'custom', fn: overflow };
     }
     const name = overflow ?? 'truncate';
-    if (!isNamedStrategy(name)) {
-      throw new InvalidConfigError(`Unknown overflow strategy "${name}"`, {
-        context: { strategy: name },
-      });
+    if (isNamedStrategy(name)) {
+      const fn = this.builtins[name];
+      return { label: name, fn };
     }
-    const fn = this.builtins[name];
-    return { label: name, fn };
+    const pluginFn = this.namedStrategies[name];
+    if (pluginFn !== undefined) {
+      return { label: name, fn: pluginFn };
+    }
+    throw new InvalidConfigError(`Unknown overflow strategy "${name}"`, {
+      context: { strategy: name },
+    });
   }
 
   private async processSlot(slot: WorkingSlot): Promise<void> {

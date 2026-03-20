@@ -9,6 +9,7 @@ import {
   type ParsedContextConfig,
 } from '../config/validator.js';
 import { InvalidConfigError } from '../errors.js';
+import type { PluginManager } from '../plugins/plugin-manager.js';
 import type { ContextSnapshot } from '../snapshot/context-snapshot.js';
 import type { ContextConfig, ProviderId, SlotConfig } from '../types/config.js';
 import type { ProviderAdapter } from '../types/provider.js';
@@ -36,6 +37,8 @@ export type ContextBuildParams = {
   readonly providerAdapters?: Partial<Record<ProviderId, ProviderAdapter>>;
   readonly previousSnapshot?: ContextSnapshot;
   readonly structuralSharing?: boolean;
+  /** When set, overrides `config.plugins` for the build pipeline (Phase 7.2). */
+  readonly pluginManager?: PluginManager;
 };
 
 /**

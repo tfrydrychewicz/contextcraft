@@ -177,6 +177,10 @@ export type {
   ContextPlugin,
 } from './types/plugin.js';
 
+// Plugin manager (§11.1 — Phase 7.2)
+export { PluginManager } from './plugins/plugin-manager.js';
+export type { PluginManagerHook, PluginManagerOptions } from './plugins/plugin-manager.js';
+
 // Provider types (§10.1)
 export type {
   Tokenizer,

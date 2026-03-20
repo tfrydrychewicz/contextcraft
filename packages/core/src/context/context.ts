@@ -168,6 +168,9 @@ export class Context {
       ...(params?.structuralSharing !== undefined
         ? { structuralSharing: params.structuralSharing }
         : {}),
+      ...(params?.pluginManager !== undefined
+        ? { pluginManager: params.pluginManager }
+        : {}),
     });
   }
 

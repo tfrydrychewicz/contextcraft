@@ -6,6 +6,7 @@
 
 import type { ParsedContextConfig } from '../config/validator.js';
 import { InvalidConfigError } from '../errors.js';
+import type { PluginManager } from '../plugins/plugin-manager.js';
 import {
   BudgetAllocator,
   orderedSlotEntriesForBudget,
@@ -164,6 +165,10 @@ export type ContextOrchestratorBuildInput = {
   readonly previousSnapshot?: ContextSnapshot;
   /** When false, disables reuse of message references from `previousSnapshot`. */
   readonly structuralSharing?: boolean;
+  /**
+   * When set, hooks and strategy registrations come from the manager instead of `config.plugins`.
+   */
+  readonly pluginManager?: PluginManager;
 };
 
 export type ContextOrchestratorBuildResult = {
@@ -330,7 +335,8 @@ export class ContextOrchestrator {
       });
     }
 
-    const plugins = resolvePlugins(config);
+    const pluginManager = input.pluginManager;
+    const plugins = pluginManager?.getPlugins() ?? resolvePlugins(config);
     const countTokens = resolveCountTokens(config);
 
     const maxTokens = config.maxTokens ?? DEFAULT_MAX_TOKENS;
@@ -339,7 +345,10 @@ export class ContextOrchestrator {
 
     emitEvent(config, { type: 'build:start', totalBudget });
 
-    const slots = await applyBeforeBudgetResolvePlugins(baseSlots, plugins);
+    const slots =
+      pluginManager !== undefined
+        ? await pluginManager.runHook('beforeBudgetResolve', baseSlots)
+        : await applyBeforeBudgetResolvePlugins(baseSlots, plugins);
 
     const evictionsBySlot = new Map<string, number>();
     const overflowSlots = new Set<string>();
@@ -367,11 +376,19 @@ export class ContextOrchestrator {
     });
     const budgetResolved = allocator.resolve(slots, totalBudget);
 
-    await runAfterBudgetResolve(plugins, budgetResolved);
+    if (pluginManager !== undefined) {
+      await pluginManager.runHook('afterBudgetResolve', budgetResolved);
+    } else {
+      await runAfterBudgetResolve(plugins, budgetResolved);
+    }
 
+    const namedStrategies = pluginManager?.getNamedOverflowStrategiesForEngine();
     const engine = new OverflowEngine({
       countTokens,
       onEvent: (e) => forward(e),
+      ...(namedStrategies !== undefined && Object.keys(namedStrategies).length > 0
+        ? { namedStrategies }
+        : {}),
     });
 
     const overflowInputs = await Promise.all(
@@ -380,11 +397,18 @@ export class ContextOrchestrator {
         priority: rs.priority,
         budgetTokens: rs.budgetTokens,
         config: slots[rs.name]!,
-        content: await applyBeforeOverflowForSlot(
-          plugins,
-          rs.name,
-          context.getItems(rs.name),
-        ),
+        content:
+          pluginManager !== undefined
+            ? await pluginManager.runHook(
+                'beforeOverflow',
+                rs.name,
+                context.getItems(rs.name),
+              )
+            : await applyBeforeOverflowForSlot(
+                plugins,
+                rs.name,
+                context.getItems(rs.name),
+              ),
       })),
     );
 
@@ -396,10 +420,17 @@ export class ContextOrchestrator {
       totalBudget,
     });
 
-    await runAfterOverflowPlugins(plugins, preOverflowBySlot, afterOverflow);
+    if (pluginManager !== undefined) {
+      await pluginManager.runHook('afterOverflow', preOverflowBySlot, afterOverflow);
+    } else {
+      await runAfterOverflowPlugins(plugins, preOverflowBySlot, afterOverflow);
+    }
 
     let messages = compileMessagesForSnapshot(slots, afterOverflow);
-    messages = await applyBeforeSnapshotPlugins(plugins, messages);
+    messages =
+      pluginManager !== undefined
+        ? await pluginManager.runHook('beforeSnapshot', messages)
+        : await applyBeforeSnapshotPlugins(plugins, messages);
 
     const slotMeta = buildSlotMetaMap({
       resolvedAfterOverflow: afterOverflow,
@@ -442,7 +473,11 @@ export class ContextOrchestrator {
       ...(structuralSharing !== undefined ? { structuralSharing } : {}),
     });
 
-    await runAfterSnapshotPlugins(plugins, snapshot);
+    if (pluginManager !== undefined) {
+      await pluginManager.runHook('afterSnapshot', snapshot);
+    } else {
+      await runAfterSnapshotPlugins(plugins, snapshot);
+    }
 
     context.clearEphemeral();
 
