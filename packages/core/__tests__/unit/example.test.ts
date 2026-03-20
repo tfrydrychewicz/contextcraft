@@ -5,7 +5,7 @@ import { makeSlot, makeItem, makeContext } from '../helpers';
 
 describe('slotmux', () => {
   it('exports version', () => {
-    expect(VERSION).toBe('0.0.1');
+    expect(VERSION).toMatch(/^\d+\.\d+\.\d+/);
   });
 });
 

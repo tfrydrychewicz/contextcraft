@@ -8,7 +8,7 @@ import { VERSION, otelPlugin } from './index.js';
 
 describe('@slotmux/plugin-otel', () => {
   it('exports VERSION', () => {
-    expect(VERSION).toMatch(/^\d+\.\d+\.\d+$/);
+    expect(VERSION).toMatch(/^\d+\.\d+\.\d+/);
   });
 
   it('otelPlugin returns a ContextPlugin', () => {

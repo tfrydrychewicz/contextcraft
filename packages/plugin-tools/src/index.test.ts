@@ -4,7 +4,7 @@ import { toolsPlugin, VERSION } from './index.js';
 
 describe('@slotmux/plugin-tools', () => {
   it('exports version', () => {
-    expect(VERSION).toBe('0.0.1');
+    expect(VERSION).toMatch(/^\d+\.\d+\.\d+/);
   });
 
   it('toolsPlugin has name and hooks', () => {

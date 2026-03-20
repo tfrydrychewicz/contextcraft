@@ -1,6 +1,6 @@
 {
   "name": "@slotmux/plugin-otel",
-  "version": "0.0.1",
+  "version": "1.0.0-rc.1",
   "description": "OpenTelemetry spans and metrics for slotmux builds (§13.4)",
   "type": "module",
   "main": "./dist/index.cjs",

@@ -13,4 +13,4 @@ export {
 export type { AttachInspectorOptions, InspectorHandle } from './inspector-server.js';
 export { serializeContextEventForJson } from './serialize-event.js';
 
-export const VERSION = '0.0.1';
+export const VERSION = '1.0.0-rc.1';

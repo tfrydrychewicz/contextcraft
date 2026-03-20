@@ -4,6 +4,6 @@ import { VERSION } from './index';
 
 describe('@slotmux/providers', () => {
   it('exports version', () => {
-    expect(VERSION).toBe('0.0.1');
+    expect(VERSION).toMatch(/^\d+\.\d+\.\d+/);
   });
 });

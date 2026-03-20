@@ -4,7 +4,7 @@ import { ragPlugin, VERSION } from './index.js';
 
 describe('@slotmux/plugin-rag', () => {
   it('exports version', () => {
-    expect(VERSION).toBe('0.0.1');
+    expect(VERSION).toMatch(/^\d+\.\d+\.\d+/);
   });
 
   it('ragPlugin exposes name and getRagCitations', () => {

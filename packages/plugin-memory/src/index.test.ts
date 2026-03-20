@@ -4,7 +4,7 @@ import { InMemoryMemoryStore, memoryPlugin, VERSION } from './index.js';
 
 describe('@slotmux/plugin-memory', () => {
   it('exports version', () => {
-    expect(VERSION).toBe('0.0.1');
+    expect(VERSION).toMatch(/^\d+\.\d+\.\d+/);
   });
 
   it('memoryPlugin exposes plugin name', () => {

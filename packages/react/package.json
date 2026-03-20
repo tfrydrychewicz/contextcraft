@@ -1,6 +1,6 @@
 {
   "name": "@slotmux/react",
-  "version": "0.0.1",
+  "version": "1.0.0-rc.1",
   "description": "React hooks for slotmux reactive context (useSyncExternalStore)",
   "type": "module",
   "sideEffects": false,
