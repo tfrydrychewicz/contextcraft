@@ -26,6 +26,12 @@ Each summary call includes a **target token count** in the system prompt and as 
 
 If the result still doesn't fit after Layer 1 and Layer 2 summaries, the Layer 2 summaries are further compressed into a single Layer 3 "essence" summary. When facts have been extracted from earlier rounds, they are injected into the L3 prompt as hard constraints so the model preserves them even under aggressive compression.
 
+### Incremental summarization
+
+The summarizer recognizes items that are **already summaries** (they have a `summarizes` field from a previous compression pass) and carries them forward without re-summarizing. Only fresh, unsummarized items are sent to the LLM. This makes per-build cost proportional to **new content added since the last build**, not total content in the context.
+
+After old-zone processing, the summarizer also performs an **adaptive zone skip**: if the old-zone summaries plus middle-zone items plus recent items already fit within budget, the middle-zone LLM calls are skipped entirely. This avoids unnecessary compression when there's enough headroom.
+
 ### Fact-aware compression
 
 Narrative summaries are inherently lossy for specific details — names, numbers, dates, and preferences get dropped when the model compresses aggressively. Fact-aware compression addresses this with a **dual-store architecture**:

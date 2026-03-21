@@ -773,4 +773,206 @@ describe('runProgressiveSummarize (§8.1)', () => {
     );
     expect(factItems).toHaveLength(0);
   });
+
+  it('skips middle-zone LLM calls when old-zone summaries + middle + recent fit budget (adaptive zone skip)', async () => {
+    const items = [
+      mk('o1', 1, 'x'.repeat(200)),
+      mk('o2', 2, 'x'.repeat(200)),
+      mk('m1', 3, 'y'.repeat(50)),
+      mk('m2', 4, 'y'.repeat(50)),
+      mk('r1', 5, 'recent1'),
+      mk('r2', 6, 'recent2'),
+    ];
+    const layers: number[] = [];
+    const summarizeText = vi.fn(async ({ layer }) => {
+      layers.push(layer);
+      return 'short';
+    });
+    await runProgressiveSummarize(items, 400, {
+      preserveLastN: 2,
+      summarizeText,
+      countItemsTokens: countChars,
+      countTextTokens: (t) => t.length,
+      slot: 's',
+      importanceScorer: null,
+      createId: (() => {
+        let n = 0;
+        return () => `s-${n++}`;
+      })(),
+    });
+
+    const l1Calls = layers.filter((l) => l === 1);
+    expect(l1Calls).toHaveLength(0);
+    expect(layers.some((l) => l === 2)).toBe(true);
+  });
+
+  it('reuses existing summary items without re-summarizing them (incremental)', async () => {
+    const existingSummary: ProgressiveItem = {
+      id: 'sum-existing',
+      role: 'assistant',
+      content: 'Previously compressed summary of old conversations.',
+      createdAt: 1,
+      slot: 's',
+      summarizes: ['old-1', 'old-2', 'old-3'],
+    };
+    const freshItems = [
+      mk('f1', 2, 'x'.repeat(200)),
+      mk('f2', 3, 'x'.repeat(200)),
+      mk('r1', 4, 'recent one'),
+      mk('r2', 5, 'recent two'),
+    ];
+    const items = [existingSummary, ...freshItems];
+
+    const payloadsSent: string[] = [];
+    const summarizeText = vi.fn(async ({ userPayload }) => {
+      payloadsSent.push(userPayload);
+      return 'new-summary';
+    });
+    const out = await runProgressiveSummarize(items, 300, {
+      preserveLastN: 2,
+      summarizeText,
+      countItemsTokens: countChars,
+      countTextTokens: (t) => t.length,
+      slot: 's',
+      importanceScorer: null,
+      createId: (() => {
+        let n = 0;
+        return () => `s-${n++}`;
+      })(),
+    });
+
+    for (const payload of payloadsSent) {
+      expect(payload).not.toContain('Previously compressed summary');
+    }
+
+    const hasExistingSummary = out.some((i) => i.id === 'sum-existing');
+    expect(hasExistingSummary).toBe(true);
+  });
+
+  it('makes fewer LLM calls on second overflow when first produced summaries (incremental)', async () => {
+    const rawItems = Array.from({ length: 12 }, (_, i) =>
+      mk(`m${String(i)}`, i, 'x'.repeat(100)),
+    );
+    let callCount1 = 0;
+    const summarizeText1 = vi.fn(async () => {
+      callCount1++;
+      return 'summary-round1';
+    });
+    const round1 = await runProgressiveSummarize(rawItems, 500, {
+      preserveLastN: 2,
+      summarizeText: summarizeText1,
+      countItemsTokens: countChars,
+      countTextTokens: (t) => t.length,
+      slot: 's',
+      importanceScorer: null,
+      createId: (() => {
+        let n = 0;
+        return () => `r1-${n++}`;
+      })(),
+    });
+
+    const newItems = [
+      ...round1,
+      mk('new1', 100, 'y'.repeat(100)),
+      mk('new2', 101, 'y'.repeat(100)),
+      mk('new3', 102, 'y'.repeat(100)),
+    ];
+    let callCount2 = 0;
+    const summarizeText2 = vi.fn(async () => {
+      callCount2++;
+      return 'summary-round2';
+    });
+    await runProgressiveSummarize(newItems, 500, {
+      preserveLastN: 2,
+      summarizeText: summarizeText2,
+      countItemsTokens: countChars,
+      countTextTokens: (t) => t.length,
+      slot: 's',
+      importanceScorer: null,
+      createId: (() => {
+        let n = 0;
+        return () => `r2-${n++}`;
+      })(),
+    });
+
+    expect(callCount2).toBeLessThan(callCount1);
+  });
+
+  it('triggers L3 consolidation only when combined output exceeds budget', async () => {
+    const existingSummaries = Array.from({ length: 8 }, (_, i) => ({
+      id: `sum-${String(i)}`,
+      role: 'assistant' as const,
+      content: 'S'.repeat(80),
+      createdAt: i,
+      slot: 's',
+      summarizes: [`orig-${String(i)}`],
+    }));
+    const freshItems = [
+      mk('f1', 10, 'x'.repeat(200)),
+      mk('r1', 11, 'recent'),
+      mk('r2', 12, 'recent'),
+    ];
+    const items = [...existingSummaries, ...freshItems];
+
+    const layers: number[] = [];
+    const summarizeText = vi.fn(async ({ layer }) => {
+      layers.push(layer);
+      return 'consolidated';
+    });
+    await runProgressiveSummarize(items, 200, {
+      preserveLastN: 2,
+      summarizeText,
+      countItemsTokens: countChars,
+      countTextTokens: (t) => t.length,
+      slot: 's',
+      importanceScorer: null,
+      createId: (() => {
+        let n = 0;
+        return () => `s-${n++}`;
+      })(),
+    });
+
+    const l3Calls = layers.filter((l) => l === 3);
+    expect(l3Calls.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('does not trigger L3 when stable summaries + fresh fit within budget', async () => {
+    const existingSummaries = [
+      {
+        id: 'sum-1',
+        role: 'assistant' as const,
+        content: 'Short summary.',
+        createdAt: 1,
+        slot: 's',
+        summarizes: ['orig-1'],
+      },
+    ];
+    const freshItems = [
+      mk('f1', 2, 'x'.repeat(200)),
+      mk('r1', 3, 'recent'),
+      mk('r2', 4, 'recent'),
+    ];
+    const items = [...existingSummaries, ...freshItems];
+
+    const layers: number[] = [];
+    const summarizeText = vi.fn(async ({ layer }) => {
+      layers.push(layer);
+      return 'short';
+    });
+    await runProgressiveSummarize(items, 500, {
+      preserveLastN: 2,
+      summarizeText,
+      countItemsTokens: countChars,
+      countTextTokens: (t) => t.length,
+      slot: 's',
+      importanceScorer: null,
+      createId: (() => {
+        let n = 0;
+        return () => `s-${n++}`;
+      })(),
+    });
+
+    const l3Calls = layers.filter((l) => l === 3);
+    expect(l3Calls).toHaveLength(0);
+  });
 });

@@ -1,5 +1,5 @@
 /**
- * Progressive summarization (§8.1, §8.4).
+ * Progressive summarization (§8.1, §8.4, §8.9).
  *
  * @packageDocumentation
  */
@@ -157,7 +157,43 @@ function chunkZoneByTokenBudget(
 }
 
 /**
+ * Returns `true` if the item is an existing summary (has been through
+ * a previous compression pass) and can be carried forward without
+ * re-summarizing.
+ */
+function isStableSummary(item: ProgressiveItem): boolean {
+  return item.summarizes !== undefined && item.summarizes.length > 0;
+}
+
+/**
+ * Splits a zone's items into stable summaries (carry forward) and fresh
+ * items (need LLM summarization).
+ */
+function splitStableAndFresh(
+  items: readonly ProgressiveItem[],
+): { stable: ProgressiveItem[]; fresh: ProgressiveItem[] } {
+  const stable: ProgressiveItem[] = [];
+  const fresh: ProgressiveItem[] = [];
+  for (const item of items) {
+    if (isStableSummary(item)) {
+      stable.push(item);
+    } else {
+      fresh.push(item);
+    }
+  }
+  return { stable, fresh };
+}
+
+/**
  * Runs progressive summarization until estimated token count is <= `budgetTokens`, or only pinned recent remain.
+ *
+ * **Incremental mode (§8.9 P1):** Items that are already summaries (have a
+ * `summarizes` field) are treated as stable and carried forward without
+ * re-summarization. Only fresh, unsummarized items are sent to the LLM.
+ * This makes per-build cost proportional to new content, not total content.
+ *
+ * **Adaptive zone skip (§8.9 P1):** After old-zone processing, if the output
+ * already fits within budget, middle-zone LLM calls are skipped entirely.
  *
  * When zones are large, items are chunked into segments of ~4-8K tokens and
  * each segment is summarized independently, producing multiple summary items
@@ -210,11 +246,6 @@ export async function runProgressiveSummarize(
   const l1Cap = Math.floor(summaryCap * 0.45);
   const maxConc = options.maxConcurrency ?? Infinity;
 
-  const oldChunks = old.length > 0 ? chunkZoneByTokenBudget(old, segmentSize, sumTok) : [];
-  const midChunks = middle.length > 0 ? chunkZoneByTokenBudget(middle, segmentSize, sumTok) : [];
-  const perOldCap = Math.max(MIN_PER_CHUNK_TOKENS, Math.floor(l2Cap / Math.max(1, oldChunks.length)));
-  const perMidCap = Math.max(MIN_PER_CHUNK_TOKENS, Math.floor(l1Cap / Math.max(1, midChunks.length)));
-
   const factStore = new FactStore();
   const { extractFacts } = options;
 
@@ -265,16 +296,29 @@ export async function runProgressiveSummarize(
     return makeSummary(text, chunk.map((x) => x.id), options.slot, createId, summaryTimeForTick(tick));
   };
 
-  const allTasks: Array<() => Promise<ProgressiveItem | null>> = [
-    ...oldChunks.map((chunk, i) =>
-      () => summarizeChunk(chunk, 2, perOldCap, promptPack.layer2, i)),
-    ...midChunks.map((chunk, i) =>
-      () => summarizeChunk(chunk, 1, perMidCap, promptPack.layer1, oldChunks.length + i)),
-  ];
+  // --- Incremental summarization (§8.9 P1) ---
+  // Separate each zone into stable summaries (carry forward) and fresh items (need LLM).
+  const oldSplit = splitStableAndFresh(old);
+  const midSplit = splitStableAndFresh(middle);
 
-  const allResults = await runWithConcurrency(allTasks, maxConc);
-  let l2Summaries = allResults.slice(0, oldChunks.length).filter((x): x is ProgressiveItem => x !== null);
-  const l1Summaries = allResults.slice(oldChunks.length).filter((x): x is ProgressiveItem => x !== null);
+  const freshOldChunks = oldSplit.fresh.length > 0
+    ? chunkZoneByTokenBudget(oldSplit.fresh, segmentSize, sumTok)
+    : [];
+  const freshMidChunks = midSplit.fresh.length > 0
+    ? chunkZoneByTokenBudget(midSplit.fresh, segmentSize, sumTok)
+    : [];
+
+  const totalOldChunks = freshOldChunks.length;
+  const perOldCap = Math.max(MIN_PER_CHUNK_TOKENS, Math.floor(l2Cap / Math.max(1, totalOldChunks)));
+  const perMidCap = Math.max(MIN_PER_CHUNK_TOKENS, Math.floor(l1Cap / Math.max(1, freshMidChunks.length)));
+
+  // Phase 1: Summarize fresh old-zone items
+  const oldTasks: Array<() => Promise<ProgressiveItem | null>> = freshOldChunks.map((chunk, i) =>
+    () => summarizeChunk(chunk, 2, perOldCap, promptPack.layer2, i));
+
+  const oldResults = await runWithConcurrency(oldTasks, maxConc);
+  const newOldSummaries = oldResults.filter((x): x is ProgressiveItem => x !== null);
+  let l2Summaries = [...oldSplit.stable, ...newOldSummaries];
 
   let recentWork = [...recent];
 
@@ -291,12 +335,40 @@ export async function runProgressiveSummarize(
     };
   };
 
+  // l1Summaries may be populated later if middle zone is processed
+  let l1Summaries: ProgressiveItem[] = [...midSplit.stable];
+
   const chain = (): ProgressiveItem[] => {
     const factItem = makeFactItem();
     return [...(factItem ? [factItem] : []), ...l2Summaries, ...l1Summaries, ...recentWork];
   };
+
+  // --- Adaptive zone skip (§8.9 P1) ---
+  // After old-zone summarization, check if l2Summaries + middle + recent fits.
+  // If so, skip middle-zone LLM calls entirely.
+  const afterOldZone = [...l2Summaries, ...middle, ...recentWork];
+  const afterOldZoneFactItem = makeFactItem();
+  const afterOldCheck = [
+    ...(afterOldZoneFactItem ? [afterOldZoneFactItem] : []),
+    ...afterOldZone,
+  ];
+
+  if (sumTok(afterOldCheck) <= budgetTokens) {
+    // Middle zone fits verbatim — skip middle-zone LLM calls
+    l1Summaries = [...middle];
+  } else {
+    // Phase 2: Summarize fresh middle-zone items
+    const midTasks: Array<() => Promise<ProgressiveItem | null>> = freshMidChunks.map((chunk, i) =>
+      () => summarizeChunk(chunk, 1, perMidCap, promptPack.layer1, totalOldChunks + i));
+
+    const midResults = await runWithConcurrency(midTasks, maxConc);
+    const newMidSummaries = midResults.filter((x): x is ProgressiveItem => x !== null);
+    l1Summaries = [...midSplit.stable, ...newMidSummaries];
+  }
+
   let out = chain();
 
+  // Phase 3: L3 consolidation — only when output exceeds budget
   if (sumTok(out) > budgetTokens && l2Summaries.length > 0) {
     const l2Payload = l2Summaries.map(plain).filter((t) => t.length > 0).join('\n\n');
     if (l2Payload.length > 0) {
@@ -330,7 +402,7 @@ export async function runProgressiveSummarize(
         text = truncateAsLastResort(l2Payload, l3Cap);
       }
       const priorIds = l2Summaries.flatMap((s) => [...(s.summarizes ?? []), s.id]);
-      const l3Tick = oldChunks.length + midChunks.length;
+      const l3Tick = totalOldChunks + freshMidChunks.length;
       const l3 = makeSummary(text, priorIds, options.slot, createId, summaryTimeForTick(l3Tick));
       l2Summaries = [l3];
       out = chain();
