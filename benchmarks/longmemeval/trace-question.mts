@@ -19,11 +19,11 @@
 
 import { readFileSync, writeFileSync, appendFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { performance } from 'node:perf_hooks';
+import { fileURLToPath } from 'node:url';
 
-import { Context, validateContextConfig } from 'slotmux';
 import { openai, ProviderRateLimitError, OpenAIApiError, type SummarizeTextResult } from '@slotmux/providers';
+import { Context, validateContextConfig } from 'slotmux';
 
 import type { DatasetEntry } from './types.js';
 

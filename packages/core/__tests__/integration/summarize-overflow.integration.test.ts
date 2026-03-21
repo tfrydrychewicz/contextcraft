@@ -9,7 +9,6 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   OverflowEngine,
   createContentItem,
-  toTokenCount,
   type OverflowEngineInputSlot,
 } from '../../src/index.js';
 import type { SlotConfig } from '../../src/types/config.js';

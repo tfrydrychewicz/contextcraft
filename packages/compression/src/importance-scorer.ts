@@ -28,7 +28,7 @@ const PREFERENCE_WORDS =
   /\b(I prefer|my favorite|I like|I love|I enjoy|I want|I need|I chose|I picked|I use)\b/i;
 const NUMBER_PATTERN = /\b\d{2,}\b/;
 const DATE_PATTERN =
-  /\b(?:\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*\s+\d{1,2})\b/i;
+  /\b(?:\d{1,2}[-/]\d{1,2}[-/]\d{2,4}|\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w*\s+\d{1,2})\b/i;
 const QUOTED_STRING = /"[^"]{2,}"|'[^']{2,}'/;
 const CAPITALIZED_SEQUENCE = /\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+\b/;
 

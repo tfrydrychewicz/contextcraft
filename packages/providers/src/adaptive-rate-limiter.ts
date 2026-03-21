@@ -93,7 +93,6 @@ export function createAdaptiveRateLimiter(opts?: AdaptiveRateLimiterOptions): Ad
   }
 
   async function acquireSlot(): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- loop re-checks after async gaps
     while (true) {
       const now = Date.now();
       if (pauseUntil > now) {

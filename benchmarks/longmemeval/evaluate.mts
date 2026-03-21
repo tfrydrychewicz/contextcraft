@@ -34,7 +34,7 @@ function resolveRunId(): string {
   if (explicit) return explicit;
 
   const files = readdirSync(resultsDir)
-    .filter((f) => f.endsWith('.jsonl') && !f.includes('.evaluated.'))
+    .filter((f) => f.endsWith('.jsonl') && !f.includes('.evaluated.') && !f.startsWith('trace-'))
     .sort()
     .reverse();
   if (files.length === 0) {

@@ -8,23 +8,43 @@
  *
  * Usage:
  *   OPENAI_API_KEY=sk-... pnpm bench:longmemeval
+ *   OPENAI_API_KEY=sk-... pnpm bench:longmemeval -- --strategy summarize
+ *   OPENAI_API_KEY=sk-... pnpm bench:longmemeval -- --strategy summarize --budget 16384
+ *
+ * CLI flags override env vars. Multiple values use commas: --strategy summarize,truncate
  *
  * See benchmarks/longmemeval/README.md for all env vars.
  */
 
-import { readFileSync, writeFileSync, appendFileSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, appendFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { performance } from 'node:perf_hooks';
+import { fileURLToPath } from 'node:url';
 
-import { Context, validateContextConfig } from 'slotmux';
 import { openai, formatOpenAIMessages } from '@slotmux/providers';
+import { Context, validateContextConfig } from 'slotmux';
 
 import type { DatasetEntry, BenchmarkRun } from './types.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// ── Config from env ──────────────────────────────────────────────────
+// ── CLI arg parser ───────────────────────────────────────────────────
+
+function parseCliArgs(argv: string[]): Record<string, string> {
+  const args: Record<string, string> = {};
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i]!;
+    if (arg === '--') continue;
+    if (arg.startsWith('--') && i + 1 < argv.length) {
+      args[arg.slice(2)] = argv[++i]!;
+    }
+  }
+  return args;
+}
+
+const cli = parseCliArgs(process.argv.slice(2));
+
+// ── Config from CLI flags → env vars ─────────────────────────────────
 
 const OPENAI_API_KEY = process.env['OPENAI_API_KEY'];
 if (!OPENAI_API_KEY) {
@@ -32,19 +52,19 @@ if (!OPENAI_API_KEY) {
   process.exit(1);
 }
 
-const READER_MODEL = process.env['LONGMEM_READER_MODEL'] ?? 'gpt-5.4-mini';
-const COMPRESSION_MODEL = process.env['LONGMEM_COMPRESSION_MODEL'] ?? 'gpt-5.4-mini';
-const BUDGETS = (process.env['LONGMEM_BUDGETS'] ?? '4096,8192,16384,32768')
+const READER_MODEL = cli['model'] ?? process.env['LONGMEM_READER_MODEL'] ?? 'gpt-5.4-mini';
+const COMPRESSION_MODEL = cli['compression-model'] ?? process.env['LONGMEM_COMPRESSION_MODEL'] ?? 'gpt-5.4-mini';
+const BUDGETS = (cli['budget'] ?? process.env['LONGMEM_BUDGETS'] ?? '4096,8192,16384,32768')
   .split(',')
   .map((s) => Number(s.trim()));
 const STRATEGIES = (
-  process.env['LONGMEM_STRATEGIES'] ??
+  cli['strategy'] ?? process.env['LONGMEM_STRATEGIES'] ??
   'truncate,truncate-latest,sliding-window,summarize,fallback-chain'
 )
   .split(',')
   .map((s) => s.trim());
-const MAX_QUESTIONS = Number(process.env['LONGMEM_MAX_QUESTIONS'] ?? '500');
-const RUN_ID = process.env['LONGMEM_RUN_ID'] ?? new Date().toISOString().replace(/[:.]/g, '-');
+const MAX_QUESTIONS = Number(cli['max-questions'] ?? process.env['LONGMEM_MAX_QUESTIONS'] ?? '500');
+const RUN_ID = cli['run-id'] ?? process.env['LONGMEM_RUN_ID'] ?? new Date().toISOString().replace(/[:.]/g, '-');
 
 // ── Load dataset ─────────────────────────────────────────────────────
 

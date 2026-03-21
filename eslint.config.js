@@ -20,13 +20,13 @@ export default [
     },
   },
   {
-    files: ['packages/debug/e2e/fixtures/**/*.mjs', 'scripts/**/*.mjs'],
+    files: ['packages/debug/e2e/fixtures/**/*.mjs', 'scripts/**/*.mjs', 'benchmarks/**/*.mjs'],
     languageOptions: {
       globals: globals.node,
     },
   },
   {
-    files: ['**/*.ts', '**/*.tsx'],
+    files: ['**/*.ts', '**/*.tsx', '**/*.mts'],
     plugins: {
       import: importPlugin,
       unicorn,

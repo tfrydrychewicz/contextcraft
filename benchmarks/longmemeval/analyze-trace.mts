@@ -245,7 +245,7 @@ const exactMatchLostStep = (() => {
 
 const finalStep = stepAnalyses[stepAnalyses.length - 1]!;
 
-const utilizationStats = {
+const _utilizationStats = {
   min: Math.min(...stepAnalyses.map((s) => s.utilization)),
   max: Math.max(...stepAnalyses.map((s) => s.utilization)),
   avg: stepAnalyses.reduce((sum, s) => sum + s.utilization, 0) / stepAnalyses.length,
@@ -265,7 +265,7 @@ const buildTimeStats = {
 const preOverflowSteps = firstOverflowStep
   ? stepAnalyses.filter((s) => s.step < firstOverflowStep.step)
   : stepAnalyses;
-const tokenGrowthRate = preOverflowSteps.length >= 2
+const _tokenGrowthRate = preOverflowSteps.length >= 2
   ? (preOverflowSteps[preOverflowSteps.length - 1]!.totalTokens - preOverflowSteps[0]!.totalTokens) /
     (preOverflowSteps.length - 1)
   : 0;

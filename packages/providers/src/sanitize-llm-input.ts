@@ -13,6 +13,7 @@
  *
  * Also strips DEL (0x7F) and C1 control range (0x80-0x9F).
  */
+// eslint-disable-next-line no-control-regex -- intentionally matching control chars for sanitization
 const CONTROL_CHARS = /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F\x80-\x9F]/g;
 
 /**

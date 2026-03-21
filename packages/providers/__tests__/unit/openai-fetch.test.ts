@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
+import { ProviderRateLimitError } from '../../src/fetch-with-retry.js';
 import {
   createOpenAIChatFetcher,
   OpenAIApiError,
 } from '../../src/openai-fetch.js';
-import { ProviderRateLimitError } from '../../src/fetch-with-retry.js';
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
