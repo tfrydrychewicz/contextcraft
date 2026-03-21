@@ -180,9 +180,10 @@ const { snapshot } = await ctx.build({
 
 When `forceCompress` is active:
 
-- **Every** non-protected slot's overflow strategy runs, even if content is within budget.
+- **Every** eligible slot's overflow strategy runs, even if content is within budget.
 - For slots that are within budget, the engine sets a **synthetic reduced budget** (50% of current token usage) so the strategy has a real target to compress toward.
-- Protected slots are still skipped — `forceCompress` does not override the `protected` flag.
+- **Protected slots** are skipped — `forceCompress` does not override the `protected` flag.
+- **Error-strategy slots** (`overflow: 'error'`) are skipped when within budget — there is no compression to perform, and forcing them would just throw.
 - The flag is per-build — it does not change the stored config. The next `build()` without the flag behaves normally.
 
 This works with both `build()` and `buildStream()`:

@@ -385,6 +385,10 @@ export class OverflowEngine {
       return;
     }
 
+    if (forceCompress && used <= slot.budgetTokens && slot.config.overflow === 'error') {
+      return;
+    }
+
     let label: string;
     let fn: OverflowStrategyFn;
     try {

@@ -973,5 +973,22 @@ describe('OverflowEngine (§7.2)', () => {
 
       expect(strategyCalled).not.toHaveBeenCalled();
     });
+
+    it('skips error-strategy slots when forceCompress and within budget', async () => {
+      const items = [
+        createContentItem({ slot: 'sys', role: 'system', content: 'hello', tokens: toTokenCount(10) }),
+      ];
+
+      const engine = new OverflowEngine({ countTokens: countSum });
+
+      const cfg: SlotConfig = { priority: 100, budget: { fixed: 2000 }, overflow: 'error' };
+      const out = await engine.resolve(
+        [slot('sys', 100, 2000, cfg, items)],
+        { forceCompress: true },
+      );
+
+      expect(out[0]!.content).toHaveLength(1);
+      expect(out[0]!.content[0]!.content).toBe('hello');
+    });
   });
 });
