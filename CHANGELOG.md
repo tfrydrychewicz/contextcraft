@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 This file is managed by [Changesets](https://github.com/changesets/changesets). Package-specific changelogs are generated when publishing.
 
+## 1.0.0-rc.2 — 2026-03-21
+
+### Added
+
+#### `slotmux` (core)
+
+- **`forceCompress` build override** — `ctx.build({ overrides: { forceCompress: true } })` triggers overflow strategies on all eligible slots even when content is within budget. The engine sets a synthetic reduced budget (50% of current usage) so strategies have a meaningful compression target. Works with both `build()` and `buildStream()`. Protected slots are still respected.
+- **`slotmuxProvider` config field** — New `ContextConfig.slotmuxProvider` option that auto-wires LLM capabilities (summarization, embeddings) into the build pipeline. When set, compression strategies like `summarize` work out of the box without manual `progressiveSummarize` injection.
+
+#### `@slotmux/providers`
+
+- **Provider factories** — `openai()`, `anthropic()`, `google()`, `mistral()`, `ollama()` factory functions that return a `SlotmuxProvider` bundling the adapter with auto-wired LLM calls. Pass just an API key for the simplest setup; override `compressionModel`, `baseUrl`, or supply custom `summarize`/`embed` functions for advanced use.
+- **`SlotmuxProvider` type** — New type that bundles a `ProviderAdapter` with optional `summarizeText`, `mapReduce`, and `embed` capabilities.
+
+#### Documentation
+
+- Forced compression docs across overflow, compression, streaming-build, and getting-started pages.
+- `!compress` command in the chatbot tutorial demonstrating on-demand context compression.
+- Provider factories documentation in concepts/providers with progressive disclosure API levels.
+- First-party plugin documentation pages (RAG, Memory, Tools) with configuration, behavior, and integration patterns.
+- SVG diagrams for overflow strategies, budget types, and compression strategies.
+
 ## 1.0.0-rc.1 — 2026-03-20
 
 First release candidate. All packages ship at `1.0.0-rc.1`.
