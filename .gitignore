@@ -15,6 +15,10 @@ blob-report/
 benchmarks/current.json
 benchmark-report.md
 
+# LongMemEval benchmark (local only)
+benchmarks/longmemeval/data/
+benchmarks/longmemeval/results/
+
 # Debug inspector UI build output
 packages/debug/inspector-static/
 

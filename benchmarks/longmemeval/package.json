@@ -1,0 +1,10 @@
+{
+  "name": "@slotmux/bench-longmemeval",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "slotmux": "workspace:*",
+    "@slotmux/providers": "workspace:*"
+  }
+}
