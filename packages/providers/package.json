@@ -1,6 +1,6 @@
 {
   "name": "@slotmux/providers",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -19,7 +19,9 @@
   },
   "typesVersions": {
     ">=4.0": {
-      "*": ["./dist/index.d.ts"]
+      "*": [
+        "./dist/index.d.ts"
+      ]
     }
   },
   "scripts": {
@@ -34,9 +36,15 @@
     "gpt-tokenizer": "*"
   },
   "peerDependenciesMeta": {
-    "tiktoken": { "optional": true },
-    "@anthropic-ai/tokenizer": { "optional": true },
-    "gpt-tokenizer": { "optional": true }
+    "tiktoken": {
+      "optional": true
+    },
+    "@anthropic-ai/tokenizer": {
+      "optional": true
+    },
+    "gpt-tokenizer": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@slotmux/tokenizers": "workspace:*",

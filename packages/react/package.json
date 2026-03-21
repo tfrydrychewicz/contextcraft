@@ -1,6 +1,6 @@
 {
   "name": "@slotmux/react",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "description": "React hooks for slotmux reactive context (useSyncExternalStore)",
   "type": "module",
   "sideEffects": false,
@@ -23,7 +23,9 @@
   },
   "typesVersions": {
     ">=4.0": {
-      "*": ["./dist/index.d.ts"]
+      "*": [
+        "./dist/index.d.ts"
+      ]
     }
   },
   "scripts": {
