@@ -215,12 +215,26 @@ const response = await fetch('https://api.openai.com/v1/chat/completions', {
 });
 ```
 
-## Custom fact extraction
+## Fact-aware compression
 
-The progressive summarizer automatically extracts structured facts from LLM output using `FACT:` lines in the summarization prompt. For domain-specific use cases, you can inject a dedicated extraction function that runs as a **separate pass** before summarization:
+When the `summarize` overflow strategy kicks in, slotmux uses **fact-aware compression** by default. This means summarization prompts ask the LLM to output structured `FACT:` lines *before* writing narrative, preserving specific details (names, numbers, dates, preferences) that would otherwise be lost during aggressive compression.
+
+The extracted facts accumulate in a deduplicated fact store and are rendered as a `Known facts:` block at the start of the summarized context. No configuration is needed — this works automatically with any `slotmuxProvider`.
+
+You can control how much space facts occupy:
 
 ```typescript
-import { createContext, Context } from 'slotmux';
+overflowConfig: {
+  factBudgetTokens: 256,  // default: 20% of summary budget, max 512
+}
+```
+
+### Custom fact extraction
+
+For domain-specific needs, inject a dedicated extraction function that runs as a **separate pass** before summarization. This is useful when you have structured data (order IDs, product SKUs, medical codes) that regex can extract more reliably than an LLM:
+
+```typescript
+import { createContext } from 'slotmux';
 import { openai } from '@slotmux/providers';
 
 const { config } = createContext({
@@ -234,7 +248,6 @@ const { config } = createContext({
       overflow: 'summarize',
       overflowConfig: {
         extractFacts: async ({ text }) => {
-          // Domain-specific: extract order IDs and product mentions
           const facts = [];
           for (const m of text.matchAll(/order\s*#(\w+)/gi)) {
             facts.push({
@@ -256,15 +269,41 @@ const { config } = createContext({
 });
 ```
 
-The extracted facts merge with any `FACT:` lines from the summarization output. Both sources accumulate in the fact store and are rendered as a `Known facts:` block at the start of the summarized context.
+The custom-extracted facts merge with any `FACT:` lines from the summarization LLM output. Both sources accumulate in the fact store and are rendered together.
 
-For an LLM-backed default that uses a structured extraction prompt:
+For an LLM-backed default that uses a specialized extraction-only prompt (separate from the summarization call):
 
 ```typescript
 import { createDefaultExtractFacts } from '@slotmux/compression';
 
 overflowConfig: {
   extractFacts: createDefaultExtractFacts(mySummarizeTextFn),
+}
+```
+
+### Importance-weighted partitioning
+
+By default, slotmux scores non-recent items by importance before deciding what to compress aggressively. Items with entity names, decisions, preferences, and specific facts stay in a moderately-compressed zone longer, while generic filler gets compressed first.
+
+Override with a domain-specific scorer:
+
+```typescript
+overflowConfig: {
+  importanceScorer: (item) => {
+    const text = String(item.content);
+    let score = 0;
+    if (/order\s*#/i.test(text)) score += 5;
+    if (/\bprice\b|\$\d/i.test(text)) score += 3;
+    return score;
+  },
+}
+```
+
+Or disable importance scoring to use pure chronological ordering:
+
+```typescript
+overflowConfig: {
+  importanceScorer: null,
 }
 ```
 

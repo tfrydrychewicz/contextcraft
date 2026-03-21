@@ -70,9 +70,11 @@ Compresses older content using a summarization function. Supports three modes vi
 
 The summarizer produces output sized to fill the available budget. Large zones are split into multiple segments and summarized independently, so information is preserved across the full summary rather than compressed into one short paragraph. All independent chunk summarizations run in parallel by default, significantly reducing wall-clock latency when multiple LLM calls are needed.
 
-The progressive summarizer uses **fact-aware compression** — extraction-first prompts produce structured `FACT:` lines before narrative, and a deduplicated fact store accumulates specific details across rounds. A `Known facts:` block is rendered at the start of the summarized context. When L3 re-compression is triggered, existing facts are pinned into the prompt so the model preserves them.
+The progressive summarizer includes three advanced capabilities (see [Compression](/concepts/compression) for the full diagrams and details):
 
-Non-recent items are partitioned into OLD and MIDDLE zones using **importance-weighted scoring** — items with more entity names, decisions, preferences, and specific facts stay in the MIDDLE zone longer. Set `importanceScorer` to customize or `null` to disable.
+- **Fact-aware compression** — Extraction-first prompts produce structured `FACT:` lines before narrative, and a deduplicated fact store accumulates specific details (names, dates, numbers, preferences) across rounds. A `Known facts:` block is rendered at the start of the summarized context. When L3 re-compression runs, existing facts are pinned into the prompt so the model preserves them.
+- **Importance-weighted partitioning** — Non-recent items are sorted by importance (entity density, decision/preference language, specific fact indicators) before splitting into OLD and MIDDLE zones. High-value items stay in the MIDDLE zone and survive longer. Set `importanceScorer` to customize or `null` for pure chronological split.
+- **Incremental summarization** — Items that are already summaries from a previous compression pass are carried forward without re-summarization. Only fresh, unsummarized items are sent to the LLM. An adaptive zone skip further reduces calls when the old-zone output plus remaining items already fit within budget. This keeps per-build cost proportional to *new content*, not total conversation length.
 
 When `preserveLastN` is omitted, slotmux dynamically calculates how many recent items to keep verbatim — roughly 50% of the slot budget — so smaller budgets keep fewer items and larger budgets keep more.
 

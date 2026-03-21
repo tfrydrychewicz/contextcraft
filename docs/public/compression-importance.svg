@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 230" fill="none">
+  <style>text { font-family: system-ui, -apple-system, sans-serif; }</style>
+  <text x="240" y="18" text-anchor="middle" font-size="11" font-weight="700" fill="#e2e2e2">Importance-weighted zone partitioning</text>
+  <text x="240" y="34" text-anchor="middle" font-size="9" fill="#a3a3a3">Fact-dense items survive longer in the context window</text>
+
+  <!-- Without importance scoring -->
+  <rect x="15" y="48" width="450" height="78" rx="6" fill="#1a1a2e" stroke="#333" stroke-width="1"/>
+  <text x="240" y="64" text-anchor="middle" font-size="8" font-weight="600" fill="#94a3b8">Without importance scoring (chronological split)</text>
+
+  <!-- OLD zone - chronological -->
+  <rect x="25" y="74" width="135" height="42" rx="4" fill="#ef4444" opacity="0.08" stroke="#ef4444" stroke-width="1"/>
+  <text x="92" y="88" text-anchor="middle" font-size="7.5" font-weight="600" fill="#f87171">OLD (aggressive L2)</text>
+  <text x="36" y="104" font-size="6.5" fill="#f87171">&#x25CF; "I decided to use React"</text>
+  <text x="36" y="112" font-size="6.5" fill="#94a3b8">&#x25CB; small talk about weather</text>
+
+  <!-- MIDDLE zone - chronological -->
+  <rect x="168" y="74" width="140" height="42" rx="4" fill="#f59e0b" opacity="0.08" stroke="#f59e0b" stroke-width="1"/>
+  <text x="238" y="88" text-anchor="middle" font-size="7.5" font-weight="600" fill="#fbbf24">MIDDLE (moderate L1)</text>
+  <text x="178" y="104" font-size="6.5" fill="#94a3b8">&#x25CB; generic chat about food</text>
+  <text x="178" y="112" font-size="6.5" fill="#fbbf24">&#x25CF; "Playlist: Summer Vibes"</text>
+
+  <!-- RECENT - chronological -->
+  <rect x="316" y="74" width="140" height="42" rx="4" fill="#22c55e" opacity="0.08" stroke="#22c55e" stroke-width="1"/>
+  <text x="386" y="88" text-anchor="middle" font-size="7.5" font-weight="600" fill="#22c55e">RECENT (verbatim)</text>
+  <text x="326" y="104" font-size="6.5" fill="#22c55e">&#x25CF; latest messages kept</text>
+  <text x="326" y="112" font-size="6.5" fill="#22c55e">&#x25CF; full detail preserved</text>
+
+  <!-- Divider -->
+  <text x="240" y="142" text-anchor="middle" font-size="9" fill="#6b7280">vs</text>
+
+  <!-- With importance scoring -->
+  <rect x="15" y="152" width="450" height="78" rx="6" fill="#1a1a2e" stroke="#333" stroke-width="1"/>
+  <text x="240" y="168" text-anchor="middle" font-size="8" font-weight="600" fill="#e2e2e2">With importance scoring (default)</text>
+
+  <!-- OLD zone - importance -->
+  <rect x="25" y="178" width="135" height="42" rx="4" fill="#ef4444" opacity="0.08" stroke="#ef4444" stroke-width="1"/>
+  <text x="92" y="192" text-anchor="middle" font-size="7.5" font-weight="600" fill="#f87171">OLD (aggressive L2)</text>
+  <text x="36" y="206" font-size="6.5" fill="#94a3b8">&#x25CB; small talk about weather</text>
+  <text x="36" y="214" font-size="6.5" fill="#94a3b8">&#x25CB; generic chat about food</text>
+
+  <!-- MIDDLE zone - importance -->
+  <rect x="168" y="178" width="140" height="42" rx="4" fill="#f59e0b" opacity="0.08" stroke="#f59e0b" stroke-width="1"/>
+  <text x="238" y="192" text-anchor="middle" font-size="7.5" font-weight="600" fill="#fbbf24">MIDDLE (moderate L1)</text>
+  <text x="178" y="206" font-size="6.5" fill="#fbbf24">&#x25CF; "I decided to use React"</text>
+  <text x="178" y="214" font-size="6.5" fill="#fbbf24">&#x25CF; "Playlist: Summer Vibes"</text>
+
+  <!-- RECENT - importance -->
+  <rect x="316" y="178" width="140" height="42" rx="4" fill="#22c55e" opacity="0.08" stroke="#22c55e" stroke-width="1"/>
+  <text x="386" y="192" text-anchor="middle" font-size="7.5" font-weight="600" fill="#22c55e">RECENT (verbatim)</text>
+  <text x="326" y="206" font-size="6.5" fill="#22c55e">&#x25CF; latest messages kept</text>
+  <text x="326" y="214" font-size="6.5" fill="#22c55e">&#x25CF; full detail preserved</text>
+</svg>

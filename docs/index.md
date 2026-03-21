@@ -128,7 +128,7 @@ If a user said something important, or a document is critical — **pin it**. Sl
 
 This is where slotmux gets interesting. Instead of one global "truncate from the top" strategy, you choose what happens when **each individual slot** runs out of space.
 
-Your RAG documents overflow? **Summarize** them progressively — the meaning is preserved. Chat history grows too long? Use a **sliding window** to keep recent messages. Tool results piling up? Keep only the most **semantically relevant** ones based on embedding similarity.
+Your RAG documents overflow? **Summarize** them progressively — with fact-aware compression that preserves names, dates, and decisions even under aggressive summarization. Chat history grows too long? Use a **sliding window** to keep recent messages. Tool results piling up? Keep only the most **semantically relevant** ones based on embedding similarity. Incremental summarization means subsequent builds only re-compress fresh content, keeping cost stable as conversations grow.
 
 <p align="center">
   <img src="/overflow-strategies.svg" alt="Three overflow strategies side by side" style="max-width: 720px; width: 100%;" />

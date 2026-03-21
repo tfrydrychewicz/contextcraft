@@ -28,29 +28,71 @@ If the result still doesn't fit after Layer 1 and Layer 2 summaries, the Layer 2
 
 ### Incremental summarization
 
+<p align="center">
+  <img src="/compression-incremental.svg" alt="Incremental summarization: stable summaries reused, only fresh items sent to LLM" style="max-width: 520px; width: 100%;" />
+</p>
+
+Without incremental summarization, every `build()` re-summarizes all items — including items that were *already summaries* from a previous pass. This means cost and latency grow with total conversation length, not with how much new content was added.
+
 The summarizer recognizes items that are **already summaries** (they have a `summarizes` field from a previous compression pass) and carries them forward without re-summarizing. Only fresh, unsummarized items are sent to the LLM. This makes per-build cost proportional to **new content added since the last build**, not total content in the context.
 
 After old-zone processing, the summarizer also performs an **adaptive zone skip**: if the old-zone summaries plus middle-zone items plus recent items already fit within budget, the middle-zone LLM calls are skipped entirely. This avoids unnecessary compression when there's enough headroom.
 
+The result: in a long-running conversation, early builds may need 5–10 LLM calls when compression first kicks in, but subsequent builds typically need only 1–2 calls for the freshly added messages.
+
 ### Fact-aware compression
 
-Narrative summaries are inherently lossy for specific details — names, numbers, dates, and preferences get dropped when the model compresses aggressively. Fact-aware compression addresses this with a **dual-store architecture**:
+<p align="center">
+  <img src="/compression-fact-aware.svg" alt="Fact-aware compression: extraction-first prompts, fact store, and fact pinning" style="max-width: 520px; width: 100%;" />
+</p>
 
-1. **Extraction-first prompts** — The LLM outputs structured `FACT: subject | predicate | value` lines before writing narrative. Facts are produced first and survive even when the model runs out of space for the narrative tail.
-2. **Fact store** — Extracted facts accumulate in an in-memory store across compression rounds. Duplicates are resolved by keeping the highest-confidence entry.
-3. **Fact block** — A synthetic `Known facts:` item is rendered at the start of the summarized context so the downstream LLM can reference specific details.
-4. **Fact pinning** — When L3 re-compression runs, existing facts are injected into the prompt as "must preserve" constraints.
+Narrative summaries are inherently lossy for specific details — names, numbers, dates, and preferences get dropped when the model compresses aggressively. For example, "The user created a playlist called 'Summer Vibes' on Spotify" might become "The user discussed music streaming platforms." The specific playlist name is gone.
+
+Fact-aware compression addresses this with a **dual-store architecture** that separates structured facts from narrative:
+
+1. **Extraction-first prompts** — The LLM is instructed to output structured `FACT: subject | predicate | value` lines *before* writing narrative. Facts are produced first and survive even when the model runs out of space for the narrative tail.
+2. **Fact store** — Extracted facts accumulate in an in-memory `FactStore` across compression rounds, keyed by `subject|predicate`. Duplicates are resolved by keeping the highest-confidence entry.
+3. **Fact block** — A synthetic `Known facts:` item is rendered at the start of the summarized context so the downstream LLM can reference specific details when answering questions.
+4. **Fact pinning** — When L3 re-compression runs, existing facts are injected into the prompt as "must preserve" constraints, preventing the model from silently dropping them.
 
 Control the fact block size with `factBudgetTokens` in `overflowConfig` (default: 20% of `summaryBudgetTokens`, capped at 512 tokens).
 
+For domain-specific extraction, you can provide a custom `extractFacts` function that runs as a separate pass before summarization:
+
+```typescript
+overflowConfig: {
+  factBudgetTokens: 256,
+  extractFacts: async ({ text }) => {
+    // Domain-specific: extract order IDs via regex
+    return [...text.matchAll(/order #(\w+)/gi)].map(m => ({
+      subject: 'user', predicate: 'placed_order', value: m[1]!,
+      sourceItemId: 'custom', confidence: 1.0, createdAt: Date.now(),
+    }));
+  },
+}
+```
+
 ### Importance-weighted zone partitioning
 
-By default, non-recent items are split into OLD and MIDDLE zones chronologically — the oldest half goes to OLD (most aggressive compression). When importance scoring is enabled (the default), items are instead sorted by importance before splitting:
+<p align="center">
+  <img src="/compression-importance.svg" alt="Importance-weighted partitioning: fact-dense items stay in MIDDLE zone" style="max-width: 480px; width: 100%;" />
+</p>
+
+By default, non-recent items are split into OLD and MIDDLE zones using importance scoring — not purely by age. Items are scored before splitting:
 
 - **Low-importance items** (generic filler, small talk) go to the OLD zone and get compressed first.
 - **High-importance items** (containing proper nouns, decisions, preferences, numbers, dates) stay in the MIDDLE zone and survive longer.
 
-The default scorer uses entity density (capitalized multi-word sequences per character), decision language, preference language, and specific fact indicators (numbers, dates, quoted strings). You can provide a custom scorer or disable importance scoring entirely:
+The default scorer (`computeItemImportance`) evaluates:
+
+| Signal | Score contribution |
+| --- | --- |
+| Entity density (capitalized multi-word sequences) | `density × 2` |
+| Decision language ("decided", "chose", "settled on") | `+1` |
+| Preference language ("I prefer", "my favorite") | `+1` |
+| Specific facts (numbers, dates, quoted strings) | `+1` |
+
+You can provide a custom scorer or disable importance scoring entirely:
 
 ```typescript
 overflowConfig: {
