@@ -13,11 +13,15 @@ import type { ProviderAdapter } from 'slotmux';
  * A function that calls an LLM to summarize text.
  * Receives the compression layer, a system prompt, and the user payload.
  * Returns the summarized text.
+ *
+ * @param params.targetTokens - Approximate token budget for the summary output.
+ *   When present, implementations should set `max_tokens` on the LLM call.
  */
 export type SummarizeTextFn = (params: {
   readonly layer: 1 | 2 | 3;
   readonly systemPrompt: string;
   readonly userPayload: string;
+  readonly targetTokens?: number;
 }) => Promise<string>;
 
 /**

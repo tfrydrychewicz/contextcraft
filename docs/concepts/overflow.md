@@ -64,15 +64,21 @@ overflowConfig: {
 
 Compresses older content using a summarization function. Supports three modes via `overflowConfig.summarizer`:
 
-- `'builtin:progressive'` (default) — Layer-based progressive summarization.
+- `'builtin:progressive'` (default) — Layer-based progressive summarization with budget-aware prompts.
 - `'builtin:map-reduce'` — Splits content into chunks, summarizes each, then merges.
 - A custom `SummarizerFn` — Your own async function.
+
+The summarizer produces output sized to fill the available budget. Large zones are split into multiple segments and summarized independently, so information is preserved across the full summary rather than compressed into one short paragraph.
+
+When `preserveLastN` is omitted, slotmux dynamically calculates how many recent items to keep verbatim — roughly 50% of the slot budget — so smaller budgets keep fewer items and larger budgets keep more.
 
 ```typescript
 overflow: 'summarize',
 overflowConfig: {
   summarizer: 'builtin:progressive',
-  preserveLastN: 5,
+  preserveLastN: 10,            // or omit for dynamic sizing
+  summaryBudget: { percent: 30 },
+  proactiveThreshold: 0.85,     // start compressing at 85% utilization
 }
 ```
 
@@ -207,6 +213,23 @@ if (userInput === '!compress') {
 
 See the [terminal chatbot tutorial](/guide/build-a-chatbot) for a working example.
 :::
+
+## Proactive compression
+
+By default, overflow strategies fire only when content exceeds the slot budget. For long conversations, this means the first compression pass is a drastic one — hundreds of messages crushed at once.
+
+Setting `proactiveThreshold` triggers early, incremental compression:
+
+```typescript
+overflowConfig: {
+  proactiveThreshold: 0.85,  // trigger at 85% utilization
+  proactiveRatio: 0.3,       // compress oldest 30% of items (default)
+}
+```
+
+When the slot reaches 85% of its budget, the summarize/compress/semantic strategy runs with a reduced target budget. This spreads compression across multiple builds, producing smoother degradation instead of one catastrophic pass.
+
+Proactive compression only fires for compression-like strategies (`summarize`, `compress`, `semantic`). Strategies like `truncate` or `error` are not affected.
 
 ## Protected slots
 

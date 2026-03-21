@@ -6,6 +6,7 @@
  */
 
 import {
+  computeDynamicPreserveLastN,
   runMapReduceSummarize,
   runProgressiveSummarize,
   type MapReduceSummarizeDeps,
@@ -70,7 +71,6 @@ export function createProgressiveSummarizeOverflow(
       return oc.summarizer([...items], budget);
     }
 
-    const preserveLastN = oc?.preserveLastN ?? 4;
     const budgetNum = budget as number;
     const summaryCap = summaryBudgetTokensFromConfig(budgetNum, oc?.summaryBudget);
     const slot = ctx.slot;
@@ -90,6 +90,13 @@ export function createProgressiveSummarizeOverflow(
 
     const progressiveItems = items as unknown as ProgressiveItem[];
     const createId = () => createContentId();
+
+    const preserveLastN = computeDynamicPreserveLastN(
+      progressiveItems,
+      budgetNum,
+      countItemsTokens,
+      oc?.preserveLastN,
+    );
 
     if (oc?.summarizer === 'builtin:map-reduce') {
       if (deps.mapReduce === undefined) {

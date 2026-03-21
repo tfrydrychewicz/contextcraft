@@ -238,9 +238,8 @@ export async function runMapReduceSummarize(
     options.mapReduce.mapChunkMaxInputTokens ?? defaultLlmWindowTokens(budgetTokens);
   const reduceMax =
     options.mapReduce.reduceMaxInputTokens ?? defaultLlmWindowTokens(budgetTokens);
-  const _summaryCap =
+  const summaryCap =
     options.summaryBudgetTokens ?? Math.max(64, Math.floor(budgetTokens * 0.15));
-  void _summaryCap;
 
   const sumTok = (arr: readonly ProgressiveItem[]) => options.countItemsTokens(arr);
 
@@ -270,12 +269,19 @@ export async function runMapReduceSummarize(
 
   const chunks = chunkBulkForMap(bulk, options.countTextTokens, mapMax);
   const bulkIds = [...new Set(bulk.map((b) => b.id))];
+  const perChunkCap = Math.max(64, Math.floor(summaryCap / Math.max(1, chunks.length)));
+  const approxWords = Math.floor(perChunkCap * 0.75);
+  const mapPromptWithTarget =
+    promptPack.map +
+    `\n\nTarget output length: approximately ${String(approxWords)} words (~${String(perChunkCap)} tokens). ` +
+    'Use the available space to preserve as many specific facts, names, numbers, dates, and user preferences as possible.';
+
   const mapOutputs: string[] = [];
   for (const ch of chunks) {
     const payload = ch.map(plain).filter((t) => t.length > 0).join('\n\n');
     if (payload.length === 0) continue;
     const text = await mapChunk({
-      systemPrompt: promptPack.map,
+      systemPrompt: mapPromptWithTarget,
       userPayload: payload,
     });
     mapOutputs.push(text);

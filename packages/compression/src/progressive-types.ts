@@ -20,11 +20,21 @@ export type ProgressiveItem = LosslessCompressibleItem & {
   readonly slot?: string;
 };
 
-/** Injectable LLM call (no network in package — app provides). */
+/**
+ * Injectable LLM call (no network in package — app provides).
+ *
+ * @param params.layer - Compression layer (1 = key points, 2 = executive, 3 = essence).
+ * @param params.systemPrompt - System prompt (may include a target-length instruction).
+ * @param params.userPayload - Conversation text to summarize.
+ * @param params.targetTokens - Approximate token budget for the summary output.
+ *   Implementations may use this to set `max_tokens` or guide output length.
+ *   Optional for backward compatibility.
+ */
 export type ProgressiveSummarizeTextFn = (params: {
   readonly layer: ProgressiveLayer;
   readonly systemPrompt: string;
   readonly userPayload: string;
+  readonly targetTokens?: number;
 }) => Promise<string>;
 
 export type ProgressivePrompts = {

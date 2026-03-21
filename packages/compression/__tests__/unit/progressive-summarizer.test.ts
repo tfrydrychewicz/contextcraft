@@ -60,4 +60,93 @@ describe('runProgressiveSummarize (§8.1)', () => {
     expect(out.some((i) => i.content === 'L2')).toBe(true);
     expect(countChars(out)).toBeLessThanOrEqual(70);
   });
+
+  it('appends target token count to system prompt', async () => {
+    const items = Array.from({ length: 10 }, (_, i) =>
+      mk(`m${String(i)}`, i, 'x'.repeat(100)),
+    );
+    const calls: Array<{ systemPrompt: string; targetTokens?: number }> = [];
+    const summarizeText = vi.fn(async (params: { systemPrompt: string; targetTokens?: number }) => {
+      calls.push({ systemPrompt: params.systemPrompt, targetTokens: params.targetTokens });
+      return 'summary';
+    });
+    await runProgressiveSummarize(items, 500, {
+      preserveLastN: 2,
+      summarizeText,
+      countItemsTokens: countChars,
+      countTextTokens: (t) => t.length,
+      slot: 's',
+      createId: (() => {
+        let n = 0;
+        return () => `s-${n++}`;
+      })(),
+    });
+    expect(calls.length).toBeGreaterThan(0);
+    for (const call of calls) {
+      expect(call.systemPrompt).toContain('Target output length');
+      expect(call.systemPrompt).toContain('tokens');
+      expect(call.targetTokens).toBeTypeOf('number');
+      expect(call.targetTokens).toBeGreaterThan(0);
+    }
+  });
+
+  it('produces multiple summary segments for large old zones', async () => {
+    const items = Array.from({ length: 30 }, (_, i) =>
+      mk(`m${String(i)}`, i, 'x'.repeat(500)),
+    );
+    let idCounter = 0;
+    const summarizeText = vi.fn(async () => 'segment-summary-' + String(idCounter++));
+    const out = await runProgressiveSummarize(items, 5000, {
+      preserveLastN: 4,
+      summarizeText,
+      countItemsTokens: countChars,
+      countTextTokens: (t) => t.length,
+      slot: 's',
+      createId: (() => {
+        let n = 0;
+        return () => `s-${n++}`;
+      })(),
+    });
+    const summaryItems = out.filter((i) => i.summarizes && i.summarizes.length > 0);
+    expect(summaryItems.length).toBeGreaterThan(1);
+  });
+
+  it('preserves more recent items when budget allows (dynamic preserveLastN omitted)', async () => {
+    const items = Array.from({ length: 20 }, (_, i) =>
+      mk(`m${String(i)}`, i, 'x'.repeat(100)),
+    );
+    const summarizeText = vi.fn(async () => 'summary');
+    const out = await runProgressiveSummarize(items, 1200, {
+      summarizeText,
+      countItemsTokens: countChars,
+      countTextTokens: (t) => t.length,
+      slot: 's',
+      createId: (() => {
+        let n = 0;
+        return () => `s-${n++}`;
+      })(),
+    });
+    const nonSummaryItems = out.filter((i) => !i.summarizes || i.summarizes.length === 0);
+    expect(nonSummaryItems.length).toBeGreaterThanOrEqual(4);
+  });
+
+  it('still works with preserveLastN=4 when explicitly configured', async () => {
+    const items = Array.from({ length: 20 }, (_, i) =>
+      mk(`m${String(i)}`, i, 'x'.repeat(100)),
+    );
+    const summarizeText = vi.fn(async () => 'summary');
+    const out = await runProgressiveSummarize(items, 600, {
+      preserveLastN: 4,
+      summarizeText,
+      countItemsTokens: countChars,
+      countTextTokens: (t) => t.length,
+      slot: 's',
+      createId: (() => {
+        let n = 0;
+        return () => `s-${n++}`;
+      })(),
+    });
+    expect(countChars(out)).toBeLessThanOrEqual(600);
+    expect(out.some((i) => i.summarizes && i.summarizes.length > 0)).toBe(true);
+  });
 });

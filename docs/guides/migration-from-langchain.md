@@ -105,6 +105,7 @@ const { config } = createContext({
   preset: 'chat',
   reserveForResponse: 4096,
   lazyContentItemTokens: true,
+  slotmuxProvider: openai({ apiKey: process.env.OPENAI_API_KEY! }),
   slots: {
     history: {
       priority: 50,
@@ -112,7 +113,8 @@ const { config } = createContext({
       overflow: 'summarize',
       overflowConfig: {
         summarizer: 'builtin:progressive',
-        preserveLastN: 5,
+        preserveLastN: 10,            // or omit for dynamic sizing
+        proactiveThreshold: 0.85,     // optional: compress early
       },
       defaultRole: 'user',
       position: 'after',
@@ -121,7 +123,7 @@ const { config } = createContext({
 });
 ```
 
-**What you gain:** Progressive summarization with zones (recent verbatim, mid-range condensed, old summarized). Token budget enforcement. The summary only runs when the slot actually overflows, not on every turn.
+**What you gain:** Budget-aware progressive summarization that fills available space instead of producing terse summaries. Dynamic `preserveLastN` scales with your budget. Optional proactive compression spreads the load across builds. Token budget enforcement. The summary only runs when the slot actually overflows (or exceeds `proactiveThreshold`), not on every turn.
 
 ### RAG chain → rag preset
 

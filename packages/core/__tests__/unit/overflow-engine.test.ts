@@ -991,4 +991,115 @@ describe('OverflowEngine (§7.2)', () => {
       expect(out[0]!.content[0]!.content).toBe('hello');
     });
   });
+
+  describe('proactive compression', () => {
+    it('triggers proactive compression when utilization exceeds proactiveThreshold', async () => {
+      const strategyCalled = vi.fn();
+      const items = [
+        createContentItem({ slot: 'a', role: 'user', content: 'x', tokens: toTokenCount(85) }),
+        createContentItem({ slot: 'a', role: 'user', content: 'y', tokens: toTokenCount(5) }),
+      ];
+
+      const engine = new OverflowEngine({
+        countTokens: countSum,
+        progressiveSummarize: {
+          summarizeText: async () => {
+            strategyCalled();
+            return 'summary';
+          },
+        },
+      });
+
+      const cfg: SlotConfig = {
+        priority: 50,
+        budget: { flex: true },
+        overflow: 'summarize',
+        overflowConfig: { proactiveThreshold: 0.8, preserveLastN: 1 },
+      };
+      await engine.resolve([slot('a', 50, 100, cfg, items)]);
+
+      expect(strategyCalled).toHaveBeenCalled();
+    });
+
+    it('does not trigger proactive compression when below threshold', async () => {
+      const strategyCalled = vi.fn();
+      const items = [
+        createContentItem({ slot: 'a', role: 'user', content: 'x', tokens: toTokenCount(50) }),
+      ];
+
+      const engine = new OverflowEngine({
+        countTokens: countSum,
+        strategies: {
+          summarize: async (content) => {
+            strategyCalled();
+            return content;
+          },
+        },
+      });
+
+      const cfg: SlotConfig = {
+        priority: 50,
+        budget: { flex: true },
+        overflow: 'summarize',
+        overflowConfig: { proactiveThreshold: 0.8 },
+      };
+      await engine.resolve([slot('a', 50, 100, cfg, items)]);
+
+      expect(strategyCalled).not.toHaveBeenCalled();
+    });
+
+    it('uses proactiveRatio to set synthetic budget', async () => {
+      let receivedBudget = 0;
+      const items = [
+        createContentItem({ slot: 'a', role: 'user', content: 'x', tokens: toTokenCount(90) }),
+      ];
+
+      const engine = new OverflowEngine({
+        countTokens: countSum,
+        strategies: {
+          summarize: async (content, budget) => {
+            receivedBudget = budget;
+            return content;
+          },
+        },
+      });
+
+      const cfg: SlotConfig = {
+        priority: 50,
+        budget: { flex: true },
+        overflow: 'summarize',
+        overflowConfig: { proactiveThreshold: 0.8, proactiveRatio: 0.4 },
+      };
+      await engine.resolve([slot('a', 50, 100, cfg, items)]);
+
+      expect(receivedBudget).toBe(Math.floor(90 * 0.6));
+    });
+
+    it('skips proactive compression for non-compression strategies', async () => {
+      const strategyCalled = vi.fn();
+      const items = [
+        createContentItem({ slot: 'a', role: 'user', content: 'x', tokens: toTokenCount(90) }),
+      ];
+
+      const engine = new OverflowEngine({
+        countTokens: countSum,
+        strategies: {
+          truncate: async (content) => {
+            strategyCalled();
+            return content.slice(-1);
+          },
+        },
+      });
+
+      const cfg: SlotConfig = {
+        priority: 50,
+        budget: { flex: true },
+        overflow: 'truncate',
+        overflowConfig: { proactiveThreshold: 0.8 },
+      };
+      await engine.resolve([slot('a', 50, 100, cfg, items)]);
+
+      expect(strategyCalled).not.toHaveBeenCalled();
+    });
+  });
 });

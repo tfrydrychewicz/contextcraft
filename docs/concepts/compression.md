@@ -14,11 +14,15 @@ Progressive summarization condenses content through multiple layers of increasin
 
 Content is divided into **zones** based on age and importance:
 
-- **Zone 1 (recent)** — Kept verbatim. These are the most recent messages that the model needs full access to.
-- **Zone 2 (mid-range)** — Summarized at a moderate level. Key points and decisions are preserved.
-- **Zone 3 (old)** — Aggressively summarized into high-level bullet points.
+- **Recent zone** — Kept verbatim. The most recent messages that the model needs full access to. When `preserveLastN` is omitted, slotmux dynamically sizes this zone to fill ~50% of the slot budget.
+- **Middle zone** — Summarized at a moderate level (Layer 1). Key points, decisions, and specific facts are preserved.
+- **Old zone** — Summarized more aggressively (Layer 2). Executive-level outcomes and critical context only.
 
-The zone boundaries shift as conversation grows: what was Zone 1 becomes Zone 2, then Zone 3. Each layer builds on the previous summary rather than re-processing raw text.
+When a zone is large, it's split into **segments** of ~2-8K tokens each, and each segment is summarized independently. This produces multiple summary items rather than one monolithic summary, preserving more information across the full conversation history.
+
+Each summary call includes a **target token count** in the system prompt and as a `targetTokens` parameter, so the LLM knows how much detail to produce. Provider factories forward this as `max_tokens` to the API.
+
+If the result still doesn't fit after Layer 1 and Layer 2 summaries, the Layer 2 summaries are further compressed into a single Layer 3 "essence" summary.
 
 ### Usage as overflow strategy
 
@@ -26,7 +30,9 @@ The zone boundaries shift as conversation grows: what was Zone 1 becomes Zone 2,
 overflow: 'summarize',
 overflowConfig: {
   summarizer: 'builtin:progressive',
-  preserveLastN: 5,   // keep last N items verbatim
+  preserveLastN: 10,              // or omit for dynamic sizing
+  summaryBudget: { percent: 30 }, // portion of slot budget for summaries
+  proactiveThreshold: 0.85,       // start compressing at 85% utilization
 }
 ```
 

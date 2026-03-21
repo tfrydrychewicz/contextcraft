@@ -39,7 +39,7 @@ export function google(opts: SlotmuxProviderOptions): SlotmuxProvider {
 
   const summarizeText: SummarizeTextFn = opts.summarize
     ? wrapCustomSummarize(opts.summarize)
-    : async ({ systemPrompt, userPayload }) => {
+    : async ({ systemPrompt, userPayload, targetTokens }) => {
         const url = `${baseUrl}/models/${model}:generateContent?key=${opts.apiKey}`;
         const res = await fetch(url, {
           method: 'POST',
@@ -47,7 +47,10 @@ export function google(opts: SlotmuxProviderOptions): SlotmuxProvider {
           body: JSON.stringify({
             systemInstruction: { parts: [{ text: systemPrompt }] },
             contents: [{ role: 'user', parts: [{ text: userPayload }] }],
-            generationConfig: { temperature: 0.3 },
+            generationConfig: {
+              temperature: 0.3,
+              ...(targetTokens !== undefined ? { maxOutputTokens: targetTokens } : {}),
+            },
           }),
         });
         const json = (await res.json()) as {

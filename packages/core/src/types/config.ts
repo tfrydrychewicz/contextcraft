@@ -151,17 +151,43 @@ export type SlotOverflowStrategy =
 // Overflow Config
 // ==========================================
 
-/** Configuration for overflow strategies */
+/**
+ * Configuration for overflow strategies.
+ *
+ * @example
+ * ```typescript
+ * overflowConfig: {
+ *   summarizer: 'builtin:progressive',
+ *   preserveLastN: 10,
+ *   summaryBudget: { percent: 30 },
+ *   proactiveThreshold: 0.85,
+ * }
+ * ```
+ */
 export interface OverflowConfig {
   /** Summarizer implementation (summarize strategy) */
   summarizer?:
     | 'builtin:progressive'
     | 'builtin:map-reduce'
     | SummarizerFn;
-  /** Number of recent messages to always preserve from summarization */
+
+  /**
+   * Number of recent messages to always preserve verbatim from summarization.
+   *
+   * When omitted, the summarizer dynamically sizes this to fill ~50% of the
+   * slot's token budget (minimum 4). Set explicitly to override the heuristic.
+   */
   preserveLastN?: number;
-  /** What portion of the slot budget the summary itself may consume */
+
+  /**
+   * What portion of the slot budget the generated summary content may consume.
+   * The summarizer uses this to set target token counts in prompts and
+   * `max_tokens` on LLM calls via provider factories.
+   *
+   * Default: 15% of the slot budget (minimum 64 tokens).
+   */
   summaryBudget?: SlotBudget;
+
   /** Minimum number of messages before summarization triggers */
   summarizeThreshold?: number;
 
@@ -189,6 +215,34 @@ export interface OverflowConfig {
    * Use only with in-memory `SlotConfig` (not JSON-serializable). Built-in `compress` forwards this to `LosslessCompressor`.
    */
   losslessDetectLanguage?: (text: string) => string | undefined;
+
+  /**
+   * Utilization threshold (0.0-1.0) at which to proactively compress oldest
+   * content before the slot is fully over budget.
+   *
+   * When set, the overflow strategy fires as soon as slot utilization exceeds
+   * this value -- even though the slot is technically still within budget.
+   * This spreads compression across multiple builds instead of one catastrophic
+   * pass when the slot finally overflows.
+   *
+   * Only applies to compression-like strategies (`summarize`, `compress`, `semantic`).
+   *
+   * @example
+   * ```typescript
+   * overflowConfig: {
+   *   proactiveThreshold: 0.85, // start compressing at 85% utilization
+   *   proactiveRatio: 0.3,      // compress oldest 30% of items
+   * }
+   * ```
+   */
+  proactiveThreshold?: number;
+
+  /**
+   * Fraction of items to target for compression when `proactiveThreshold` fires (0.0-1.0).
+   * The overflow strategy receives a synthetic budget of `usedTokens * (1 - proactiveRatio)`.
+   * Default: `0.3` (compress oldest 30%).
+   */
+  proactiveRatio?: number;
 }
 
 // ==========================================

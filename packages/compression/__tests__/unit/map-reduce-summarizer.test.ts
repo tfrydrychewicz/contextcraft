@@ -116,4 +116,37 @@ describe('runMapReduceSummarize', () => {
     expect(reduceMerge).not.toHaveBeenCalled();
     expect(out.some((i) => i.content === 'only')).toBe(true);
   });
+
+  it('appends target token count to map system prompt', async () => {
+    const items = [
+      mk('o1', 1, 'x'.repeat(100)),
+      mk('o2', 2, 'x'.repeat(100)),
+      mk('r1', 3, 'y'.repeat(50)),
+      mk('r2', 4, 'y'.repeat(50)),
+    ];
+    const prompts: string[] = [];
+    const mapChunk = vi.fn(async ({ systemPrompt }: { systemPrompt: string }) => {
+      prompts.push(systemPrompt);
+      return 'mapped';
+    });
+    const reduceMerge = vi.fn(async () => 'reduced');
+
+    await runMapReduceSummarize(items, 120, {
+      preserveLastN: 2,
+      mapReduce: { mapChunk, reduceMerge, mapChunkMaxInputTokens: 250 },
+      countItemsTokens: countChars,
+      countTextTokens: (t) => t.length,
+      slot: 's',
+      createId: (() => {
+        let n = 0;
+        return () => `id-${n++}`;
+      })(),
+    });
+
+    expect(prompts.length).toBeGreaterThan(0);
+    for (const p of prompts) {
+      expect(p).toContain('Target output length');
+      expect(p).toContain('tokens');
+    }
+  });
 });

@@ -370,7 +370,15 @@ export class OverflowEngine {
   ): Promise<void> {
     const ctx = this.buildOverflowContext(slot);
     const used = this.countTokens(slot.content);
-    if (used <= slot.budgetTokens && !forceCompress) return;
+
+    const proactiveThreshold = slot.config.overflowConfig?.proactiveThreshold;
+    const isProactive =
+      proactiveThreshold !== undefined &&
+      used > slot.budgetTokens * proactiveThreshold &&
+      used <= slot.budgetTokens &&
+      !forceCompress;
+
+    if (used <= slot.budgetTokens && !forceCompress && !isProactive) return;
 
     if (slot.config.protected) {
       ctx.logger?.warn(
@@ -400,10 +408,19 @@ export class OverflowEngine {
       throw err;
     }
 
-    const effectiveBudget =
-      forceCompress && used <= slot.budgetTokens
-        ? toTokenCount(Math.floor(used * 0.5))
-        : toTokenCount(slot.budgetTokens);
+    if (isProactive && !isCompressionLikeOverflowLabel(label)) {
+      return;
+    }
+
+    let effectiveBudget: TokenCount;
+    if (forceCompress && used <= slot.budgetTokens) {
+      effectiveBudget = toTokenCount(Math.floor(used * 0.5));
+    } else if (isProactive) {
+      const ratio = slot.config.overflowConfig?.proactiveRatio ?? 0.3;
+      effectiveBudget = toTokenCount(Math.floor(used * (1 - ratio)));
+    } else {
+      effectiveBudget = toTokenCount(slot.budgetTokens);
+    }
 
     const beforeTokens = used;
     const compressionLike = isCompressionLikeOverflowLabel(label);

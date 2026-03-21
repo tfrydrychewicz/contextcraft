@@ -100,6 +100,8 @@ export const overflowConfigSchema = z
     ).optional(),
     windowSize: z.number().int().positive().optional(),
     compressionLevel: z.number().min(0).max(1).optional(),
+    proactiveThreshold: z.number().min(0).max(1).optional(),
+    proactiveRatio: z.number().min(0).max(1).optional(),
   })
   .passthrough();
 

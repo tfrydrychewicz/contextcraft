@@ -76,8 +76,19 @@ Pinned items survive truncation and sliding-window strategies. They still count 
 
 As the conversation grows, the history slot will eventually exceed its budget. The `chat` preset uses `summarize` as the overflow strategy.
 
+The summarizer produces **budget-aware** output — each summary call receives a target token count so the LLM fills the available space instead of producing a terse paragraph. When `preserveLastN` is omitted, the number of verbatim recent items scales with the budget automatically.
+
+::: tip Proactive compression for long conversations
+Set `proactiveThreshold` to start compressing before the slot is full. This spreads compression across multiple builds instead of one drastic pass:
+```typescript
+overflowConfig: {
+  proactiveThreshold: 0.85,  // compress at 85% utilization
+}
+```
+:::
+
 ::: warning
-The `summarize` strategy requires a summarization function to be injected (via `overflowConfig.summarizer` or `@slotmux/compression`). For simpler setups, override the history slot to use `truncate` or `sliding-window`.
+The `summarize` strategy requires a summarization function to be injected (via `slotmuxProvider` or `overflowConfig.summarizer`). For simpler setups, override the history slot to use `truncate` or `sliding-window`.
 :::
 
 ### Using truncation instead

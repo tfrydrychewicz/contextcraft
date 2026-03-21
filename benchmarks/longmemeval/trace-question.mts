@@ -183,6 +183,7 @@ async function recordStep(label: string, sessionIndex: number | null, turnsAdded
   const line = {
     _type: 'step' as const,
     step: stepNum,
+    timestamp: new Date().toISOString(),
     label,
     sessionIndex,
     turnsAdded,
@@ -207,12 +208,15 @@ async function recordStep(label: string, sessionIndex: number | null, turnsAdded
 
   const histSlot = slotsRecord['history'];
   const overflowFlag = overflowOccurred ? ' [OVERFLOW]' : '';
+  const now = new Date();
+  const ts = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}.${String(now.getMilliseconds()).padStart(3, '0')}`;
   console.log(
-    `  Step ${String(stepNum).padStart(3)}: ${label.padEnd(30)} ` +
+    `  [${ts}] Step ${String(stepNum).padStart(3)}: ${label.padEnd(30)} ` +
     `tokens=${String(line.totalTokens).padStart(6)}/${String(line.totalBudget)} ` +
     `util=${(line.utilization * 100).toFixed(1).padStart(5)}% ` +
     `items=${String(histSlot?.itemCount ?? 0).padStart(4)} ` +
-    `evicted=${String(histSlot?.evictedCount ?? 0).padStart(4)}` +
+    `evicted=${String(histSlot?.evictedCount ?? 0).padStart(4)} ` +
+    `build=${String(line.buildTimeMs).padStart(5)}ms` +
     `${overflowFlag}`,
   );
 }

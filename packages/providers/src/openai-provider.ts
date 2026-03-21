@@ -39,7 +39,7 @@ export function openai(opts: SlotmuxProviderOptions): SlotmuxProvider {
 
   const summarizeText: SummarizeTextFn = opts.summarize
     ? wrapCustomSummarize(opts.summarize)
-    : async ({ systemPrompt, userPayload }) => {
+    : async ({ systemPrompt, userPayload, targetTokens }) => {
         const res = await fetch(`${baseUrl}/chat/completions`, {
           method: 'POST',
           headers: {
@@ -53,6 +53,7 @@ export function openai(opts: SlotmuxProviderOptions): SlotmuxProvider {
               { role: 'user', content: userPayload },
             ],
             temperature: 0.3,
+            ...(targetTokens !== undefined ? { max_tokens: targetTokens } : {}),
           }),
         });
         const json = (await res.json()) as {

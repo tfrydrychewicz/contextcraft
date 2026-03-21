@@ -44,7 +44,7 @@ export function ollama(opts: OllamaProviderOptions = {}): SlotmuxProvider {
 
   const summarizeText: SummarizeTextFn = opts.summarize
     ? wrapCustomSummarize(opts.summarize)
-    : async ({ systemPrompt, userPayload }) => {
+    : async ({ systemPrompt, userPayload, targetTokens }) => {
         const res = await fetch(`${baseUrl}/api/chat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -55,6 +55,7 @@ export function ollama(opts: OllamaProviderOptions = {}): SlotmuxProvider {
               { role: 'user', content: userPayload },
             ],
             stream: false,
+            ...(targetTokens !== undefined ? { options: { num_predict: targetTokens } } : {}),
           }),
         });
         const json = (await res.json()) as {

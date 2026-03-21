@@ -39,7 +39,7 @@ export function anthropic(opts: SlotmuxProviderOptions): SlotmuxProvider {
 
   const summarizeText: SummarizeTextFn = opts.summarize
     ? wrapCustomSummarize(opts.summarize)
-    : async ({ systemPrompt, userPayload }) => {
+    : async ({ systemPrompt, userPayload, targetTokens }) => {
         const res = await fetch(`${baseUrl}/messages`, {
           method: 'POST',
           headers: {
@@ -51,7 +51,7 @@ export function anthropic(opts: SlotmuxProviderOptions): SlotmuxProvider {
             model,
             system: systemPrompt,
             messages: [{ role: 'user', content: userPayload }],
-            max_tokens: 4096,
+            max_tokens: targetTokens ?? 4096,
             temperature: 0.3,
           }),
         });
