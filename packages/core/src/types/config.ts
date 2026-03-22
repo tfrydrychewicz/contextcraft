@@ -337,6 +337,24 @@ export interface OverflowConfig {
       readonly createdAt: number;
     }>
   >;
+
+  /**
+   * Half-life in milliseconds for time-based fact confidence decay (§8.4).
+   *
+   * When set, older facts lose effective confidence exponentially over time,
+   * causing them to be deprioritized and dropped first when the fact budget
+   * is tight. The decay formula is `confidence * 0.5^(age / halfLifeMs)`.
+   *
+   * Default: `undefined` (no decay — raw confidence is used as-is).
+   *
+   * @example
+   * ```typescript
+   * overflowConfig: {
+   *   factDecayHalfLifeMs: 1_800_000,  // 30-minute half-life
+   * }
+   * ```
+   */
+  factDecayHalfLifeMs?: number;
 }
 
 // ==========================================

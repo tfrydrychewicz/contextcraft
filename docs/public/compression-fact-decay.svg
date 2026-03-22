@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 280" fill="none">
+  <defs>
+    <marker id="axisArr" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto"><path d="M0,0 L6,2 L0,4" fill="#6b7280"/></marker>
+  </defs>
+  <style>text { font-family: system-ui, -apple-system, sans-serif; }</style>
+  <text x="270" y="18" text-anchor="middle" font-size="11" font-weight="700" fill="#e2e2e2">Time-based fact decay</text>
+  <text x="270" y="34" text-anchor="middle" font-size="9" fill="#a3a3a3">confidence x 0.5^(age / halfLife) -- old trivial facts drop off</text>
+
+  <line x1="60" y1="200" x2="500" y2="200" stroke="#555" stroke-width="1" marker-end="url(#axisArr)"/>
+  <line x1="60" y1="200" x2="60" y2="50" stroke="#555" stroke-width="1" marker-end="url(#axisArr)"/>
+  <text x="280" y="218" text-anchor="middle" font-size="7" fill="#94a3b8">Age (minutes ago)</text>
+  <text x="40" y="125" text-anchor="middle" font-size="7" fill="#94a3b8" transform="rotate(-90 40 125)">Effective confidence</text>
+
+  <text x="54" y="68" text-anchor="end" font-size="6.5" fill="#94a3b8">1.0</text>
+  <line x1="56" y1="65" x2="63" y2="65" stroke="#444" stroke-width="0.5"/>
+  <text x="54" y="100" text-anchor="end" font-size="6.5" fill="#94a3b8">0.75</text>
+  <line x1="56" y1="97" x2="63" y2="97" stroke="#444" stroke-width="0.5"/>
+  <text x="54" y="133" text-anchor="end" font-size="6.5" fill="#94a3b8">0.50</text>
+  <line x1="56" y1="130" x2="500" y2="130" stroke="#333" stroke-width="0.5" stroke-dasharray="2 3"/>
+  <text x="54" y="166" text-anchor="end" font-size="6.5" fill="#94a3b8">0.25</text>
+  <line x1="56" y1="163" x2="63" y2="163" stroke="#444" stroke-width="0.5"/>
+  <text x="54" y="203" text-anchor="end" font-size="6.5" fill="#94a3b8">0</text>
+
+  <text x="60" y="212" text-anchor="middle" font-size="6.5" fill="#94a3b8">now</text>
+  <text x="170" y="212" text-anchor="middle" font-size="6.5" fill="#94a3b8">15m</text>
+  <line x1="170" y1="197" x2="170" y2="203" stroke="#444" stroke-width="0.5"/>
+  <text x="280" y="212" text-anchor="middle" font-size="6.5" fill="#94a3b8">30m</text>
+  <line x1="280" y1="197" x2="280" y2="203" stroke="#444" stroke-width="0.5"/>
+  <text x="390" y="212" text-anchor="middle" font-size="6.5" fill="#94a3b8">45m</text>
+  <line x1="390" y1="197" x2="390" y2="203" stroke="#444" stroke-width="0.5"/>
+  <text x="490" y="212" text-anchor="middle" font-size="6.5" fill="#94a3b8">60m</text>
+
+  <path d="M60,73 Q120,78 170,97 Q220,115 280,130 Q340,148 390,155 Q440,170 490,178" stroke="#22c55e" stroke-width="1.5" fill="none"/>
+  <circle cx="60" cy="73" r="3" fill="#22c55e"/>
+  <text x="75" y="70" font-size="7" fill="#22c55e">conf 0.9</text>
+
+  <path d="M60,130 Q120,137 170,148 Q220,157 280,165 Q340,173 390,180 Q440,186 490,190" stroke="#f59e0b" stroke-width="1.5" fill="none"/>
+  <circle cx="60" cy="130" r="3" fill="#f59e0b"/>
+  <text x="75" y="127" font-size="7" fill="#f59e0b">conf 0.5</text>
+
+  <path d="M60,160 Q120,168 170,175 Q220,182 280,187 Q340,191 390,194 Q440,196 490,197" stroke="#ef4444" stroke-width="1.5" fill="none"/>
+  <circle cx="60" cy="160" r="3" fill="#ef4444"/>
+  <text x="75" y="157" font-size="7" fill="#ef4444">conf 0.3</text>
+
+  <line x1="60" y1="175" x2="500" y2="175" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="505" y="178" font-size="6.5" fill="#f59e0b">budget cutoff</text>
+
+  <rect x="70" y="230" width="200" height="40" rx="4" fill="#1a1a2e" stroke="#22c55e" stroke-width="0.5"/>
+  <text x="80" y="244" font-size="7" fill="#86efac">KEPT: user requested "poem" (0.9)</text>
+  <text x="80" y="258" font-size="6.5" fill="#94a3b8">5 min ago = effective: 0.88</text>
+
+  <rect x="290" y="230" width="200" height="40" rx="4" fill="#1a1a2e" stroke="#ef4444" stroke-width="0.5"/>
+  <text x="300" y="244" font-size="7" fill="#fca5a5">DROP: user greeted "casually" (0.3)</text>
+  <text x="300" y="258" font-size="6.5" fill="#94a3b8">45 min ago = effective: 0.11</text>
+</svg>

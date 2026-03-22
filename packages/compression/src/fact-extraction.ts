@@ -47,13 +47,25 @@ export type ParseFactResult = {
   readonly narrative: string;
 };
 
-const FACT_LINE_RE = /^FACT:\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*$/;
+const FACT_LINE_RE = /^FACT:\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)(?:\s*\|\s*([\d.]+))?\s*$/;
+
+const DEFAULT_CONFIDENCE = 0.9;
+const MIN_CONFIDENCE = 0.1;
+const MAX_CONFIDENCE = 1.0;
+
+function parseConfidence(raw: string | undefined): number {
+  if (raw === undefined) return DEFAULT_CONFIDENCE;
+  const n = Number.parseFloat(raw);
+  if (Number.isNaN(n)) return DEFAULT_CONFIDENCE;
+  return Math.min(MAX_CONFIDENCE, Math.max(MIN_CONFIDENCE, n));
+}
 
 /**
- * Parses `FACT: subject | predicate | value` lines from LLM output.
+ * Parses `FACT: subject | predicate | value [ | confidence ]` lines from LLM output.
  *
  * Lines matching the pattern are extracted as {@link FactEntry} objects.
- * Everything else is returned as the `narrative` portion.
+ * The optional 4th field is a confidence score (0.0–1.0); when absent the
+ * default is 0.9. Everything else is returned as the `narrative` portion.
  *
  * @param text - Raw LLM output containing interleaved FACT lines and narrative
  * @param sourceItemId - ID of the content item(s) that produced this text
@@ -77,7 +89,7 @@ export function parseFactLines(
         predicate: match[2]!.trim(),
         value: match[3]!.trim(),
         sourceItemId,
-        confidence: 0.9,
+        confidence: parseConfidence(match[4]),
         createdAt,
       });
     } else {
@@ -87,6 +99,31 @@ export function parseFactLines(
 
   const narrative = narrativeLines.join('\n').trim();
   return { facts, narrative };
+}
+
+/** Default half-life for fact decay: 30 minutes. */
+export const DEFAULT_FACT_DECAY_HALF_LIFE_MS = 1_800_000;
+
+/**
+ * Computes effective confidence after time-based decay.
+ *
+ * Uses exponential decay: `confidence * 0.5^(age / halfLifeMs)`.
+ * Stored confidence is never mutated — decay only affects ordering
+ * and budget pruning at render time.
+ *
+ * @param fact - The fact entry
+ * @param newestCreatedAt - Timestamp of the most recent fact (reference point)
+ * @param halfLifeMs - Time in ms for confidence to halve (default 30 min)
+ * @returns Decayed confidence value
+ */
+export function decayedConfidence(
+  fact: FactEntry,
+  newestCreatedAt: number,
+  halfLifeMs: number = DEFAULT_FACT_DECAY_HALF_LIFE_MS,
+): number {
+  const age = Math.max(0, newestCreatedAt - fact.createdAt);
+  if (age === 0 || halfLifeMs <= 0) return fact.confidence;
+  return fact.confidence * Math.pow(0.5, age / halfLifeMs);
 }
 
 /**
@@ -139,15 +176,27 @@ export class FactStore {
   }
 
   /**
-   * Returns facts sorted by confidence descending (highest first), then
-   * by createdAt descending (most recent first) as tiebreaker.
+   * Returns facts sorted by effective confidence descending (highest first),
+   * then by createdAt descending (most recent first) as tiebreaker.
    *
-   * Use this to decide which facts to drop when the fact block exceeds budget.
+   * When `halfLifeMs` is provided, effective confidence is computed with
+   * time-based decay relative to the newest fact in the store.
+   *
+   * @param halfLifeMs - Optional decay half-life. When omitted, raw confidence is used.
    */
-  byConfidenceDesc(): readonly FactEntry[] {
-    return [...this.entries.values()].sort(
-      (a, b) => b.confidence - a.confidence || b.createdAt - a.createdAt,
-    );
+  byConfidenceDesc(halfLifeMs?: number): readonly FactEntry[] {
+    const all = [...this.entries.values()];
+    if (halfLifeMs === undefined || all.length === 0) {
+      return all.sort(
+        (a, b) => b.confidence - a.confidence || b.createdAt - a.createdAt,
+      );
+    }
+    const newest = Math.max(...all.map((f) => f.createdAt));
+    return all.sort((a, b) => {
+      const da = decayedConfidence(a, newest, halfLifeMs);
+      const db = decayedConfidence(b, newest, halfLifeMs);
+      return db - da || b.createdAt - a.createdAt;
+    });
   }
 
   /**
@@ -162,10 +211,11 @@ export class FactStore {
    * @param maxChars - Maximum character length for the rendered block.
    *   Once the limit is reached, remaining facts are dropped.
    *   Pass `Infinity` to include all.
+   * @param halfLifeMs - Optional decay half-life for time-based confidence decay.
    * @returns The rendered text, or an empty string if the store is empty
    */
-  render(maxChars: number = Infinity): string {
-    const facts = this.byConfidenceDesc();
+  render(maxChars: number = Infinity, halfLifeMs?: number): string {
+    const facts = this.byConfidenceDesc(halfLifeMs);
     if (facts.length === 0) return '';
 
     const prefix = 'Known facts: ';
@@ -192,10 +242,11 @@ export class FactStore {
    *
    * @param maxChars - Maximum character length. Facts are added in confidence
    *   order; lowest-confidence facts are dropped first when over budget.
+   * @param halfLifeMs - Optional decay half-life for time-based confidence decay.
    * @returns Multi-line string of `FACT:` lines, or empty string if no facts
    */
-  renderAsFactLines(maxChars: number = Infinity): string {
-    const facts = this.byConfidenceDesc();
+  renderAsFactLines(maxChars: number = Infinity, halfLifeMs?: number): string {
+    const facts = this.byConfidenceDesc(halfLifeMs);
     if (facts.length === 0) return '';
 
     const lines: string[] = [];
@@ -264,10 +315,14 @@ export type ExtractFactsFn = (params: ExtractFactsParams) => Promise<readonly Fa
 const DEFAULT_EXTRACTION_PROMPT =
   `Extract every specific, concrete fact from the following conversation text. ` +
   `Output ONLY lines in this exact format:\n` +
-  `FACT: subject | predicate | value\n\n` +
+  `FACT: subject | predicate | value | confidence\n\n` +
+  `where confidence is 0.0–1.0 indicating how useful this fact would be if asked about later ` +
+  `(1.0 = critical, 0.5 = moderately useful).\n\n` +
   `Include: names, numbers, dates, user preferences, decisions, places, products, ` +
   `accounts, URLs, versions, prices, quantities, and any other concrete detail ` +
   `that could be asked about later.\n\n` +
+  `Do NOT extract trivial social interactions (greetings, thank-yous, farewells, ` +
+  `small talk, acknowledgments like "ok" or "thanks"). ` +
   `Do NOT include opinions, vague statements, or narrative. ` +
   `Do NOT include any text besides FACT: lines.`;
 

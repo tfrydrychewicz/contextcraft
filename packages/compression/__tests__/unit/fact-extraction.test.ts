@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { createDefaultExtractFacts, FactStore, parseFactLines } from '../../src/fact-extraction.js';
+import { createDefaultExtractFacts, decayedConfidence, FactStore, parseFactLines } from '../../src/fact-extraction.js';
 import type { FactEntry } from '../../src/fact-extraction.js';
 
 describe('parseFactLines', () => {
@@ -94,6 +94,51 @@ describe('parseFactLines', () => {
 
     expect(result.facts).toHaveLength(1);
     expect(result.facts[0]!.value).toBe('how to use | in bash');
+  });
+
+  it('parses optional 4th confidence field', () => {
+    const text = 'FACT: user | name | Alice | 0.95';
+    const result = parseFactLines(text, 'src-8', 8000);
+
+    expect(result.facts).toHaveLength(1);
+    expect(result.facts[0]!.confidence).toBe(0.95);
+  });
+
+  it('defaults confidence to 0.9 when 4th field is absent', () => {
+    const text = 'FACT: user | name | Alice';
+    const result = parseFactLines(text, 'src-9', 9000);
+
+    expect(result.facts).toHaveLength(1);
+    expect(result.facts[0]!.confidence).toBe(0.9);
+  });
+
+  it('clamps confidence to [0.1, 1.0]', () => {
+    const lines = [
+      'FACT: user | a | too-low | 0.0',
+      'FACT: user | b | too-high | 1.5',
+      'FACT: user | c | just-above-min | 0.05',
+    ].join('\n');
+    const result = parseFactLines(lines, 'src-10', 10000);
+
+    expect(result.facts[0]!.confidence).toBe(0.1);
+    expect(result.facts[1]!.confidence).toBe(1.0);
+    expect(result.facts[2]!.confidence).toBe(0.1);
+  });
+
+  it('falls back to 0.9 when 4th field is not a number', () => {
+    const text = 'FACT: user | name | Alice | high';
+    const result = parseFactLines(text, 'src-11', 11000);
+
+    expect(result.facts).toHaveLength(1);
+    expect(result.facts[0]!.confidence).toBe(0.9);
+  });
+
+  it('distinguishes confidence field from pipe-containing values', () => {
+    const text = 'FACT: user | query | how to use | in bash';
+    const result = parseFactLines(text, 'src-12', 12000);
+
+    expect(result.facts[0]!.value).toBe('how to use | in bash');
+    expect(result.facts[0]!.confidence).toBe(0.9);
   });
 });
 
@@ -283,6 +328,92 @@ describe('FactStore', () => {
       expect(parsed.facts).toHaveLength(2);
       expect(parsed.narrative).toBe('');
     });
+  });
+
+  describe('byConfidenceDesc with decay', () => {
+    it('reorders facts by decayed confidence when halfLifeMs is provided', () => {
+      const store = new FactStore();
+      store.add(mkFact('user', 'old-high', 'ancient', 0.9, 1000));
+      store.add(mkFact('user', 'new-low', 'recent', 0.5, 100_000));
+
+      const withoutDecay = store.byConfidenceDesc();
+      expect(withoutDecay[0]!.value).toBe('ancient');
+
+      const withDecay = store.byConfidenceDesc(10_000);
+      expect(withDecay[0]!.value).toBe('recent');
+    });
+
+    it('does not apply decay when halfLifeMs is undefined', () => {
+      const store = new FactStore();
+      store.add(mkFact('user', 'a', 'high', 0.9, 1000));
+      store.add(mkFact('user', 'b', 'low', 0.3, 50_000));
+
+      const sorted = store.byConfidenceDesc();
+      expect(sorted[0]!.value).toBe('high');
+    });
+  });
+
+  describe('render with decay', () => {
+    it('prioritizes recent facts when decay is enabled', () => {
+      const store = new FactStore();
+      store.add(mkFact('user', 'old', 'stale', 0.9, 1000));
+      store.add(mkFact('user', 'new', 'fresh', 0.6, 100_000));
+
+      const rendered = store.render(Infinity, 10_000);
+      const freshIdx = rendered.indexOf('fresh');
+      const staleIdx = rendered.indexOf('stale');
+      expect(freshIdx).toBeLessThan(staleIdx);
+    });
+  });
+
+  describe('renderAsFactLines with decay', () => {
+    it('drops old decayed facts first under budget', () => {
+      const store = new FactStore();
+      store.add(mkFact('user', 'critical', 'must-keep', 0.8, 100_000));
+      store.add(mkFact('user', 'old', 'can-drop', 0.9, 1000));
+
+      const rendered = store.renderAsFactLines(50, 10_000);
+      expect(rendered).toContain('must-keep');
+      expect(rendered).not.toContain('can-drop');
+    });
+  });
+});
+
+describe('decayedConfidence', () => {
+  const mkEntry = (confidence: number, createdAt: number): FactEntry => ({
+    subject: 'user',
+    predicate: 'test',
+    value: 'v',
+    sourceItemId: 'test',
+    confidence,
+    createdAt,
+  });
+
+  it('returns raw confidence when age is 0', () => {
+    const fact = mkEntry(0.9, 5000);
+    expect(decayedConfidence(fact, 5000)).toBe(0.9);
+  });
+
+  it('halves confidence after one half-life', () => {
+    const fact = mkEntry(1.0, 0);
+    const result = decayedConfidence(fact, 1_800_000, 1_800_000);
+    expect(result).toBeCloseTo(0.5, 5);
+  });
+
+  it('quarters confidence after two half-lives', () => {
+    const fact = mkEntry(1.0, 0);
+    const result = decayedConfidence(fact, 3_600_000, 1_800_000);
+    expect(result).toBeCloseTo(0.25, 5);
+  });
+
+  it('returns raw confidence when halfLifeMs is 0', () => {
+    const fact = mkEntry(0.8, 0);
+    expect(decayedConfidence(fact, 10_000, 0)).toBe(0.8);
+  });
+
+  it('handles negative age gracefully (returns raw confidence)', () => {
+    const fact = mkEntry(0.7, 10_000);
+    expect(decayedConfidence(fact, 5_000)).toBe(0.7);
   });
 });
 

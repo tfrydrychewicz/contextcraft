@@ -7,7 +7,7 @@ Slotmux provides three compression families for reducing token usage without los
 Progressive summarization condenses content through multiple layers of increasing abstraction. It's designed for conversation history where you want to preserve recent detail while compacting older turns.
 
 <p align="center">
-  <img src="/compression-progressive.svg" alt="Progressive summarization zones" style="max-width: 480px; width: 100%;" />
+  <img src="/compression-progressive.svg" alt="Progressive summarization zones" style="max-width: 720px; width: 100%;" />
 </p>
 
 ### How it works
@@ -29,7 +29,7 @@ If the result still doesn't fit after Layer 1 and Layer 2 summaries, the Layer 2
 ### Incremental summarization
 
 <p align="center">
-  <img src="/compression-incremental.svg" alt="Incremental summarization: stable summaries reused, only fresh items sent to LLM" style="max-width: 520px; width: 100%;" />
+  <img src="/compression-incremental.svg" alt="Incremental summarization: stable summaries reused, only fresh items sent to LLM" style="max-width: 720px; width: 100%;" />
 </p>
 
 Without incremental summarization, every `build()` re-summarizes all items — including items that were *already summaries* from a previous pass. This means cost and latency grow with total conversation length, not with how much new content was added.
@@ -43,19 +43,47 @@ The result: in a long-running conversation, early builds may need 5–10 LLM cal
 ### Fact-aware compression
 
 <p align="center">
-  <img src="/compression-fact-aware.svg" alt="Fact-aware compression: extraction-first prompts, fact store, and fact pinning" style="max-width: 520px; width: 100%;" />
+  <img src="/compression-fact-aware.svg" alt="Fact-aware compression: extraction-first prompts, fact store, and fact pinning" style="max-width: 720px; width: 100%;" />
 </p>
 
 Narrative summaries are inherently lossy for specific details — names, numbers, dates, and preferences get dropped when the model compresses aggressively. For example, "The user created a playlist called 'Summer Vibes' on Spotify" might become "The user discussed music streaming platforms." The specific playlist name is gone.
 
 Fact-aware compression addresses this with a **dual-store architecture** that separates structured facts from narrative:
 
-1. **Extraction-first prompts** — The LLM is instructed to output structured `FACT: subject | predicate | value` lines *before* writing narrative. Facts are produced first and survive even when the model runs out of space for the narrative tail.
-2. **Fact store** — Extracted facts accumulate in an in-memory `FactStore` across compression rounds, keyed by `subject|predicate`. Duplicates are resolved by keeping the highest-confidence entry.
-3. **Fact block** — A synthetic `Known facts:` item is rendered at the start of the summarized context so the downstream LLM can reference specific details when answering questions.
-4. **Fact pinning** — When L3 re-compression runs, existing facts are injected into the prompt as "must preserve" constraints, preventing the model from silently dropping them.
+1. **Extraction-first prompts** — The LLM is instructed to output structured `FACT: subject | predicate | value | confidence` lines *before* writing narrative. Facts are produced first and survive even when the model runs out of space for the narrative tail. The confidence field (0.0–1.0) lets the LLM express how important each fact is; when omitted, it defaults to 0.9.
+2. **Trivial fact filtering** — Prompts explicitly instruct the LLM to skip greetings, thank-yous, farewells, and other trivial social interactions. Only facts that would be useful if asked about later are extracted.
+3. **Fact store** — Extracted facts accumulate in an in-memory `FactStore` across compression rounds, keyed by `subject|predicate`. Duplicates are resolved by keeping the highest-confidence entry.
+4. **Fact block** — A synthetic `Known facts:` item is rendered at the start of the summarized context so the downstream LLM can reference specific details when answering questions. Facts are ordered by confidence — the most important facts appear first and survive when budget is tight.
+5. **Fact pinning** — When L3 re-compression runs, existing facts are injected into the prompt as "must preserve" constraints, preventing the model from silently dropping them.
 
-Control the fact block size with `factBudgetTokens` in `overflowConfig` (default: 20% of `summaryBudgetTokens`, capped at 512 tokens).
+#### Fact confidence scoring
+
+<p align="center">
+  <img src="/compression-fact-confidence.svg" alt="Fact confidence scoring: LLM assigns importance, trivial facts deprioritized" style="max-width: 720px; width: 100%;" />
+</p>
+
+The LLM assigns a confidence score to each fact it extracts. Critical facts (names, decisions, account numbers) get high confidence; trivial observations get low confidence. When the fact budget is tight, low-confidence facts are dropped first, ensuring the most useful information survives.
+
+#### Time-based fact decay
+
+<p align="center">
+  <img src="/compression-fact-decay.svg" alt="Fact decay: old facts lose effective confidence over time" style="max-width: 720px; width: 100%;" />
+</p>
+
+In long conversations, facts from early turns become stale. Time-based decay reduces the effective confidence of older facts using exponential decay: `confidence × 0.5^(age / halfLife)`. This means old trivial facts drop off naturally while recent important facts hold their position.
+
+Enable decay with `factDecayHalfLifeMs` in `overflowConfig`:
+
+```typescript
+overflowConfig: {
+  factBudgetTokens: 256,
+  factDecayHalfLifeMs: 1_800_000, // 30-minute half-life
+}
+```
+
+Decay only affects **render-time ordering** — stored confidence values are never mutated. When decay is not configured, raw confidence is used as-is (the default).
+
+#### Custom fact extraction
 
 For domain-specific extraction, you can provide a custom `extractFacts` function that runs as a separate pass before summarization:
 
@@ -75,7 +103,7 @@ overflowConfig: {
 ### Importance-weighted zone partitioning
 
 <p align="center">
-  <img src="/compression-importance.svg" alt="Importance-weighted partitioning: fact-dense items stay in MIDDLE zone" style="max-width: 480px; width: 100%;" />
+  <img src="/compression-importance.svg" alt="Importance-weighted partitioning: fact-dense items stay in MIDDLE zone" style="max-width: 720px; width: 100%;" />
 </p>
 
 By default, non-recent items are split into OLD and MIDDLE zones using importance scoring — not purely by age. Items are scored before splitting:
@@ -136,7 +164,7 @@ const result = await runProgressiveSummarize({
 An alternative to progressive summarization that works better for large batches of independent content (e.g. retrieved documents).
 
 <p align="center">
-  <img src="/compression-map-reduce.svg" alt="Map-reduce summarization pipeline" style="max-width: 480px; width: 100%;" />
+  <img src="/compression-map-reduce.svg" alt="Map-reduce summarization pipeline" style="max-width: 720px; width: 100%;" />
 </p>
 
 ### How it works
@@ -173,7 +201,7 @@ const result = await runMapReduceSummarize({
 Semantic compression uses embedding similarity to selectively keep the most relevant content. Unlike summarization, it doesn't rewrite text — it filters items based on how relevant they are to an anchor.
 
 <p align="center">
-  <img src="/compression-semantic.svg" alt="Semantic compression via similarity filtering" style="max-width: 500px; width: 100%;" />
+  <img src="/compression-semantic.svg" alt="Semantic compression via similarity filtering" style="max-width: 720px; width: 100%;" />
 </p>
 
 ### How it works
@@ -221,7 +249,7 @@ const result = await runSemanticCompress({
 Lossless compression reduces token count through mechanical text transformations that preserve meaning: stop-word removal, whitespace normalization, and redundancy elimination. No LLM call is required.
 
 <p align="center">
-  <img src="/compression-lossless.svg" alt="Lossless compression text transformation" style="max-width: 480px; width: 100%;" />
+  <img src="/compression-lossless.svg" alt="Lossless compression text transformation" style="max-width: 720px; width: 100%;" />
 </p>
 
 ### How it works

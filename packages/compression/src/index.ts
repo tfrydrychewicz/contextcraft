@@ -29,7 +29,7 @@ export type {
 
 export { runWithConcurrency } from './concurrency.js';
 
-export { createDefaultExtractFacts, FactStore, parseFactLines } from './fact-extraction.js';
+export { createDefaultExtractFacts, decayedConfidence, DEFAULT_FACT_DECAY_HALF_LIFE_MS, FactStore, parseFactLines } from './fact-extraction.js';
 export type { ExtractFactsFn, ExtractFactsParams, FactEntry, ParseFactResult } from './fact-extraction.js';
 
 export { computeItemImportance } from './importance-scorer.js';

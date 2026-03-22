@@ -122,6 +122,7 @@ export function createProgressiveSummarizeOverflow(
     const factBudget = oc?.factBudgetTokens;
     const importanceScorer = oc?.importanceScorer;
     const extractFacts = oc?.extractFacts;
+    const factDecayHalfLifeMs = oc?.factDecayHalfLifeMs;
 
     const raw = await runProgressiveSummarize(progressiveItems, budgetNum, {
       preserveLastN,
@@ -135,6 +136,7 @@ export function createProgressiveSummarizeOverflow(
       ...(factBudget !== undefined ? { factBudgetTokens: factBudget } : {}),
       ...(importanceScorer !== undefined ? { importanceScorer } : {}),
       ...(extractFacts !== undefined ? { extractFacts } : {}),
+      ...(factDecayHalfLifeMs !== undefined ? { factDecayHalfLifeMs } : {}),
     });
 
     return enrichSummaryTokens(raw, countTextTokens);
