@@ -7,6 +7,7 @@
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 
 import type {
+  BuildRecordWire,
   InspectorEventWire,
   SerializedSnapshotWire,
   SlotsOkResponse,
@@ -40,11 +41,26 @@ function parseEventsPayload(data: unknown): readonly InspectorEventWire[] {
   return raw.filter((e): e is InspectorEventWire => isRecord(e) && typeof e['type'] === 'string');
 }
 
+function parseBuildsPayload(data: unknown): readonly BuildRecordWire[] {
+  if (!isRecord(data) || data['ok'] !== true) {
+    return [];
+  }
+  const raw = data['builds'];
+  if (!Array.isArray(raw)) {
+    return [];
+  }
+  return raw.filter(
+    (b): b is BuildRecordWire =>
+      isRecord(b) && typeof b['index'] === 'number' && typeof b['timestamp'] === 'number',
+  );
+}
+
 export function useInspector(pollMs = 2000): {
   readonly snapshot: SerializedSnapshotWire | null;
   readonly previousSnapshot: SerializedSnapshotWire | null;
   readonly slots: SlotsOkResponse | null;
   readonly events: readonly TimedInspectorEvent[];
+  readonly builds: readonly BuildRecordWire[];
   readonly wsConnected: boolean;
   readonly fetchError: string | null;
   readonly refresh: () => Promise<void>;
@@ -53,6 +69,7 @@ export function useInspector(pollMs = 2000): {
   const [previousSnapshot, setPreviousSnapshot] = useState<SerializedSnapshotWire | null>(null);
   const [slots, setSlots] = useState<SlotsOkResponse | null>(null);
   const [events, setEvents] = useState<readonly TimedInspectorEvent[]>([]);
+  const [builds, setBuilds] = useState<readonly BuildRecordWire[]>([]);
   const [wsConnected, setWsConnected] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
@@ -76,10 +93,11 @@ export function useInspector(pollMs = 2000): {
   const refresh = useCallback(async () => {
     try {
       setFetchError(null);
-      const [evRes, snapRes, slotRes] = await Promise.all([
+      const [evRes, snapRes, slotRes, buildsRes] = await Promise.all([
         fetch('/events'),
         fetch('/snapshot'),
         fetch('/slots'),
+        fetch('/builds'),
       ]);
 
       if (!evRes.ok || !snapRes.ok || !slotRes.ok) {
@@ -107,6 +125,11 @@ export function useInspector(pollMs = 2000): {
           ok: true,
           slots: slotJson['slots'] as SlotsOkResponse['slots'],
         });
+      }
+
+      if (buildsRes.ok) {
+        const buildsJson: unknown = await buildsRes.json();
+        setBuilds(parseBuildsPayload(buildsJson));
       }
     } catch (e) {
       setFetchError(e instanceof Error ? e.message : String(e));
@@ -158,6 +181,7 @@ export function useInspector(pollMs = 2000): {
     previousSnapshot,
     slots,
     events,
+    builds,
     wsConnected,
     fetchError,
     refresh,

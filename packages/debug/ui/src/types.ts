@@ -56,3 +56,23 @@ export type SlotsOkResponse = {
     >
   >;
 };
+
+export type SlotItemWire = {
+  readonly id: string;
+  readonly role: string;
+  readonly content: string | readonly unknown[];
+  readonly tokens: number | null;
+  readonly pinned: boolean;
+  readonly metadata: Record<string, unknown> | null;
+  readonly summarizes: readonly string[] | null;
+};
+
+export type BuildRecordWire = {
+  readonly index: number;
+  readonly timestamp: number;
+  readonly preSlots: Readonly<Record<string, readonly SlotItemWire[]>>;
+  readonly postSlots: Readonly<Record<string, readonly SlotItemWire[]>>;
+  readonly snapshot: SerializedSnapshotWire | null;
+  readonly compressions: readonly unknown[];
+  readonly evictions: readonly unknown[];
+};

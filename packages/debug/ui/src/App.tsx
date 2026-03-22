@@ -6,6 +6,7 @@
 
 import { useCallback, useState } from 'preact/hooks';
 
+import { ContextExplorer } from './components/ContextExplorer.js';
 import { DiffViewer } from './components/DiffViewer.js';
 import { SlotUtilization } from './components/SlotUtilization.js';
 import { Timeline } from './components/Timeline.js';
@@ -16,7 +17,7 @@ import { useInspector } from './hooks/useInspector.js';
 import './styles.css';
 
 export function App() {
-  const { snapshot, previousSnapshot, slots, events, wsConnected, fetchError, refresh } = useInspector();
+  const { snapshot, previousSnapshot, slots, events, builds, wsConnected, fetchError, refresh } = useInspector();
   const [budgetFactors, setBudgetFactors] = useState<Readonly<Record<string, number>>>({});
 
   const onFactors = useCallback((f: Readonly<Record<string, number>>) => {
@@ -48,6 +49,8 @@ export function App() {
       </header>
 
       {fetchError !== null ? <div class="error-banner">Fetch error: {fetchError}</div> : null}
+
+      <ContextExplorer builds={builds} />
 
       <div class="inspector__grid">
         <div>

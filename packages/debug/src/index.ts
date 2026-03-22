@@ -7,10 +7,11 @@
 export { InspectorDisabledError } from './errors.js';
 export {
   attachInspector,
+  DEFAULT_MAX_BUILDS,
   DEFAULT_MAX_EVENTS,
   DEFAULT_PORT,
 } from './inspector-server.js';
-export type { AttachInspectorOptions, InspectorHandle } from './inspector-server.js';
+export type { AttachInspectorOptions, BuildRecord, InspectorHandle, SlotItemsCapture } from './inspector-server.js';
 export { serializeContextEventForJson } from './serialize-event.js';
 
 export const VERSION = '1.0.0-rc.1';

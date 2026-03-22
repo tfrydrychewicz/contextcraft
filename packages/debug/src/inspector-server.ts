@@ -15,6 +15,7 @@ import { serveInspectorStatic } from './serve-inspector-static.js';
 
 const DEFAULT_PORT = 4200;
 const DEFAULT_MAX_EVENTS = 500;
+const DEFAULT_MAX_BUILDS = 50;
 
 export type AttachInspectorOptions = {
   /** TCP port (default 4200). Use `0` to pick a free port. */
@@ -26,6 +27,22 @@ export type AttachInspectorOptions = {
   readonly allowInNonDevelopment?: boolean;
   /** Cap for in-memory event ring (default 500). */
   readonly maxEvents?: number;
+  /** Cap for stored build records (default 50). */
+  readonly maxBuilds?: number;
+};
+
+/** Per-slot content snapshot captured during a build. */
+export type SlotItemsCapture = Readonly<Record<string, readonly unknown[]>>;
+
+/** A captured build record with pre- and post-compression slot content. */
+export type BuildRecord = {
+  readonly index: number;
+  readonly timestamp: number;
+  readonly preSlots: SlotItemsCapture;
+  readonly postSlots: SlotItemsCapture;
+  readonly snapshot: unknown;
+  readonly compressions: readonly unknown[];
+  readonly evictions: readonly unknown[];
 };
 
 export type InspectorHandle = {
@@ -62,6 +79,28 @@ function sendJson(
   res.end(json);
 }
 
+function captureSlotItems(ctx: Context): SlotItemsCapture {
+  const result: Record<string, readonly unknown[]> = {};
+  for (const name of ctx.registeredSlots) {
+    try {
+      result[name] = ctx.getItems(name).map((item) => ({
+        id: item.id,
+        role: item.role,
+        content: typeof item.content === 'string'
+          ? item.content
+          : item.content,
+        tokens: item.tokens ?? null,
+        pinned: item.pinned ?? false,
+        metadata: item.metadata ?? null,
+        summarizes: item.summarizes ?? null,
+      }));
+    } catch {
+      result[name] = [];
+    }
+  }
+  return result;
+}
+
 function slotsPayload(ctx: Context): unknown {
   const layout = ctx.getSlotsConfig();
   if (layout === undefined) {
@@ -95,9 +134,14 @@ export function attachInspector(ctx: Context, options?: AttachInspectorOptions):
 
   const listenPort = options?.port ?? DEFAULT_PORT;
   const maxEvents = options?.maxEvents ?? DEFAULT_MAX_EVENTS;
+  const maxBuilds = options?.maxBuilds ?? DEFAULT_MAX_BUILDS;
 
   const serializedEvents: unknown[] = [];
   let lastSnapshotSerialized: unknown = null;
+
+  const buildRecords: BuildRecord[] = [];
+  let buildCounter = 0;
+  let pendingPreSlots: SlotItemsCapture | null = null;
 
   const server = http.createServer((req, res) => {
     if (req.method === 'OPTIONS') {
@@ -127,7 +171,7 @@ export function attachInspector(ctx: Context, options?: AttachInspectorOptions):
       sendJson(res, 200, {
         ok: true,
         package: '@slotmux/debug',
-        endpoints: ['/snapshot', '/slots', '/events', '/inspector/', 'WebSocket same port'],
+        endpoints: ['/snapshot', '/slots', '/events', '/builds', '/inspector/', 'WebSocket same port'],
       });
       return;
     }
@@ -153,6 +197,22 @@ export function attachInspector(ctx: Context, options?: AttachInspectorOptions):
       return;
     }
 
+    if (path === '/builds') {
+      sendJson(res, 200, {
+        ok: true,
+        builds: buildRecords.map((b) => ({
+          index: b.index,
+          timestamp: b.timestamp,
+          preSlots: b.preSlots,
+          postSlots: b.postSlots,
+          snapshot: b.snapshot,
+          compressions: b.compressions,
+          evictions: b.evictions,
+        })),
+      });
+      return;
+    }
+
     sendJson(res, 404, { ok: false, error: 'Not found' });
   });
 
@@ -164,9 +224,42 @@ export function attachInspector(ctx: Context, options?: AttachInspectorOptions):
     if (serializedEvents.length > maxEvents) {
       serializedEvents.splice(0, serializedEvents.length - maxEvents);
     }
+
+    if (ev.type === 'build:start') {
+      pendingPreSlots = captureSlotItems(ctx);
+    }
+
     if (ev.type === 'build:complete') {
       lastSnapshotSerialized = (serialized as { snapshot: unknown }).snapshot;
+
+      const postSlots = captureSlotItems(ctx);
+      const snapshotData = (serialized as { snapshot: unknown }).snapshot;
+      const meta = snapshotData !== null && typeof snapshotData === 'object'
+        ? (snapshotData as Record<string, unknown>)['meta']
+        : null;
+      const compressions = meta !== null && typeof meta === 'object'
+        ? ((meta as Record<string, unknown>)['compressions'] as readonly unknown[] | undefined) ?? []
+        : [];
+      const evictions = meta !== null && typeof meta === 'object'
+        ? ((meta as Record<string, unknown>)['evictions'] as readonly unknown[] | undefined) ?? []
+        : [];
+
+      const record: BuildRecord = {
+        index: buildCounter++,
+        timestamp: Date.now(),
+        preSlots: pendingPreSlots ?? postSlots,
+        postSlots,
+        snapshot: snapshotData,
+        compressions,
+        evictions,
+      };
+      buildRecords.push(record);
+      if (buildRecords.length > maxBuilds) {
+        buildRecords.splice(0, buildRecords.length - maxBuilds);
+      }
+      pendingPreSlots = null;
     }
+
     const wsPayload = JSON.stringify({
       type: 'slotmux:event',
       event: serialized,
@@ -213,4 +306,4 @@ export function attachInspector(ctx: Context, options?: AttachInspectorOptions):
   });
 }
 
-export { DEFAULT_MAX_EVENTS, DEFAULT_PORT };
+export { DEFAULT_MAX_BUILDS, DEFAULT_MAX_EVENTS, DEFAULT_PORT };
