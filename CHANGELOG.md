@@ -188,3 +188,4 @@ First release candidate. All packages ship at `1.0.0-rc.1`.
 #### Documentation
 
 - VitePress documentation site with getting started guide, chatbot tutorial, 5 concept pages, 16 guides (framework integration, observability, advanced features, production patterns), and API reference.
+
