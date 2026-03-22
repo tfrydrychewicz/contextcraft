@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 This file is managed by [Changesets](https://github.com/changesets/changesets). Package-specific changelogs are generated when publishing.
 
+## 1.0.0-rc.5 — 2026-03-22
+
+### Added
+
+#### `@slotmux/tokenizers`
+
+- **FNV-1a cache keys** — Token count cache now uses FNV-1a (pure JS, non-cryptographic) instead of SHA-256 for cache key hashing, removing the `node:crypto` dependency and improving key computation speed.
+
+#### `@slotmux/compression`
+
+- **Adaptive similarity thresholds** — `computeAdaptiveThreshold` uses a z-score formula (`mean + k × stddev`) to set a data-driven similarity cutoff for semantic compression. Configure via `adaptiveThreshold: true` (k=1.0) or `adaptiveThreshold: 2.5` for custom sensitivity.
+- **Tiered token estimation** — `estimateItemsTokens` provides fast character-based token estimates (chars/3.5) for heuristic paths like `computeDynamicPreserveLastN` and adaptive zone skip, while exact BPE counting is reserved for final budget enforcement.
+- **JSON structured fact extraction** — `createDefaultExtractFacts` now uses `responseSchema` with `FACT_EXTRACTION_SCHEMA` for type-safe JSON output from providers that support structured output. Falls back to `FACT:` line parsing when JSON parsing fails.
+
+#### `@slotmux/providers`
+
+- **`responseSchema` support** — All provider factories (`openai`, `anthropic`, `google`, `mistral`, `ollama`) now accept an optional `responseSchema` parameter in `SummarizeTextFn` and use their native structured output mechanisms (OpenAI `response_format: json_schema`, Anthropic tool use, Google `responseMimeType`, Mistral `response_format: json_object`, Ollama `format: json`).
+
+#### `slotmux` (core)
+
+- **`adaptiveThreshold` config** — New `overflowConfig.adaptiveThreshold` option for semantic compression (`boolean | number`).
+
+#### Documentation
+
+- New SVG diagrams: adaptive similarity thresholds and tiered token estimation.
+- Expanded compression.md with adaptive threshold configuration examples and tiered estimation overview.
+- Updated overflow.md with `adaptiveThreshold` option for the semantic strategy.
+
+#### Benchmarks
+
+- **LLM usage tracking** — LongMemEval benchmark now counts LLM requests and estimated tokens sent per run, prints totals at completion, and includes per-strategy usage tables in the report.
+
 ## 1.0.0-rc.4 — 2026-03-21
 
 ### Added
