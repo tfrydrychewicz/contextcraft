@@ -14,7 +14,7 @@
     "@slotmux/providers": "workspace:*"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.2.0",
+    "@vitejs/plugin-vue": "^6.0.5",
     "typescript": "^5.6.3",
     "vite": "^6.0.0"
   }
